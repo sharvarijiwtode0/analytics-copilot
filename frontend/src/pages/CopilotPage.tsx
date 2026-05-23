@@ -9,6 +9,7 @@ import { ChatInput } from '../components/Chat/ChatInput'
 import DisambiguationModal from '../components/DisambiguationModal'
 import Sidebar from '../components/Layout/Sidebar'
 import TransparencyPanel from '../components/TransparencyPanel'
+import AgentSidebar, { type AgentRun } from '../components/AgentSidebar'
 import { useStreamingQuery, type TransparencyStep } from '../hooks/useStreamingQuery'
 
 export const CopilotPage: React.FC = () => {
@@ -73,6 +74,10 @@ export const CopilotPage: React.FC = () => {
   // Transparency panel state
   const [transparencySteps, setTransparencySteps] = useState<TransparencyStep[]>([])
   const [showTransparency, setShowTransparency] = useState(false)
+
+  // Agent sidebar history (persisted across messages)
+  const [agentHistory, setAgentHistory] = useState<AgentRun[]>([])
+  const currentRunRef = useRef<AgentRun | null>(null)
 
   // Streaming query hook
   const { streamQuery, isStreaming, abort } = useStreamingQuery()
@@ -139,14 +144,42 @@ export const CopilotPage: React.FC = () => {
     setTransparencySteps([])
     setShowTransparency(true)
 
+    // Start a new agent run entry
+    const runId = crypto.randomUUID()
+    currentRunRef.current = {
+      id: runId,
+      question,
+      startedAt: Date.now(),
+      nodes: {},
+    }
+
     // Use streaming query for real-time updates
     streamQuery(question, datasourceId, {
       onData: (step) => {
         setTransparencySteps(prev => [...prev, step])
+        // Accumulate into current run
+        if (currentRunRef.current) {
+          const run = currentRunRef.current
+          if (step.data?.tables) run.tables = step.data.tables as string[]
+          if (step.data?.row_count !== undefined) run.rowCount = step.data.row_count as number
+          if (step.data?.sql) run.sql = step.data.sql as string
+          if (step.data?.intent) run.intent = step.data.intent as string
+          if (step.data?.insights) run.insights = step.data.insights as string[]
+          if (step.data?.key_metrics) run.keyMetrics = step.data.key_metrics as Record<string, string>
+        }
       },
       onComplete: (response) => {
         setLoading(false)
         setShowTransparency(false)
+        // Finalise run and push to history
+        if (currentRunRef.current) {
+          const run = currentRunRef.current
+          run.completedAt = Date.now()
+          if (response.sql) run.sql = response.sql
+          if (response.row_count) run.rowCount = response.row_count
+          setAgentHistory(prev => [...prev, { ...run }])
+          currentRunRef.current = null
+        }
 
         // Check for disambiguation error
         if (response.error?.startsWith('DISAMBIGUATION_NEEDED:')) {
@@ -172,6 +205,13 @@ export const CopilotPage: React.FC = () => {
       onError: (error) => {
         setLoading(false)
         setShowTransparency(false)
+        if (currentRunRef.current) {
+          const run = currentRunRef.current
+          run.completedAt = Date.now()
+          run.error = error
+          setAgentHistory(prev => [...prev, { ...run }])
+          currentRunRef.current = null
+        }
         addAssistantMessage({
           conversation_id: conversationId || '',
           message_id: crypto.randomUUID(),
@@ -226,7 +266,7 @@ export const CopilotPage: React.FC = () => {
 
   return (
     <div className={`flex h-screen ${theme === 'dark' ? 'bg-zinc-950' : 'bg-slate-50'}`}>
-      {/* Sidebar */}
+      {/* Left Sidebar — chat history */}
       <Sidebar 
         isOpen={sidebarOpen} 
         onToggle={() => setSidebarOpen(!sidebarOpen)} 
@@ -239,35 +279,35 @@ export const CopilotPage: React.FC = () => {
         }}
       />
 
-      {/* Main Content */}
-      <div className={`flex flex-col flex-1 transition-all duration-300 ${sidebarOpen ? 'lg:ml-60' : 'lg:ml-14'}`}>
+      {/* Main Content — full width between sidebars */}
+      <div className={`flex flex-col flex-1 min-w-0 transition-all duration-300 ${sidebarOpen ? 'lg:ml-60' : 'lg:ml-14'}`}>
         {/* Header */}
-        <header className={`flex items-center justify-between px-6 py-4 border-b shadow-sm z-10 ${
+        <header className={`flex items-center justify-between px-5 py-3 border-b z-10 ${
           theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'
         }`}>
           <div className="flex items-center gap-3">
-            <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${theme === 'dark' ? 'bg-zinc-800' : 'bg-zinc-900'}`}>
-              <BarChart2 size={18} className="text-white" />
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${theme === 'dark' ? 'bg-zinc-800' : 'bg-zinc-900'}`}>
+              <BarChart2 size={16} className="text-white" />
             </div>
             <div>
               <h1 className={`font-semibold text-sm ${theme === 'dark' ? 'text-zinc-100' : 'text-slate-800'}`}>
                 Data Visualization Copilot
               </h1>
               <p className={`text-xs ${theme === 'dark' ? 'text-zinc-400' : 'text-slate-400'}`}>
-                AI-Powered Analytics · {datasourceId === 'default' ? 'SQLite Demo' : datasourceId === 'limese' ? 'Limese ClickHouse' : datasourceId}
+                {datasourceId === 'default' ? 'SQLite Demo' : datasourceId === 'limese' ? 'Limese ClickHouse' : datasourceId}
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {/* Mode Switcher */}
             <div className={`flex items-center gap-0.5 rounded-lg p-0.5 text-xs ${
               theme === 'dark' ? 'bg-zinc-800' : 'bg-slate-100'
             }`}>
               {[
-                { id: 'chat' as ChatMode, icon: <MessageSquare size={13} />, label: 'Chat' },
-                { id: 'sql' as ChatMode, icon: <Code size={13} />, label: 'SQL' },
-                { id: 'dashboard' as ChatMode, icon: <LayoutDashboard size={13} />, label: 'Dashboard' },
+                { id: 'chat' as ChatMode, icon: <MessageSquare size={12} />, label: 'Chat' },
+                { id: 'sql' as ChatMode, icon: <Code size={12} />, label: 'SQL' },
+                { id: 'dashboard' as ChatMode, icon: <LayoutDashboard size={12} />, label: 'Dashboard' },
               ].map(m => (
                 <button
                   key={m.id}
@@ -283,7 +323,7 @@ export const CopilotPage: React.FC = () => {
                 </button>
               ))}
             </div>
-            {/* Datasource indicator */}
+            {/* Datasource */}
             <div className={`flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs ${
               theme === 'dark' ? 'bg-zinc-800 text-zinc-300' : 'bg-slate-100 text-slate-600'
             }`}>
@@ -293,10 +333,7 @@ export const CopilotPage: React.FC = () => {
               ) : (
                 <select
                   value={datasourceId}
-                  onChange={(e) => {
-                    setDatasourceId(e.target.value)
-                    startNewSession()
-                  }}
+                  onChange={(e) => { setDatasourceId(e.target.value); startNewSession() }}
                   className="bg-transparent border-none outline-none font-medium cursor-pointer"
                 >
                   {datasources.map((ds) => (
@@ -310,92 +347,74 @@ export const CopilotPage: React.FC = () => {
           </div>
         </header>
 
-        {/* Messages scroll area */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 md:px-8 py-6">
-          <div className="max-w-4xl w-full mx-auto">
-            {messages.length === 0 ? (
-              <WelcomeScreen
-                onQuestionClick={handleSend}
-                theme={theme}
-                schema={schema}
-                datasourceId={datasourceId}
-                loading={schemaLoading}
-              />
-            ) : (
-              <>
-                {messages.map((msg) => (
-                  <ChatMessageComponent
-                    key={msg.id}
-                    message={msg}
-                    onFollowUp={handleSend}
-                    onEdit={(id, content) => setChatInputValue(content)}
-                    onDelete={(id) => setMessageToDelete(id)}
+        {/* Body — chat + agent sidebar side by side */}
+        <div className="flex flex-1 min-h-0">
+          {/* Chat area — fills all remaining space */}
+          <div className="flex flex-col flex-1 min-w-0">
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 md:px-8 py-6">
+              <div className="w-full max-w-3xl mx-auto">
+                {messages.length === 0 ? (
+                  <WelcomeScreen
+                    onQuestionClick={handleSend}
                     theme={theme}
+                    schema={schema}
+                    datasourceId={datasourceId}
+                    loading={schemaLoading}
                   />
-                ))}
-                {isLoading && <ThinkingIndicator seconds={elapsedSeconds} theme={theme} />}
-              </>
-            )}
-            <div ref={bottomRef} />
-          </div>
-        </div>
+                ) : (
+                  <>
+                    {messages.map((msg) => (
+                      <ChatMessageComponent
+                        key={msg.id}
+                        message={msg}
+                        onFollowUp={handleSend}
+                        onEdit={(id, content) => setChatInputValue(content)}
+                        onDelete={(id) => setMessageToDelete(id)}
+                        theme={theme}
+                      />
+                    ))}
+                    {isLoading && <ThinkingIndicator seconds={elapsedSeconds} theme={theme} />}
+                  </>
+                )}
+                <div ref={bottomRef} />
+              </div>
+            </div>
 
-        {/* Transparency Panel — sleek inline block right above the input */}
-        {showTransparency && transparencySteps.length > 0 && (
-          <div className="max-w-4xl w-full mx-auto px-4 mb-3">
-            <TransparencyPanel
-              steps={transparencySteps}
-              isComplete={!isLoading && !isStreaming}
-              sql={transparencySteps.find(s => s.data?.sql)?.data?.sql as string}
-              tables={(transparencySteps
-                .find(s => s.step === 'discover_schema' || s.step === 'generate_sql')
-                ?.data as { tables?: string[] } | undefined)?.tables || []}
-              columns={transparencySteps.find(s => s.data?.columns)?.data?.columns as string[]}
-            />
-          </div>
-        )}
-
-        {/* Disambiguation Modal */}
-        {disambiguation && (
-          <div className="max-w-4xl mx-auto px-4 pb-2">
-            <DisambiguationModal
-              keyword={disambiguation.keyword}
-              options={disambiguation.options}
-              onSelect={handleDisambiguationSelect}
-              onDismiss={() => setDisambiguation(null)}
-            />
-          </div>
-        )}
-
-        {/* Input — full width, below the split chat area */}
-        <div className={`border-t ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'}`}>
-          <div className="max-w-4xl mx-auto flex flex-col">
-            <ChatInput
-              value={chatInputValue}
-              onChange={setChatInputValue}
-              onSend={handleSend}
-              onStop={() => {
-                abort()
-                setLoading(false)
-                setShowTransparency(false)
-              }}
-              isLoading={isLoading}
-              theme={theme}
-            />
-            {showTransparency && transparencySteps.length > 0 && (
-              <div className="px-4 pb-4">
-                <TransparencyPanel
-                  steps={transparencySteps}
-                  isComplete={!isLoading && !isStreaming}
-                  sql={transparencySteps.find(s => s.data?.sql)?.data?.sql as string}
-                  tables={transparencySteps
-                    .find(s => s.step === 'discover_schema' || s.step === 'generate_sql')
-                    ?.data?.tables as string[] || []}
-                  columns={transparencySteps.find(s => s.data?.columns)?.data?.columns as string[]}
+            {/* Disambiguation */}
+            {disambiguation && (
+              <div className="px-8 pb-2 max-w-3xl mx-auto w-full">
+                <DisambiguationModal
+                  keyword={disambiguation.keyword}
+                  options={disambiguation.options}
+                  onSelect={handleDisambiguationSelect}
+                  onDismiss={() => setDisambiguation(null)}
                 />
               </div>
             )}
+
+            {/* Input */}
+            <div className={`border-t ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'}`}>
+              <div className="max-w-3xl mx-auto">
+                <ChatInput
+                  value={chatInputValue}
+                  onChange={setChatInputValue}
+                  onSend={handleSend}
+                  onStop={() => { abort(); setLoading(false); setShowTransparency(false) }}
+                  isLoading={isLoading}
+                  theme={theme}
+                />
+              </div>
+            </div>
           </div>
+
+          {/* Right Agent Sidebar */}
+          <AgentSidebar
+            steps={transparencySteps}
+            isStreaming={isStreaming || isLoading}
+            currentQuestion={activeSession?.messages.filter(m => m.role === 'user').slice(-1)[0]?.content || ''}
+            history={agentHistory}
+          />
         </div>
       </div>
 

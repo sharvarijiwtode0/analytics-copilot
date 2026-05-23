@@ -164,6 +164,14 @@ export default function App() {
             path="/"
             element={
               <ProtectedRoute>
+                <CopilotPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/demo"
+            element={
+              <ProtectedRoute>
                 <DummyClientWebsite />
               </ProtectedRoute>
             }

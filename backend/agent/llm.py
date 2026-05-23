@@ -44,6 +44,8 @@ def _inject_keys() -> None:
         os.environ["DEEPSEEK_API_KEY"] = settings.deepseek_api_key
     if settings.cohere_api_key:
         os.environ["COHERE_API_KEY"] = settings.cohere_api_key
+    if settings.zhipu_api_key:
+        os.environ["ZHIPU_API_KEY"] = settings.zhipu_api_key
 
 
 _inject_keys()
@@ -75,6 +77,8 @@ def _get_key(model: str) -> str | None:
         return settings.deepseek_api_key or None
     if "cohere" in model or "command" in model:
         return settings.cohere_api_key or None
+    if "zhipu" in model or "glm" in model:
+        return settings.zhipu_api_key or None
     return None
 
 
@@ -149,15 +153,27 @@ async def call_llm(
         for attempt in range(2):
             try:
                 t0 = time.perf_counter()
-                kwargs: dict = {
-                    "model": m,
-                    "messages": messages,
-                    "max_tokens": max_tokens,
-                    "temperature": temperature,
-                }
-                api_key = _get_key(m)
-                if api_key:
-                    kwargs["api_key"] = api_key
+                # For zhipu/glm models, use openai-compatible endpoint via Z.ai
+                if "zhipu" in m or "glm" in m:
+                    actual_model = m.split("/", 1)[-1]  # strip "zhipu/" prefix
+                    kwargs: dict = {
+                        "model": f"openai/{actual_model}",
+                        "messages": messages,
+                        "max_tokens": max_tokens,
+                        "temperature": temperature,
+                        "api_key": settings.zhipu_api_key,
+                        "api_base": settings.zhipu_base_url,
+                    }
+                else:
+                    kwargs: dict = {
+                        "model": m,
+                        "messages": messages,
+                        "max_tokens": max_tokens,
+                        "temperature": temperature,
+                    }
+                    api_key = _get_key(m)
+                    if api_key:
+                        kwargs["api_key"] = api_key
 
                 resp = await litellm.acompletion(**kwargs)
                 latency_ms = int((time.perf_counter() - t0) * 1000)

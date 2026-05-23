@@ -1,9 +1,12 @@
 from functools import lru_cache
+from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+_ENV_FILE = Path(__file__).parent.parent / ".env"
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+    model_config = SettingsConfigDict(env_file=str(_ENV_FILE), env_file_encoding="utf-8", extra="ignore")
 
     # App
     app_name: str = "Data Visualization Copilot"
@@ -40,11 +43,15 @@ class Settings(BaseSettings):
     deepseek_api_key: str = ""
     cohere_api_key: str = ""
 
+    # Zhipu AI (GLM) — Z.ai OpenAI-compatible endpoint
+    zhipu_api_key: str = ""
+    zhipu_base_url: str = "https://api.z.ai/api/coding/paas/v4"
+
     # Model routing
-    llm_fast_model: str = "groq/llama-3.1-8b-instant"        # Intent, routing decisions
-    llm_smart_model: str = "groq/llama-3.3-70b-versatile"    # SQL generation, insights
-    llm_premium_model: str = "anthropic/claude-sonnet-4-6"    # Complex analysis (paid)
-    llm_fallback_model: str = "groq/llama-3.1-8b-instant"
+    llm_fast_model: str = "zhipu/glm-5-turbo"
+    llm_smart_model: str = "zhipu/glm-5-turbo"
+    llm_premium_model: str = "zhipu/glm-5-turbo"
+    llm_fallback_model: str = "zhipu/glm-5-turbo"
 
     # Vector Memory (Qdrant)
     qdrant_url: str = "http://localhost:6333"

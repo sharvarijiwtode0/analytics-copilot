@@ -1,12 +1,13 @@
 """
 Data Visualization Copilot — FastAPI Backend
 Entry point: uvicorn backend.main:app --reload --port 8001
+# Force reload trigger: Dynamic LLM timeouts, regex JSON parsing, and refined gauge heuristics v2
 """
 from __future__ import annotations
 
 import structlog
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
@@ -46,7 +47,6 @@ def create_app() -> FastAPI:
     app.include_router(canary_compat.router, prefix="/api/v1", tags=["Canary Compatible"])
 
     # DB Intelligence API endpoints
-    from fastapi import BackgroundTasks
 
     @app.get("/api/v1/db/context", tags=["DB Intelligence"])
     async def get_context_summary() -> dict:

@@ -18,7 +18,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.agent.graph import run_analytics_agent
 from backend.auth.dependencies import get_current_user_optional
 from backend.data.connector import upload_csv_as_datasource, get_schema, register_datasource
-from backend.database import get_db
+from backend.database import get_db, AsyncSessionLocal
 from backend.models.conversation import Conversation, Message
 from backend.models.user import User
 from backend.services.llm_cache import get_cache as _get_llm_cache
@@ -58,8 +58,121 @@ class QueryResponse(BaseModel):
 
 # ─── Endpoints ─────────────────────────────────────────────────────────────────
 
+@router.get("/profile")
+async def profile_endpoint():
+    import time
+    from backend.agent.state import AnalyticsState
+    from backend.agent.nodes.intent import understand_intent
+    from backend.agent.nodes.schema import discover_schema
+    from backend.agent.nodes.sql_gen import generate_sql
+    from backend.agent.nodes.executor import execute_sql
+    from backend.agent.nodes.analyst import analyze_insights
+    from backend.agent.nodes.viz_config import generate_viz_config
+    from backend.agent.nodes.responder import compose_response
+
+    state: AnalyticsState = {
+        "session_id": "profile_session",
+        "conversation_id": "profile_conv",
+        "user_question": "What is the total number of items in the combined_sales_final table?",
+        "datasource_id": "limese",
+        "conversation_history": [],
+        "user_id": "anonymous",
+        "step_errors": [],
+    }
+
+    steps = [
+        ("intent", understand_intent),
+        ("schema", discover_schema),
+        ("sql_gen", generate_sql),
+        ("executor", execute_sql),
+        ("analyst", analyze_insights),
+        ("viz_config", generate_viz_config),
+        ("responder", compose_response),
+    ]
+
+    results = []
+    for name, node in steps:
+        t0 = time.perf_counter()
+        try:
+            state = await node(state)
+            duration = time.perf_counter() - t0
+            results.append({
+                "step": name,
+                "duration_seconds": round(duration, 3),
+                "success": True,
+                "error": state.get("error") if "error" in state else None
+            })
+        except Exception as e:
+            duration = time.perf_counter() - t0
+            results.append({
+                "step": name,
+                "duration_seconds": round(duration, 3),
+                "success": False,
+                "error": str(e)
+            })
+            break
+
+    from backend.config import settings
+    from backend.agent.llm import call_llm
+    
+    t_start = time.perf_counter()
+    test_resp = await call_llm(
+        messages=[{"role": "user", "content": "Respond with the word 'Hello' only."}],
+        task="routing"
+    )
+    test_duration = time.perf_counter() - t_start
+
+    return {
+        "fast_model": settings.llm_fast_model,
+        "smart_model": settings.llm_smart_model,
+        "test_llm": {
+            "model_used": test_resp.model,
+            "latency_seconds": round(test_duration, 3),
+            "response": test_resp.content,
+        },
+        "profiling_results": results
+    }
+
+@router.get("/debug")
+async def debug_endpoint():
+    import sys
+    import importlib
+    import traceback
+    
+    # Force reload of streaming_graph to apply the absolute latest file changes
+    if "backend.agent.streaming_graph" in sys.modules:
+        importlib.reload(sys.modules["backend.agent.streaming_graph"])
+        
+    from backend.agent.streaming_graph import get_streaming_graph
+    from backend.agent.state import AnalyticsState
+
+    q = "Show overall catalog margins and average profit margins per product"
+    with open("/home/ambarish/analytics-copilot/debug_output.txt", "w") as f:
+        f.write("Starting graph execution diagnostic...\n")
+        try:
+            graph_runner = get_streaming_graph()
+            initial_state = AnalyticsState(
+                session_id="debug_session",
+                conversation_id="debug_conv",
+                user_question=q,
+                datasource_id="limese",
+                conversation_history=[],
+                user_id="anonymous",
+                step_errors=[],
+            )
+            f.write("Running graph_runner.graph.astream directly...\n")
+            async for output in graph_runner.graph.astream(initial_state):
+                f.write(f"Yielded: {output}\n")
+            f.write("Finished without exceptions.\n")
+            return {"status": "success", "message": "Written to debug_output.txt"}
+        except Exception as exc:
+            tb = traceback.format_exc()
+            f.write(f"\n!!! EXCEPTION: {str(exc)}\n")
+            f.write(tb)
+            return {"status": "error", "error": str(exc), "traceback": tb}
+
 @router.post("/query", response_model=QueryResponse)
-async def query(payload: QueryRequest, db: DbDep, current_user: UserDep = None) -> QueryResponse:
+async def query(payload: QueryRequest, current_user: UserDep = None) -> QueryResponse:
     """
     Main chat endpoint. Send a question, get AI-powered chart + insights.
     Includes LLM caching (15-min TTL) — repeat questions return instantly.
@@ -143,71 +256,72 @@ async def query(payload: QueryRequest, db: DbDep, current_user: UserDep = None) 
         conversation_id = payload.conversation_id
         conversation = None
 
-        if conversation_id:
-            result = await db.execute(select(Conversation).where(Conversation.id == conversation_id))
-            conversation = result.scalar_one_or_none()
+        async with AsyncSessionLocal() as session:
+            if conversation_id:
+                result = await session.execute(select(Conversation).where(Conversation.id == conversation_id))
+                conversation = result.scalar_one_or_none()
 
-        if not conversation:
-            conversation = Conversation(
-                id=conversation_id or str(uuid.uuid4()),
-                user_id=user_id,
-                datasource_id=payload.datasource_id,
-                title=payload.question[:100],
-            )
-            db.add(conversation)
-            await db.flush()
-            conversation_id = conversation.id
+            if not conversation:
+                conversation = Conversation(
+                    id=conversation_id or str(uuid.uuid4()),
+                    user_id=user_id,
+                    datasource_id=payload.datasource_id,
+                    title=payload.question[:100],
+                )
+                session.add(conversation)
+                await session.flush()
+                conversation_id = conversation.id
 
-        # Save user message
-        user_msg = Message(
-            id=str(uuid.uuid4()),
-            conversation_id=conversation_id,
-            role="user",
-            content=payload.question,
-        )
-        db.add(user_msg)
-
-        # Save cached assistant message to database
-        cache_fields = {k: v for k, v in cached.items() if k in QueryResponse.model_fields}
-        assistant_msg = Message(
-            id=str(uuid.uuid4()),
-            conversation_id=conversation_id,
-            role="assistant",
-            content=cache_fields.get("text", ""),
-            sql_query=cache_fields.get("sql", ""),
-            query_results={
-                "columns": cache_fields.get("columns", []),
-                "rows": cache_fields.get("rows", [])[:50],
-                "row_count": cache_fields.get("row_count", 0),
-            },
-            viz_config=cache_fields.get("chart"),
-            insights=cache_fields.get("insights", []),
-            follow_up_questions=cache_fields.get("follow_up_questions", []),
-            model_used=cache_fields.get("model_used", "cache"),
-            latency_ms=0,
-            error=None,
-        )
-        db.add(assistant_msg)
-        await db.commit()
-
-        # Log the cached query for analytics
-        try:
-            await log_query(
-                db=db,
-                user_id=user_id,
+            # Save user message
+            user_msg = Message(
+                id=str(uuid.uuid4()),
                 conversation_id=conversation_id,
-                datasource_id=payload.datasource_id,
-                question=payload.question,
-                intent_type="cached",
-                sql_query=cache_fields.get("sql", ""),
-                row_count=cache_fields.get("row_count", 0),
-                viz_type=cache_fields.get("viz_type"),
-                latency_ms=cache_fields.get("total_latency_ms", 0),
-                cache_hit=True,
-                model_used=cache_fields.get("model_used", "cache")
+                role="user",
+                content=payload.question,
             )
-        except Exception:
-            pass
+            session.add(user_msg)
+
+            # Save cached assistant message to database
+            cache_fields = {k: v for k, v in cached.items() if k in QueryResponse.model_fields}
+            assistant_msg = Message(
+                id=str(uuid.uuid4()),
+                conversation_id=conversation_id,
+                role="assistant",
+                content=cache_fields.get("text", ""),
+                sql_query=cache_fields.get("sql", ""),
+                query_results={
+                    "columns": cache_fields.get("columns", []),
+                    "rows": cache_fields.get("rows", [])[:50],
+                    "row_count": cache_fields.get("row_count", 0),
+                },
+                viz_config=cache_fields.get("chart"),
+                insights=cache_fields.get("insights", []),
+                follow_up_questions=cache_fields.get("follow_up_questions", []),
+                model_used=cache_fields.get("model_used", "cache"),
+                latency_ms=0,
+                error=None,
+            )
+            session.add(assistant_msg)
+            await session.commit()
+
+            # Log the cached query for analytics
+            try:
+                await log_query(
+                    db=session,
+                    user_id=user_id,
+                    conversation_id=conversation_id,
+                    datasource_id=payload.datasource_id,
+                    question=payload.question,
+                    intent_type="cached",
+                    sql_query=cache_fields.get("sql", ""),
+                    row_count=cache_fields.get("row_count", 0),
+                    viz_type=cache_fields.get("viz_type"),
+                    latency_ms=cache_fields.get("total_latency_ms", 0),
+                    cache_hit=True,
+                    model_used=cache_fields.get("model_used", "cache")
+                )
+            except Exception:
+                pass
 
         # Role-based filtering for cached responses
         can_view_sql = current_user.can_view_sql() if current_user else True
@@ -218,47 +332,49 @@ async def query(payload: QueryRequest, db: DbDep, current_user: UserDep = None) 
             **{k: v for k, v in cache_fields.items() if k not in ("sql", "sql_explanation") or can_view_sql},
         )
 
-    # Get or create conversation
+    # Get or create conversation and load history
     conversation_id = payload.conversation_id
     conversation = None
+    conversation_history = []
 
-    if conversation_id:
-        result = await db.execute(select(Conversation).where(Conversation.id == conversation_id))
-        conversation = result.scalar_one_or_none()
+    async with AsyncSessionLocal() as session:
+        if conversation_id:
+            result = await session.execute(select(Conversation).where(Conversation.id == conversation_id))
+            conversation = result.scalar_one_or_none()
 
-    if not conversation:
-        conversation = Conversation(
-            id=str(uuid.uuid4()),
-            user_id=user_id,
-            datasource_id=payload.datasource_id,
-            title=payload.question[:100],
+        if not conversation:
+            conversation = Conversation(
+                id=str(uuid.uuid4()),
+                user_id=user_id,
+                datasource_id=payload.datasource_id,
+                title=payload.question[:100],
+            )
+            session.add(conversation)
+            await session.flush()
+            conversation_id = conversation.id
+
+        # Load conversation history (last N messages)
+        history_result = await session.execute(
+            select(Message)
+            .where(Message.conversation_id == conversation_id)
+            .order_by(Message.created_at.desc())
+            .limit(20)
         )
-        db.add(conversation)
-        await db.flush()
-        conversation_id = conversation.id
+        history_messages = list(reversed(history_result.scalars().all()))
+        conversation_history = [
+            {"role": m.role, "content": m.content}
+            for m in history_messages
+        ]
 
-    # Load conversation history (last N messages)
-    history_result = await db.execute(
-        select(Message)
-        .where(Message.conversation_id == conversation_id)
-        .order_by(Message.created_at.desc())
-        .limit(20)
-    )
-    history_messages = list(reversed(history_result.scalars().all()))
-    conversation_history = [
-        {"role": m.role, "content": m.content}
-        for m in history_messages
-    ]
-
-    # Save user message
-    user_msg = Message(
-        id=str(uuid.uuid4()),
-        conversation_id=conversation_id,
-        role="user",
-        content=payload.question,
-    )
-    db.add(user_msg)
-    await db.flush()
+        # Save user message
+        user_msg = Message(
+            id=str(uuid.uuid4()),
+            conversation_id=conversation_id,
+            role="user",
+            content=payload.question,
+        )
+        session.add(user_msg)
+        await session.commit()
 
     # Run the 7-step agent pipeline
     try:
@@ -294,48 +410,49 @@ async def query(payload: QueryRequest, db: DbDep, current_user: UserDep = None) 
             "model_used": "",
         }
 
-    # Log query for analytics (async, don't fail request on logging errors)
-    try:
-        intent_type = agent_result.get("intent", {}).get("type", "unknown") if isinstance(agent_result.get("intent"), dict) else "unknown"
-        await log_query(
-            db=db,
-            user_id=user_id,
-            conversation_id=conversation_id,
-            datasource_id=payload.datasource_id,
-            question=payload.question,
-            intent_type=intent_type,
-            sql_query=agent_result.get("sql", ""),
-            row_count=agent_result.get("row_count", 0),
-            viz_type=agent_result.get("viz_type"),
-            latency_ms=agent_result.get("total_latency_ms", 0),
-            cache_hit=False,
-            model_used=agent_result.get("model_used", ""),
-            error=agent_result.get("error")
-        )
-    except Exception:
-        pass
+    async with AsyncSessionLocal() as session:
+        # Log query for analytics (async, don't fail request on logging errors)
+        try:
+            intent_type = agent_result.get("intent", {}).get("type", "unknown") if isinstance(agent_result.get("intent"), dict) else "unknown"
+            await log_query(
+                db=session,
+                user_id=user_id,
+                conversation_id=conversation_id,
+                datasource_id=payload.datasource_id,
+                question=payload.question,
+                intent_type=intent_type,
+                sql_query=agent_result.get("sql", ""),
+                row_count=agent_result.get("row_count", 0),
+                viz_type=agent_result.get("viz_type"),
+                latency_ms=agent_result.get("total_latency_ms", 0),
+                cache_hit=False,
+                model_used=agent_result.get("model_used", ""),
+                error=agent_result.get("error")
+            )
+        except Exception:
+            pass
 
-    # Save assistant message
-    assistant_msg = Message(
-        id=str(uuid.uuid4()),
-        conversation_id=conversation_id,
-        role="assistant",
-        content=agent_result.get("text", ""),
-        sql_query=agent_result.get("sql"),
-        query_results={
-            "columns": agent_result.get("columns", []),
-            "rows": agent_result.get("rows", [])[:50],
-            "row_count": agent_result.get("row_count", 0),
-        },
-        viz_config=agent_result.get("chart"),
-        insights=agent_result.get("insights", []),
-        follow_up_questions=agent_result.get("follow_up_questions", []),
-        model_used=agent_result.get("model_used", ""),
-        latency_ms=agent_result.get("total_latency_ms", 0),
-        error=agent_result.get("error"),
-    )
-    db.add(assistant_msg)
-    await db.commit()
+        # Save assistant message
+        assistant_msg = Message(
+            id=str(uuid.uuid4()),
+            conversation_id=conversation_id,
+            role="assistant",
+            content=agent_result.get("text", ""),
+            sql_query=agent_result.get("sql"),
+            query_results={
+                "columns": agent_result.get("columns", []),
+                "rows": agent_result.get("rows", [])[:50],
+                "row_count": agent_result.get("row_count", 0),
+            },
+            viz_config=agent_result.get("chart"),
+            insights=agent_result.get("insights", []),
+            follow_up_questions=agent_result.get("follow_up_questions", []),
+            model_used=agent_result.get("model_used", ""),
+            latency_ms=agent_result.get("total_latency_ms", 0),
+            error=agent_result.get("error"),
+        )
+        session.add(assistant_msg)
+        await session.commit()
 
     # Cache successful results (Canary-style 15-min cache)
     if not agent_result.get("error") and agent_result.get("row_count", 0) > 0:
@@ -466,7 +583,6 @@ async def disambiguate_question(
     question: str,
     selected_meaning: str,
     keyword: str,
-    db: DbDep = None,
     current_user: UserDep = None
 ) -> QueryResponse:
     """
@@ -495,5 +611,5 @@ async def disambiguate_question(
 
     payload = SimplePayload(resolved_question, "default", None)
 
-    return await query(payload, db, current_user)
+    return await query(payload, current_user)
 

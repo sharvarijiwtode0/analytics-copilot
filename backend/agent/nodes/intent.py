@@ -35,7 +35,6 @@ async def understand_intent(state: AnalyticsState) -> AnalyticsState:
     if pre_result["skip_llm"]:
         log.info("intent.pre_filter", type=pre_result["type"])
         return {
-            **state,
             "intent": {
                 "type": pre_result["type"],
                 "confidence": pre_result["confidence"],
@@ -102,10 +101,13 @@ Rules:
             max_tokens=350,
             temperature=0.0,
         )
+        import re
         raw = resp.content.strip()
-        if "```" in raw:
-            raw = raw.split("```")[1].replace("json", "").strip()
-        intent = json.loads(raw)
+        json_match = re.search(r'(\{.*\})', raw, re.DOTALL)
+        raw_json = json_match.group(1) if json_match else raw
+        if "```" in raw_json:
+            raw_json = raw_json.split("```")[1].replace("json", "").strip()
+        intent = json.loads(raw_json)
     except Exception as exc:
         log.warning("intent.parse_failed", error=str(exc))
         intent = {
@@ -135,4 +137,4 @@ Rules:
 
     log.info("intent.classified", type=intent.get("type"), confidence=intent.get("confidence"),
              rephrased=(intent.get("rephrased_question") or "")[:80])
-    return {**state, "intent": intent}
+    return {"intent": intent}

@@ -1,0 +1,118 @@
+{
+  "verification_session_123": {
+    "shopify": 2
+  },
+  "68c2c56d-dfc7-4887-afcb-847091bd343a": {
+    "core": 1,
+    "catalog": 4,
+    "inventory": 3,
+    "shopify": 1,
+    "unicomm": 1,
+    "zoho": 2
+  },
+  "893b4dbf-bfb0-494c-9297-e1f02d9e9bf6": {
+    "shopify": 1
+  },
+  "test_session": {
+    "shopify": 1
+  },
+  "95512b4d-efeb-488a-b2ad-0c10cd91cccd": {
+    "core": 1,
+    "catalog": 4,
+    "inventory": 3,
+    "shopify": 1,
+    "unicomm": 1,
+    "zoho": 2
+  },
+  "a73696d1-216f-4ab5-b052-9d4088d18821": {
+    "core": 1,
+    "catalog": 4,
+    "inventory": 3,
+    "shopify": 1,
+    "unicomm": 1,
+    "zoho": 2
+  },
+  "3fd75903-5c31-4034-ba5d-035d43b5afb6": {
+    "core": 1,
+    "catalog": 4,
+    "inventory": 3,
+    "shopify": 1,
+    "unicomm": 1,
+    "zoho": 2
+  },
+  "d8e8b420-c2a3-4204-9637-108c76602e23": {
+    "core": 1,
+    "catalog": 4,
+    "inventory": 3,
+    "shopify": 1,
+    "unicomm": 1,
+    "zoho": 2
+  },
+  "b3ca11b5-e8d4-45ea-8a2f-32d8008a7b68": {
+    "core": 1,
+    "catalog": 4,
+    "inventory": 3,
+    "shopify": 1,
+    "unicomm": 1,
+    "zoho": 2
+  },
+  "c18a7550-8fb4-4c02-a287-786bf717bfcc": {
+    "shopify": 1
+  },
+  "248ae4fa-6218-466a-8609-ae01ef3f4cc3": {
+    "core": 1,
+    "catalog": 4,
+    "inventory": 3,
+    "shopify": 1,
+    "unicomm": 1,
+    "zoho": 2
+  },
+  "1b252efb-307b-4351-bb3e-c33c5bcce619": {
+    "core": 1,
+    "catalog": 4,
+    "inventory": 3,
+    "shopify": 1,
+    "unicomm": 1,
+    "zoho": 2
+  },
+  "8c6982f4-73b0-420d-bfb5-be42cd47a915": {
+    "core": 1,
+    "catalog": 4,
+    "inventory": 3,
+    "shopify": 1,
+    "unicomm": 1,
+    "zoho": 2
+  },
+  "5dee0259-f12c-445d-9fe4-fa0ec78f4ab6": {
+    "core": 1,
+    "catalog": 4,
+    "inventory": 3,
+    "shopify": 1,
+    "unicomm": 1,
+    "zoho": 2
+  },
+  "6a697b3a-437e-46e0-8993-d8c0f8c8d59e": {
+    "core": 1,
+    "catalog": 4,
+    "inventory": 3,
+    "shopify": 1,
+    "unicomm": 1,
+    "zoho": 2
+  },
+  "83293363-3fd5-443f-abbd-3797ff3b13f8": {
+    "core": 1,
+    "catalog": 4,
+    "inventory": 3,
+    "shopify": 1,
+    "unicomm": 1,
+    "zoho": 2
+  },
+  "61fce725-a8b1-4d24-a00b-e18bb7450920": {
+    "catalog": 4,
+    "core": 1,
+    "inventory": 3,
+    "shopify": 1,
+    "unicomm": 1,
+    "zoho": 2
+  }
+}

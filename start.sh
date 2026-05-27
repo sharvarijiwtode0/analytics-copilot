@@ -34,11 +34,11 @@ fi
 
 # 3. Start Docker services (Redis + Qdrant) if not already running
 if command -v docker &> /dev/null; then
-  echo "🐳 Ensuring Redis & Qdrant are running..."
+  echo "🐳 Ensuring Redis, Qdrant & PostgreSQL are running..."
   # Try docker compose up (non-fatal — services may already be running)
-  sudo docker compose --profile vector up -d redis qdrant 2>/dev/null || \
-  sudo docker compose up -d redis qdrant 2>/dev/null || \
-  docker compose up -d redis qdrant 2>/dev/null || \
+  sudo docker compose --profile vector up -d redis qdrant postgres 2>/dev/null || \
+  sudo docker compose up -d redis qdrant postgres 2>/dev/null || \
+  docker compose up -d redis qdrant postgres 2>/dev/null || \
   echo "⚠️  Could not start Docker services (may already be running or not installed)"
 
   # Wait for Redis to be ready (up to 15 seconds)

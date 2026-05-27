@@ -1,7 +1,7 @@
 """Query Analytics Service - Log queries and provide analytics aggregations."""
 import structlog
 from datetime import datetime, timedelta
-from sqlalchemy import select, func, and_
+from sqlalchemy import select, func, and_, Integer, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.models.query_log import QueryLog
 
@@ -118,7 +118,6 @@ async def get_popular_queries(
     limit: int = 10
 ) -> list[dict]:
     """Get most frequently asked questions."""
-    from sqlalchemy import desc
 
     query = select(
         QueryLog.question,

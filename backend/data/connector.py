@@ -26,6 +26,40 @@ _schema_cache: dict[str, dict] = {}
 # Format: {id: {type, connection_config}}
 _datasources: dict[str, dict] = {}
 
+SCHEMA_CACHE_FILE = Path(__file__).parent.parent / "data" / "schema_cache.json"
+
+
+def _load_schema_cache_from_disk() -> None:
+    global _schema_cache
+    if SCHEMA_CACHE_FILE.exists():
+        try:
+            with open(SCHEMA_CACHE_FILE, "r") as f:
+                data = json.load(f)
+            for ds_id, val in data.items():
+                if "refreshed_at" in val:
+                    val["refreshed_at"] = datetime.fromisoformat(val["refreshed_at"])
+            _schema_cache = data
+            log.info("schema_cache.loaded_from_disk", path=str(SCHEMA_CACHE_FILE), count=len(data))
+        except Exception as exc:
+            log.warning("schema_cache.disk_load_failed", error=str(exc))
+
+
+def _save_schema_cache_to_disk() -> None:
+    try:
+        SCHEMA_CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
+        serializable_cache = {}
+        for ds_id, val in _schema_cache.items():
+            refreshed_at_str = val["refreshed_at"].isoformat() if isinstance(val.get("refreshed_at"), datetime) else str(val.get("refreshed_at", ""))
+            serializable_cache[ds_id] = {
+                "schema": val["schema"],
+                "refreshed_at": refreshed_at_str
+            }
+        with open(SCHEMA_CACHE_FILE, "w") as f:
+            json.dump(serializable_cache, f, indent=2, default=str)
+        log.info("schema_cache.saved_to_disk", path=str(SCHEMA_CACHE_FILE))
+    except Exception as exc:
+        log.warning("schema_cache.disk_save_failed", error=str(exc))
+
 
 def register_datasource(ds_id: str, ds_type: str, config: dict) -> None:
     """Register a datasource for use by the agent."""
@@ -42,15 +76,28 @@ def _get_datasource(ds_id: str) -> dict:
 
 async def get_schema(datasource_id: str) -> dict:
     """Get schema for a datasource, using cache if available."""
+    global _schema_cache
+    if not _schema_cache:
+        _load_schema_cache_from_disk()
+
     cached = _schema_cache.get(datasource_id)
     if cached:
-        age_seconds = (datetime.utcnow() - cached["refreshed_at"]).seconds
+        refreshed_at = cached.get("refreshed_at")
+        if isinstance(refreshed_at, str):
+            try:
+                refreshed_at = datetime.fromisoformat(refreshed_at)
+                cached["refreshed_at"] = refreshed_at
+            except Exception:
+                refreshed_at = datetime.utcnow()
+
+        age_seconds = (datetime.utcnow() - refreshed_at).seconds
         if age_seconds < 3600:  # 1-hour cache
             return cached["schema"]
 
     ds = _get_datasource(datasource_id)
     schema = await _introspect_schema(ds)
     _schema_cache[datasource_id] = {"schema": schema, "refreshed_at": datetime.utcnow()}
+    _save_schema_cache_to_disk()
     return schema
 
 

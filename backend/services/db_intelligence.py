@@ -46,6 +46,9 @@ PRIORITY_TABLES = [
     "shopify_orders",
     "unicomm_sales_final",
     "zoho_sales_final",
+    "zoho_purchase_orders",
+    "inventory_ledger",
+    "product_hierarchy",
     "lead_time",
 ]
 
@@ -89,9 +92,9 @@ def _get_client() -> Any:
     )
 
 
-def _scan_table(client: Any, table: str, existing_table: dict | None = None) -> dict:
-    """Deep-scan a single table and return structured context."""
-    log.info("db_intelligence.scanning", table=table)
+def _scan_table(client: Any, table: str, existing_table: dict | None = None, deep_scan: bool = True) -> dict:
+    """Scan a table (deep-scan for priority tables, shallow-scan for others)."""
+    log.info("db_intelligence.scanning", table=table, deep=deep_scan)
 
     # Row count
     try:
@@ -128,43 +131,45 @@ def _scan_table(client: Any, table: str, existing_table: dict | None = None) -> 
         }
 
         # Try to get unique count + sample values
-        try:
-            r = client.query(
-                f"SELECT uniq(`{col_name}`) as u, count(`{col_name}`) as nn "
-                f"FROM {table}"
-            )
-            unique = int(r.result_rows[0][0])
-            non_null = int(r.result_rows[0][1])
-            info["unique_count"] = unique
-            info["non_null_count"] = non_null
-            info["null_count"] = max(0, cnt - non_null)
+        unique = 0
+        if deep_scan:
+            try:
+                r = client.query(
+                    f"SELECT uniq(`{col_name}`) as u, count(`{col_name}`) as nn "
+                    f"FROM {table}"
+                )
+                unique = int(r.result_rows[0][0])
+                non_null = int(r.result_rows[0][1])
+                info["unique_count"] = unique
+                info["non_null_count"] = non_null
+                info["null_count"] = max(0, cnt - non_null)
 
-            # Fetch all values for low-cardinality columns
-            if 1 < unique <= MAX_CATEGORICAL:
-                try:
-                    sv = client.query(
-                        f"SELECT DISTINCT `{col_name}` FROM {table} "
-                        f"WHERE `{col_name}` IS NOT NULL LIMIT {MAX_CATEGORICAL}"
-                    )
-                    vals = [str(r[0]) for r in sv.result_rows if r[0] is not None]
-                    info["exact_values"] = sorted(vals)
-                    info["is_categorical"] = True
-                except Exception:
-                    pass
-            elif unique == 1:
-                # Constant column
-                try:
-                    cv = client.query(f"SELECT `{col_name}` FROM {table} LIMIT 1")
-                    info["constant_value"] = str(cv.result_rows[0][0]) if cv.result_rows else "?"
-                    info["is_constant"] = True
-                except Exception:
-                    pass
-        except Exception:
-            pass
+                # Fetch all values for low-cardinality columns
+                if 1 < unique <= MAX_CATEGORICAL:
+                    try:
+                        sv = client.query(
+                            f"SELECT DISTINCT `{col_name}` FROM {table} "
+                            f"WHERE `{col_name}` IS NOT NULL LIMIT {MAX_CATEGORICAL}"
+                        )
+                        vals = [str(r[0]) for r in sv.result_rows if r[0] is not None]
+                        info["exact_values"] = sorted(vals)
+                        info["is_categorical"] = True
+                    except Exception:
+                        pass
+                elif unique == 1:
+                    # Constant column
+                    try:
+                        cv = client.query(f"SELECT `{col_name}` FROM {table} LIMIT 1")
+                        info["constant_value"] = str(cv.result_rows[0][0]) if cv.result_rows else "?"
+                        info["is_constant"] = True
+                    except Exception:
+                        pass
+            except Exception:
+                pass
 
         # Date range for date columns
         type_lower = col_type.lower()
-        if "date" in type_lower or "time" in type_lower:
+        if deep_scan and ("date" in type_lower or "time" in type_lower):
             try:
                 dr = client.query(
                     f"SELECT toString(min(`{col_name}`)), toString(max(`{col_name}`)) FROM {table}"
@@ -174,7 +179,7 @@ def _scan_table(client: Any, table: str, existing_table: dict | None = None) -> 
                 pass
 
         # Numerical range for numeric columns
-        if any(t in type_lower for t in ["int", "float", "decimal"]) and unique > MAX_CATEGORICAL:
+        if deep_scan and any(t in type_lower for t in ["int", "float", "decimal"]) and unique > MAX_CATEGORICAL:
             try:
                 nr = client.query(
                     f"SELECT round(min(`{col_name}`),2), round(max(`{col_name}`),2), round(avg(`{col_name}`),2) FROM {table}"
@@ -195,6 +200,20 @@ def _scan_table(client: Any, table: str, existing_table: dict | None = None) -> 
         "total_columns": len(columns_info),
         "columns": columns_info,
     }
+
+    # Sample 2 rows
+    result["sample_data"] = []
+    if deep_scan:
+        try:
+            sample_result = client.query(f"SELECT * FROM {table} LIMIT 2")
+            sample_cols = list(sample_result.column_names)
+            sample_rows = [
+                {col: str(val) for col, val in zip(sample_cols, row)}
+                for row in sample_result.result_rows
+            ]
+            result["sample_data"] = sample_rows
+        except Exception:
+            pass
 
     # Table-level business facts
     if table == "combined_sales_final":
@@ -265,30 +284,26 @@ def build_db_context() -> dict:
 
     existing_tables = existing_context.get("tables", {})
 
-    # Dynamically scan all tables in the database, prioritize PRIORITY_TABLES
+    # Scan all 173 tables with tiered scan
     try:
         tables_res = client.query("SHOW TABLES").result_rows
         all_tables = [r[0] for r in tables_res if not r[0].startswith(".")]
-        seen = set()
-        tables_to_scan = []
-        for t in PRIORITY_TABLES:
-            if t in all_tables:
-                tables_to_scan.append(t)
-                seen.add(t)
-        for t in all_tables:
-            if t not in seen:
-                tables_to_scan.append(t)
     except Exception as e:
         log.warning("db_intelligence.show_tables_failed", error=str(e))
-        tables_to_scan = PRIORITY_TABLES
+        all_tables = PRIORITY_TABLES
 
-    log.info("db_intelligence.starting_scan", tables_count=len(tables_to_scan))
+    log.info(
+        "db_intelligence.starting_scan",
+        total_tables=len(all_tables),
+        priority_tables=len(PRIORITY_TABLES)
+    )
 
     tables_context = {}
-    for table in tables_to_scan:
+    for table in all_tables:
         try:
             existing_table = existing_tables.get(table)
-            tables_context[table] = _scan_table(client, table, existing_table)
+            is_priority = table in PRIORITY_TABLES
+            tables_context[table] = _scan_table(client, table, existing_table, deep_scan=is_priority)
         except Exception as exc:
             log.error("db_intelligence.table_failed", table=table, error=str(exc))
             tables_context[table] = {"table": table, "error": str(exc)}
@@ -410,7 +425,28 @@ def build_sql_context_prompt(
     for tname in tables_to_show:
         tdata = tables.get(tname, {})
         if not tdata or tdata.get("error"):
-            continue
+            # Dynamically shallow scan the missing table!
+            try:
+                client = _get_client()
+                cnt = client.query(f"SELECT count() FROM {tname}").result_rows[0][0]
+                schema = client.query(f"DESCRIBE TABLE {tname}").result_rows
+                cols = []
+                for r in schema:
+                    cols.append({
+                        "name": r[0],
+                        "type": r[1],
+                        "annotation": COLUMN_ANNOTATIONS.get(tname, {}).get(r[0], ""),
+                    })
+                tdata = {
+                    "table": tname,
+                    "row_count": cnt,
+                    "columns": cols,
+                }
+                # Cache it locally in context so we don't repeat the scan next time
+                tables[tname] = tdata
+            except Exception as e:
+                log.warning("db_intelligence.dynamic_scan_failed", table=tname, error=str(e))
+                continue
 
         row_count = tdata.get("row_count", 0)
         lines.append(f"\nTABLE: {tname} ({row_count:,} rows)")
@@ -460,46 +496,130 @@ _context_loaded_at: float = 0.0
 _build_lock = threading.Lock()
 
 
+def _build_minimal_fast_context() -> dict:
+    """
+    Build a minimal table/column schema context in < 0.2 seconds.
+    Used on first run as an instant fallback so startup never blocks.
+    """
+    log.info("db_intelligence.building_minimal_fast_context")
+    t0 = time.time()
+    tables_context = {}
+    try:
+        client = _get_client()
+        tables_res = client.query("SHOW TABLES").result_rows
+        all_tables = {r[0] for r in tables_res if not r[0].startswith(".")}
+        tables_to_scan = [t for t in PRIORITY_TABLES if t in all_tables] or PRIORITY_TABLES
+
+        for table in tables_to_scan:
+            try:
+                schema = client.query(f"DESCRIBE TABLE {table}").result_rows
+                columns = [{"name": r[0], "type": r[1], "annotation": COLUMN_ANNOTATIONS.get(table, {}).get(r[0], "")} for r in schema]
+                tables_context[table] = {
+                    "table": table,
+                    "row_count": 0,
+                    "total_columns": len(columns),
+                    "columns": columns,
+                    "description": "",
+                    "aliases": [],
+                }
+            except Exception:
+                tables_context[table] = {"table": table, "error": "could not describe table"}
+    except Exception as exc:
+        log.warning("db_intelligence.fast_context_failed", error=str(exc))
+
+    elapsed = round(time.time() - t0, 2)
+    log.info("db_intelligence.fast_context_built", seconds=elapsed)
+    return {
+        "database": "limese",
+        "host": "118.95.209.221:8123",
+        "scanned_at": datetime.utcnow().isoformat(),
+        "scan_duration_seconds": elapsed,
+        "tables": tables_context,
+        "global_notes": ["DATABASE TABLES: " + ", ".join(tables_context.keys())],
+    }
+
+
 def get_db_context(force_refresh: bool = False) -> dict:
     """
     Return the DB intelligence context.
-    Loads from disk if available and fresh; otherwise triggers a scan.
-    Thread-safe.
+    Uses stale-while-revalidate pattern:
+      - Returns cached in-memory/disk context IMMEDIATELY (no blocking)
+      - Kicks off database scans in a background thread to prevent keeping the user waiting
+      - On clean boot with zero cache, builds a schema in < 0.2s as a fast fallback
     """
     global _context_cache, _context_loaded_at
 
-    # Return in-memory cache if fresh
+    # 1. Return in-memory cache immediately if fresh
     if _context_cache and not force_refresh:
         age_hours = (time.time() - _context_loaded_at) / 3600
         if age_hours < REFRESH_HOURS:
             return _context_cache
 
-    # Try loading from disk
-    if not force_refresh and CONTEXT_FILE.exists():
+    # 2. Try loading from disk (fast, non-blocking)
+    disk_ctx = None
+    if CONTEXT_FILE.exists():
         try:
             with open(CONTEXT_FILE) as f:
-                ctx = json.load(f)
-            scanned_at = ctx.get("scanned_at", "")
-            if scanned_at:
-                age_hours = (time.time() - datetime.fromisoformat(scanned_at).timestamp()) / 3600
-                if age_hours < REFRESH_HOURS:
-                    _context_cache = ctx
-                    _context_loaded_at = time.time()
-                    log.info("db_intelligence.loaded_from_disk", age_hours=round(age_hours, 1))
-                    return _context_cache
+                disk_ctx = json.load(f)
         except Exception as exc:
             log.warning("db_intelligence.disk_load_failed", error=str(exc))
 
-    # Build fresh (blocking)
-    with _build_lock:
-        # Double-check after acquiring lock
-        if _context_cache and not force_refresh:
+    # 3. Handle Stale-While-Revalidate
+    if disk_ctx:
+        scanned_at_str = disk_ctx.get("scanned_at", "")
+        try:
+            scanned_at = datetime.fromisoformat(scanned_at_str)
+            age_hours = (time.time() - scanned_at.timestamp()) / 3600
+        except Exception:
+            age_hours = 999.0
+
+        if age_hours < REFRESH_HOURS and not force_refresh:
+            _context_cache = disk_ctx
+            _context_loaded_at = time.time()
+            log.info("db_intelligence.loaded_from_disk", age_hours=round(age_hours, 1))
             return _context_cache
-        log.info("db_intelligence.building_context")
-        _context_cache = build_db_context()
+
+        # Cache is stale or refresh forced — update memory cache and scan asynchronously
+        log.info("db_intelligence.revalidating_stale_cache_in_background", age_hours=round(age_hours, 1))
+        _context_cache = disk_ctx
         _context_loaded_at = time.time()
 
-    return _context_cache
+        # Revalidate in a background thread
+        def _revalidate():
+            with _build_lock:
+                try:
+                    global _context_cache, _context_loaded_at
+                    fresh_ctx = build_db_context()
+                    _context_cache = fresh_ctx
+                    _context_loaded_at = time.time()
+                except Exception as e:
+                    log.error("db_intelligence.background_revalidation_failed", error=str(e))
+
+        threading.Thread(target=_revalidate, daemon=True, name="db-intelligence-revalidate").start()
+        return disk_ctx
+
+    # 4. Clean boot fallback — absolutely zero cache exists
+    # To keep startup under 1s, we populate a minimal fast context immediately,
+    # and then trigger the heavy deep scan asynchronously.
+    log.info("db_intelligence.clean_boot_no_cache_detected")
+    fast_ctx = _build_minimal_fast_context()
+    _context_cache = fast_ctx
+    _context_loaded_at = time.time()
+
+    # Trigger heavy deep scan in the background
+    def _first_time_deep_scan():
+        with _build_lock:
+            try:
+                global _context_cache, _context_loaded_at
+                deep_ctx = build_db_context()
+                _context_cache = deep_ctx
+                _context_loaded_at = time.time()
+            except Exception as e:
+                log.error("db_intelligence.first_time_deep_scan_failed", error=str(e))
+
+    threading.Thread(target=_first_time_deep_scan, daemon=True, name="db-intelligence-first-deep-scan").start()
+    return fast_ctx
+
 
 
 def start_background_refresh() -> None:

@@ -15,11 +15,16 @@ from backend.agent.nodes import (
     intent, schema, sql_gen, executor,
     analyst, viz_config, responder, general_llm, disambiguate
 )
+from backend.agent.nodes.route_tables import route_tables
 from backend.agent.nodes.insight_followup import handle_insight_followup, _is_insight_followup
 from backend.agent.nodes.general_llm import handle_general_query
 import structlog
 
 log = structlog.get_logger(__name__)
+
+async def start_node(state: AnalyticsState) -> dict:
+    """An entry point node to start the graph before fanning out."""
+    return {"datasource_id": state.get("datasource_id")}
 
 
 class StreamingGraphRunner:
@@ -32,8 +37,13 @@ class StreamingGraphRunner:
             "message": "Understanding your question...",
             "description": "Analyzing what you're asking for"
         },
-        "disambiguate": {
+        "route_tables": {
             "progress": 15,
+            "message": "Selecting target tables...",
+            "description": "Matching semantic table blueprints"
+        },
+        "disambiguate": {
+            "progress": 20,
             "message": "Clarifying ambiguous terms...",
             "description": "Checking if any terms need clarification"
         },
@@ -105,6 +115,13 @@ class StreamingGraphRunner:
             try:
                 # Run original node
                 result = await original_func(state)
+                
+                # Diagnostic logging to trace exactly what is returned
+                try:
+                    result_keys = list(result.keys()) if isinstance(result, dict) else None
+                    log.info("streaming_graph.node_debug", node=node_name, keys=result_keys, type=str(type(result)))
+                except Exception as dbg_err:
+                    log.info("streaming_graph.node_debug_error", node=node_name, error=str(dbg_err))
 
                 # Emit completion with partial results
                 partial_data = {"status": "complete"}
@@ -169,6 +186,10 @@ class StreamingGraphRunner:
             self._wrap_node(schema.discover_schema, "discover_schema")
         )
         graph.add_node(
+            "route_tables",
+            self._wrap_node(route_tables, "route_tables")
+        )
+        graph.add_node(
             "generate_sql",
             self._wrap_node(sql_gen.generate_sql, "generate_sql")
         )
@@ -194,44 +215,36 @@ class StreamingGraphRunner:
         )
 
         # Same routing logic as original graph
-        graph.set_entry_point("understand_intent")
+        from backend.agent.graph import routing_gatekeeper, _after_gatekeeper
 
-        def _should_skip_sql(state: AnalyticsState) -> str:
-            if state.get("skip_pipeline"):
-                return "skip_to_respond"
+        graph.add_node(
+            "routing_gatekeeper",
+            self._wrap_node(routing_gatekeeper, "routing_gatekeeper")
+        )
 
-            intent_type = state.get("intent", {}).get("type", "")
-            question = state.get("user_question", "")
-            history = state.get("conversation_history", [])
-
-            if _is_insight_followup(question, history):
-                return "insight_followup"
-
-            if intent_type == "analytical_question":
-                return "generate_sql"
-
-            if intent_type in ("greeting", "conversational", "off_topic"):
-                return "general_llm"
-
-            if intent_type == "export_request":
-                return "skip_to_respond"
-
-            return "generate_sql"
+        # Single starter entry point node fanning out in parallel to intent and route
+        graph.add_node("start_node", start_node)
+        graph.set_entry_point("start_node")
+        graph.add_edge("start_node", "understand_intent")
+        graph.add_edge("start_node", "route_tables")
 
         def _after_disambiguate(state: AnalyticsState) -> str:
             if state.get("skip_pipeline"):
                 return "skip_to_respond"
             return "discover_schema"
 
+        graph.add_edge("understand_intent", "routing_gatekeeper")
+        graph.add_edge("route_tables", "routing_gatekeeper")
+
         graph.add_conditional_edges(
-            "understand_intent",
-            _should_skip_sql,
+            "routing_gatekeeper",
+            _after_gatekeeper,
             {
-                "generate_sql": "disambiguate",
                 "skip_to_respond": "compose_response",
                 "general_llm": "general_llm",
                 "insight_followup": "insight_followup",
-                "general_llm": "general_llm",
+                "disambiguate": "disambiguate",
+                "discover_schema": "discover_schema",
             }
         )
         graph.add_conditional_edges(
@@ -244,9 +257,24 @@ class StreamingGraphRunner:
         )
         graph.add_edge("discover_schema", "generate_sql")
         graph.add_edge("generate_sql", "execute_sql")
-        graph.add_edge("execute_sql", "analyze_insights")
-        graph.add_edge("analyze_insights", "generate_viz_config")
+        
+        from backend.agent.graph import _should_retry_sql
+
+        # Fan-out (Execute SQL loops back to generate_sql on failure, or runs Insights & Visualization in parallel)
+        graph.add_conditional_edges(
+            "execute_sql",
+            _should_retry_sql,
+            {
+                "retry": "generate_sql",
+                "analyze": "analyze_insights",
+                "viz": "generate_viz_config",
+            }
+        )
+        
+        # Fan-in (Insights & Visualization join at Response Compose)
+        graph.add_edge("analyze_insights", "compose_response")
         graph.add_edge("generate_viz_config", "compose_response")
+        
         graph.add_edge("insight_followup", "compose_response")
         graph.add_edge("general_llm", "compose_response")
         graph.add_edge("compose_response", "__end__")
@@ -313,6 +341,8 @@ class StreamingGraphRunner:
             }
 
         except Exception as exc:
+            import traceback
+            tb = traceback.format_exc()
             # Emit queued progress before error
             for update in progress_queue:
                 yield update
@@ -320,6 +350,7 @@ class StreamingGraphRunner:
             yield {
                 "type": "error",
                 "error": str(exc),
+                "traceback": tb,
                 "step": progress_queue[-1]["step"] if progress_queue else "unknown"
             }
 

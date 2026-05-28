@@ -125,15 +125,65 @@ def _pivot_and_build_multi_series(columns: list, rows: list, title: str, chart_t
                 "areaStyle": {"opacity": 0.05} if chart_type == "line" else None
             })
 
-        # Currency formatter if any series is monetary
-        is_currency = any(
-            any(kw in s["name"].lower() for kw in ["revenue", "sales", "price", "amount", "subtotal", "income", "value"])
-            for s in series_list
-        )
-        y_axes = {
-            "type": "value",
-            "axisLabel": {"formatter": "₹{value}" if is_currency else "{value}"}
-        }
+        # Check if we should use dual Y-axes
+        # If there are exactly two numeric series, and one represents currency/revenue while the other represents count/units
+        use_dual_axis = False
+        y_axes = []
+        if len(series_list) == 2:
+            s1_name, s2_name = series_list[0]["name"].lower(), series_list[1]["name"].lower()
+            s1_rev = any(w in s1_name for w in ["revenue", "sales", "price", "amount", "subtotal", "income", "value"])
+            s2_units = any(w in s2_name for w in ["unit", "qty", "quantity", "order", "count", "sold", "volume"])
+            
+            s2_rev = any(w in s2_name for w in ["revenue", "sales", "price", "amount", "subtotal", "income", "value"])
+            s1_units = any(w in s1_name for w in ["unit", "qty", "quantity", "order", "count", "sold", "volume"])
+            
+            if (s1_rev and s2_units) or (s2_rev and s1_units):
+                use_dual_axis = True
+                
+        if use_dual_axis:
+            # First axis is currency, second is counts
+            s1_is_rev = any(w in series_list[0]["name"].lower() for w in ["revenue", "sales", "price", "amount", "subtotal", "income", "value"])
+            
+            y_axes = [
+                {
+                    "type": "value",
+                    "name": "Revenue",
+                    "axisLabel": {"formatter": "₹{value}"}
+                },
+                {
+                    "type": "value",
+                    "name": "Volume",
+                    "axisLabel": {"formatter": "{value}"},
+                    "splitLine": {"show": False}
+                }
+            ]
+            # Map the series to correct Y-axis indexes
+            series_list[0]["yAxisIndex"] = 0 if s1_is_rev else 1
+            series_list[1]["yAxisIndex"] = 1 if s1_is_rev else 0
+            
+            # Make the volume series a line chart, and revenue a bar chart
+            series_list[0]["type"] = "bar" if s1_is_rev else "line"
+            series_list[1]["type"] = "line" if s1_is_rev else "bar"
+        else:
+            is_currency = any(
+                any(kw in s["name"].lower() for kw in ["revenue", "sales", "price", "amount", "subtotal", "income", "value"])
+                for s in series_list
+            )
+            y_axes = {
+                "type": "value",
+                "axisLabel": {"formatter": "₹{value}" if is_currency else "{value}"}
+            }
+
+        # Scrollable Zoom overlay if categories are large (> 12)
+        zoom = []
+        if len(x_data) > 12:
+            zoom = [{
+                "type": "slider",
+                "show": True,
+                "start": 0,
+                "end": max(10, int(1200 / len(x_data))),
+                "bottom": "5%"
+            }]
 
         return {
             "title": {"text": title, "left": "center"},
@@ -153,7 +203,8 @@ def _pivot_and_build_multi_series(columns: list, rows: list, title: str, chart_t
             },
             "yAxis": y_axes,
             "series": series_list,
-            "grid": {"left": "12%", "right": "5%", "bottom": "25%" if len(x_data) > 6 else "15%", "top": "18%"},
+            "grid": {"left": "12%", "right": "8%" if use_dual_axis else "5%", "bottom": "35%" if len(x_data) > 12 else ("25%" if len(x_data) > 6 else "15%"), "top": "18%"},
+            "dataZoom": zoom
         }
 
     # --- CASE 2: Two categorical + one numeric ---
@@ -285,13 +336,22 @@ def _build_pie_chart(columns: list, rows: list, title: str) -> dict:
         return {}
     name_col, val_col = columns[0], columns[1]
     data = []
-    for r in rows[:20]:
+    for r in rows[:40]:
         name = str(r.get(name_col, "") if isinstance(r, dict) else r[0])
         val_raw = r.get(val_col) if isinstance(r, dict) else r[1]
         try:
             data.append({"name": name, "value": round(float(val_raw or 0), 2)})
         except (ValueError, TypeError):
             pass
+
+    # High Cardinality Pie Chart Grouping (Adaptive Presentation Agent pattern)
+    if len(data) > 8:
+        data = sorted(data, key=lambda x: x["value"], reverse=True)
+        top_data = data[:7]
+        other_sum = sum(x["value"] for x in data[7:])
+        if other_sum > 0:
+            top_data.append({"name": "Other", "value": round(other_sum, 2)})
+        data = top_data
 
     # Use simpler labels for small screens, detailed for larger
     label_formatter = "{b}\n{d}%" if len(data) <= 6 else "{d}%"

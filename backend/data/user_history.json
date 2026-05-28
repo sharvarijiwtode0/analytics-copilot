@@ -1,6 +1,11 @@
 {
   "verification_session_123": {
-    "shopify": 2
+    "shopify": 7,
+    "core": 10,
+    "inventory": 9,
+    "unicomm": 7,
+    "catalog": 3,
+    "zoho": 6
   },
   "68c2c56d-dfc7-4887-afcb-847091bd343a": {
     "core": 1,
@@ -114,5 +119,73 @@
     "shopify": 1,
     "unicomm": 1,
     "zoho": 2
+  },
+  "a950b736-050e-4040-b883-462a33322865": {
+    "core": 1,
+    "inventory": 1,
+    "shopify": 1,
+    "unicomm": 1
+  },
+  "ccc310d8-dc3d-4cc8-b630-a98e9e19c477": {
+    "core": 1,
+    "catalog": 2,
+    "inventory": 1
+  },
+  "59b13b45-f9c2-4845-9902-496a784e06fb": {
+    "core": 1,
+    "catalog": 2,
+    "inventory": 1
+  },
+  "a4029b5c-7001-438e-8159-9daf9c7d97f1": {
+    "core": 1,
+    "catalog": 2,
+    "inventory": 1
+  },
+  "test_supervisor_session": {
+    "core": 1,
+    "inventory": 1,
+    "shopify": 1,
+    "unicomm": 1
+  },
+  "ab891aca-ca48-4c93-854b-7f14c49906ba": {
+    "core": 1,
+    "zoho": 1,
+    "unicomm": 1,
+    "shopify": 1
+  },
+  "d3493832-055c-464a-af6f-2ca106d6e1d2": {
+    "core": 1,
+    "zoho": 1,
+    "unicomm": 1,
+    "inventory": 1
+  },
+  "2cf63f91-64cf-4aaf-93ee-37f296f8c9cb": {
+    "core": 1,
+    "unicomm": 1,
+    "zoho": 1,
+    "inventory": 1
+  },
+  "4b8a4802-981f-4032-84a7-40ddfc3c16c5": {
+    "zoho": 1,
+    "core": 1,
+    "catalog": 1,
+    "unicomm": 1
+  },
+  "8ec4e757-1a12-4306-9ca0-10f81acfb183": {
+    "core": 1,
+    "zoho": 1,
+    "unicomm": 1,
+    "inventory": 1
+  },
+  "376dd92c-6ebd-4fca-8c13-d71fa89ccc98": {
+    "inventory": 2,
+    "catalog": 1,
+    "zoho": 1
+  },
+  "0f1d7479-adea-4ca6-bd83-fc110002d7d0": {
+    "core": 1,
+    "zoho": 1,
+    "unicomm": 1,
+    "inventory": 1
   }
 }

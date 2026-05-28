@@ -18,6 +18,9 @@ from backend.agent.nodes import (
 from backend.agent.nodes.route_tables import route_tables
 from backend.agent.nodes.insight_followup import handle_insight_followup, _is_insight_followup
 from backend.agent.nodes.general_llm import handle_general_query
+from backend.agent.nodes.sql_reviewer import review_sql
+from backend.agent.nodes.supervisor import supervisor
+from backend.agent.nodes.critic import review_insights
 import structlog
 
 log = structlog.get_logger(__name__)
@@ -32,6 +35,11 @@ class StreamingGraphRunner:
 
     # Step definitions with descriptions and progress percentages
     STEPS = {
+        "supervisor": {
+            "progress": 5,
+            "message": "Supervisor planning reasoning loop...",
+            "description": "Orchestrating the cognitive agent workflow"
+        },
         "understand_intent": {
             "progress": 10,
             "message": "Understanding your question...",
@@ -58,12 +66,17 @@ class StreamingGraphRunner:
             "description": "Finding relevant tables and columns"
         },
         "generate_sql": {
-            "progress": 45,
+            "progress": 40,
             "message": "Writing SQL query...",
             "description": "Generating the database query"
         },
+        "review_sql": {
+            "progress": 50,
+            "message": "DBA reviewing SQL query...",
+            "description": "Validating query rules and database compatibility"
+        },
         "execute_sql": {
-            "progress": 60,
+            "progress": 65,
             "message": "Running query on database...",
             "description": "Fetching your data"
         },
@@ -72,8 +85,13 @@ class StreamingGraphRunner:
             "message": "Analyzing results...",
             "description": "Finding patterns and insights"
         },
+        "review_insights": {
+            "progress": 82,
+            "message": "Validating insights correctness...",
+            "description": "Factual cross-referencing and reflection checks"
+        },
         "generate_viz_config": {
-            "progress": 85,
+            "progress": 88,
             "message": "Creating visualization...",
             "description": "Building your chart"
         },
@@ -140,6 +158,15 @@ class StreamingGraphRunner:
                 elif node_name == "generate_sql":
                     partial_data["sql"] = result.get("sql_query", "")
 
+                elif node_name == "supervisor":
+                    partial_data["next_step"] = result.get("next_step")
+                    thoughts = result.get("supervisor_thoughts", [])
+                    partial_data["thoughts"] = thoughts[-1] if thoughts else ""
+
+                elif node_name == "review_sql":
+                    partial_data["sql_validated"] = result.get("sql_validated")
+                    partial_data["dba_feedback"] = result.get("dba_feedback", "")
+
                 elif node_name == "execute_sql":
                     qr = result.get("query_results", {})
                     partial_data["row_count"] = qr.get("row_count", 0)
@@ -148,6 +175,10 @@ class StreamingGraphRunner:
                 elif node_name == "analyze_insights":
                     partial_data["insights"] = result.get("insights", [])[:3]
                     partial_data["key_metrics"] = result.get("key_metrics", {})
+
+                elif node_name == "review_insights":
+                    partial_data["insights_validated"] = result.get("insights_validated")
+                    partial_data["critic_feedback"] = result.get("critic_feedback", "")
 
                 elif node_name == "generate_viz_config":
                     partial_data["viz_type"] = result.get("viz_type")
@@ -190,8 +221,16 @@ class StreamingGraphRunner:
             self._wrap_node(route_tables, "route_tables")
         )
         graph.add_node(
+            "supervisor",
+            self._wrap_node(supervisor, "supervisor")
+        )
+        graph.add_node(
             "generate_sql",
             self._wrap_node(sql_gen.generate_sql, "generate_sql")
+        )
+        graph.add_node(
+            "review_sql",
+            self._wrap_node(review_sql, "review_sql")
         )
         graph.add_node(
             "execute_sql",
@@ -213,70 +252,55 @@ class StreamingGraphRunner:
             "insight_followup",
             self._wrap_node(handle_insight_followup, "insight_followup")
         )
+        graph.add_node(
+            "review_insights",
+            self._wrap_node(review_insights, "review_insights")
+        )
 
         # Same routing logic as original graph
-        from backend.agent.graph import routing_gatekeeper, _after_gatekeeper
 
-        graph.add_node(
-            "routing_gatekeeper",
-            self._wrap_node(routing_gatekeeper, "routing_gatekeeper")
-        )
-
-        # Single starter entry point node fanning out in parallel to intent and route
+        # Single starter entry point node routing to supervisor
         graph.add_node("start_node", start_node)
         graph.set_entry_point("start_node")
-        graph.add_edge("start_node", "understand_intent")
-        graph.add_edge("start_node", "route_tables")
+        graph.add_edge("start_node", "supervisor")
 
-        def _after_disambiguate(state: AnalyticsState) -> str:
-            if state.get("skip_pipeline"):
-                return "skip_to_respond"
-            return "discover_schema"
+        # All nodes transition directly back to supervisor
+        graph.add_edge("understand_intent", "supervisor")
+        graph.add_edge("discover_schema", "supervisor")
+        graph.add_edge("generate_sql", "supervisor")
+        graph.add_edge("review_sql", "supervisor")
+        graph.add_edge("execute_sql", "supervisor")
+        graph.add_edge("analyze_insights", "supervisor")
+        graph.add_edge("generate_viz_config", "supervisor")
+        graph.add_edge("general_llm", "supervisor")
+        graph.add_edge("disambiguate", "supervisor")
+        graph.add_edge("insight_followup", "supervisor")
+        graph.add_edge("route_tables", "supervisor")
+        graph.add_edge("review_insights", "supervisor")
 
-        graph.add_edge("understand_intent", "routing_gatekeeper")
-        graph.add_edge("route_tables", "routing_gatekeeper")
-
+        # The supervisor conditional routing edge
+        from backend.agent.graph import _route_next
         graph.add_conditional_edges(
-            "routing_gatekeeper",
-            _after_gatekeeper,
+            "supervisor",
+            _route_next,
             {
-                "skip_to_respond": "compose_response",
+                "understand_intent": "understand_intent",
+                "discover_schema": "discover_schema",
+                "generate_sql": "generate_sql",
+                "review_sql": "review_sql",
+                "execute_sql": "execute_sql",
+                "analyze_insights": "analyze_insights",
+                "generate_viz_config": "generate_viz_config",
+                "review_insights": "review_insights",
+                "compose_response": "compose_response",
                 "general_llm": "general_llm",
-                "insight_followup": "insight_followup",
                 "disambiguate": "disambiguate",
-                "discover_schema": "discover_schema",
+                "insight_followup": "insight_followup",
+                "route_tables": "route_tables",
+                "__end__": "__end__",
             }
         )
-        graph.add_conditional_edges(
-            "disambiguate",
-            _after_disambiguate,
-            {
-                "discover_schema": "discover_schema",
-                "skip_to_respond": "compose_response",
-            }
-        )
-        graph.add_edge("discover_schema", "generate_sql")
-        graph.add_edge("generate_sql", "execute_sql")
-        
-        from backend.agent.graph import _should_retry_sql
 
-        # Fan-out (Execute SQL loops back to generate_sql on failure, or runs Insights & Visualization in parallel)
-        graph.add_conditional_edges(
-            "execute_sql",
-            _should_retry_sql,
-            {
-                "retry": "generate_sql",
-                "analyze": "analyze_insights",
-                "viz": "generate_viz_config",
-            }
-        )
-        
-        # Fan-in (Insights & Visualization join at Response Compose)
-        graph.add_edge("analyze_insights", "compose_response")
-        graph.add_edge("generate_viz_config", "compose_response")
-        
-        graph.add_edge("insight_followup", "compose_response")
-        graph.add_edge("general_llm", "compose_response")
         graph.add_edge("compose_response", "__end__")
 
         return graph.compile()
@@ -296,6 +320,11 @@ class StreamingGraphRunner:
         - data: partial results from each node
         """
         t0 = time.perf_counter()
+
+        # Compact history to keep context windows small and save tokens (ReMe pattern)
+        if initial_state.get("conversation_history"):
+            from backend.agent.utils import compact_history
+            initial_state["conversation_history"] = await compact_history(initial_state["conversation_history"])
 
         # Generator to collect progress updates
         progress_queue = []

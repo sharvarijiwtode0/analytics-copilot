@@ -75,8 +75,20 @@ class AnalyticsState(TypedDict, total=False):
     error: str | None
     step_errors: list[str]
     sql_retry_count: int
+    review_retry_count: int
+    dba_feedback: str
+    next_step: str
+    supervisor_thoughts: list[str]
+    insights_validated: bool
+    critic_feedback: str
+    critic_retry_count: int
 
     # Routing and Clarification
     candidate_tables: list[dict]
     ambiguity_score: float
     locked_tables: list[str]
+    # New fields for recursive agent
+    confidence: float | None
+    retry_count: int
+    max_retries: int
+    memory_snapshot: dict | None

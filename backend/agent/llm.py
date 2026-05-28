@@ -199,12 +199,12 @@ async def call_llm(
 
                 # Use dynamic task-specific timeouts to prevent premature aborts on heavy generations
                 task_timeouts = {
-                    "routing": 8.0,
-                    "sql": 12.0,
-                    "analysis": 18.0,
-                    "general": 18.0,
+                    "routing": 30.0,
+                    "sql": 45.0,
+                    "analysis": 45.0,
+                    "general": 45.0,
                 }
-                kwargs["timeout"] = task_timeouts.get(task, 12.0)
+                kwargs["timeout"] = task_timeouts.get(task, 45.0)
                 resp = await litellm.acompletion(**kwargs)
                 latency_ms = int((time.perf_counter() - t0) * 1000)
                 usage = resp.usage

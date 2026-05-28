@@ -80,6 +80,26 @@ COLUMN_ANNOTATIONS: dict[str, dict[str, str]] = {
         "gross_sales_rs":  "Daily revenue in ₹.",
         "burn_period":     "Fixed 90-day config value — do NOT use for calculations.",
     },
+    "shopify_orders": {
+        "subtotal":           "REVENUE — USE THIS for Shopify revenue/sales totals.",
+        "total":              "Order total including taxes — use subtotal instead for pure revenue.",
+        "lineitem_price":     "Price per line item.",
+        "lineitem_quantity":  "Units per line item — USE THIS for unit counts.",
+        "created_at":         "Primary date column. Filter: created_at >= '2025-01-01'. Group: formatDateTime(created_at, '%Y-%m').",
+        "financial_status":   "Payment state. EXCLUDE refunded: WHERE financial_status NOT IN ('refunded','partially_refunded').",
+        "fulfillment_status": "Shipping state: 'fulfilled' = shipped, 'unfulfilled' = pending.",
+        "lineitem_name":      "Product name per line item.",
+    },
+    "zoho_sales_final": {
+        "so_item_rate":      "UNIT PRICE — price per unit for this line item.",
+        "so_quantity":       "UNITS ordered for this line item.",
+        "so_item_total":     "REVENUE per line — USE THIS for zoho revenue/sales totals.",
+        "so_subtotal":       "Order subtotal before tax — use so_item_total for line-level revenue.",
+        "so_total":          "Order total including tax.",
+        "so_order_date":     "Primary date column. Filter: so_order_date >= '2025-01-01'. Group: formatDateTime(so_order_date, '%Y-%m').",
+        "so_status":         "Order status. EXCLUDE: WHERE so_status NOT IN ('Cancelled','Returned').",
+        "so_customer_name":  "B2B customer/distributor name.",
+    },
 }
 
 # ─── Core scanner ─────────────────────────────────────────────────────────────
@@ -407,12 +427,15 @@ def build_sql_context_prompt(
     """
     lines: list[str] = []
 
-    # Global rules first — most critical, always included
+    # Global rules first — cap at 20 to avoid overwhelming the model context.
+    # The per-column exact-value dumps are already present in the schema section below.
     notes = context.get("global_notes", [])
     if notes:
         lines.append("=== CRITICAL RULES ===")
-        for note in notes:
+        for note in notes[:20]:  # hard cap: first 20 notes only
             lines.append(f"• {note}")
+        if len(notes) > 20:
+            lines.append(f"• ... ({len(notes) - 20} more rules omitted — see schema section below)")
         lines.append("")
 
     # Table schemas — only relevant, only useful columns
@@ -456,16 +479,29 @@ def build_sql_context_prompt(
             facts = tdata["business_facts"]
             lines.append(f"  Facts: {json.dumps(facts)}")
 
-        # Sort columns: annotated + categorical first, then others
+        # Sort columns: annotated + categorical first, then others.
+        # Always overlay live COLUMN_ANNOTATIONS so new annotations apply immediately
+        # without requiring a 24-hour cache refresh.
+        live_annotations = COLUMN_ANNOTATIONS.get(tname, {})
         all_cols = tdata.get("columns", [])
-        priority_cols = [c for c in all_cols if c.get("annotation") or c.get("exact_values") or c.get("is_constant")]
-        other_cols = [c for c in all_cols if c not in priority_cols]
+
+        def _has_useful_info(c: dict) -> bool:
+            return bool(
+                live_annotations.get(c["name"])
+                or c.get("annotation")
+                or c.get("exact_values")
+                or c.get("is_constant")
+            )
+
+        priority_cols = [c for c in all_cols if _has_useful_info(c)]
+        other_cols = [c for c in all_cols if not _has_useful_info(c)]
         cols_to_show = (priority_cols + other_cols)[:max_cols_per_table]
 
         for col in cols_to_show:
             col_name = col["name"]
             col_type = col["type"]
-            annotation = col.get("annotation", "")
+            # Live annotation takes precedence over cached one
+            annotation = live_annotations.get(col_name) or col.get("annotation", "")
 
             col_line = f"  • `{col_name}` ({col_type})"
 

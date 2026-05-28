@@ -30,12 +30,27 @@ BUSINESS_SYNONYMS: dict[str, str] = {
 }
 
 class DynamicSchemaAgent:
-    def __init__(self):
-        try:
-            self.context = get_db_context()
-        except Exception as e:
-            log.warning("dynamic_schema.failed_to_load_context", error=str(e))
+    def __init__(self, datasource_id: str = "limese", schema: dict | None = None):
+        self.datasource_id = datasource_id
+        if datasource_id == "limese":
+            try:
+                self.context = get_db_context()
+            except Exception as e:
+                log.warning("dynamic_schema.failed_to_load_context", error=str(e))
+                self.context = {"tables": {}}
+        else:
             self.context = {"tables": {}}
+            if schema and "tables" in schema:
+                tables_dict = {}
+                for t in schema["tables"]:
+                    tables_dict[t["name"]] = {
+                        "name": t["name"],
+                        "columns": t.get("columns", []),
+                        "aliases": [],
+                        "row_count": t.get("row_count", 0),
+                        "description": t.get("description", ""),
+                    }
+                self.context["tables"] = tables_dict
 
     def match_synonym_or_column(self, term: str) -> dict[str, str] | None:
         """
@@ -76,7 +91,7 @@ class DynamicSchemaAgent:
 
         return None
 
-    def scan_question_for_missing_tables(self, question: str, current_tables: list[str]) -> list[str]:
+    def scan_question_for_missing_tables(self, question: str, current_tables: list[str], allowed_tables: list[str] | None = None) -> list[str]:
         """
         Scan the user's question for any terms matching table names or their aliases/synonyms
         that weren't originally discovered, and return those table names to expand schema.
@@ -87,6 +102,8 @@ class DynamicSchemaAgent:
 
         for tname, tdata in tables.items():
             if tname in new_tables:
+                continue
+            if allowed_tables is not None and tname not in allowed_tables:
                 continue
 
             # Check if table name is in question

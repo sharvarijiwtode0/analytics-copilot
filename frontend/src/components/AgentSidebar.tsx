@@ -43,11 +43,14 @@ const NODE_META: Record<string, { label: string; icon: React.ReactNode; color: s
   general_llm:        { label: 'General LLM',      icon: <Cpu size={11} />,          color: 'text-indigo-400' },
   discover_schema:    { label: 'Schema',           icon: <Database size={11} />,     color: 'text-blue-400' },
   generate_sql:       { label: 'SQL Gen',          icon: <Code2 size={11} />,        color: 'text-cyan-400' },
+  review_sql:         { label: 'DBA Review',       icon: <CheckCircle2 size={11} />, color: 'text-emerald-400' },
   execute_sql:        { label: 'Query Run',        icon: <Play size={11} />,         color: 'text-green-400' },
   analyze_insights:   { label: 'Analysis',         icon: <Activity size={11} />,     color: 'text-amber-400' },
+  review_insights:    { label: 'Critic Review',    icon: <CheckCircle2 size={11} />, color: 'text-green-400' },
   generate_viz_config:{ label: 'Visualisation',    icon: <BarChart3 size={11} />,    color: 'text-pink-400' },
   compose_response:   { label: 'Response',         icon: <MessageSquare size={11} />,color: 'text-indigo-400' },
   insight_followup:   { label: 'Follow-up',        icon: <ArrowRight size={11} />,   color: 'text-teal-400' },
+  supervisor:         { label: 'Supervisor',       icon: <Cpu size={11} />,          color: 'text-slate-400' },
 }
 
 interface AgentSidebarProps {

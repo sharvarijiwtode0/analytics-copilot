@@ -14,8 +14,10 @@ const PIPELINE_STEPS = [
   { id: 'understand_intent', label: 'Intent', short: 'Intent Classification' },
   { id: 'discover_schema', label: 'Schema', short: 'Schema Introspection' },
   { id: 'generate_sql', label: 'SQL Gen', short: 'SQL Query Synthesis' },
+  { id: 'review_sql', label: 'DBA Review', short: 'SQL Syntax & Compliance Check' },
   { id: 'execute_sql', label: 'Execution', short: 'Database Query Run' },
   { id: 'analyze_insights', label: 'Insights', short: 'Statistical & Insight Analysis' },
+  { id: 'review_insights', label: 'Critic Review', short: 'Factual Reflection Check' },
   { id: 'generate_viz_config', label: 'Visualization', short: 'Apache ECharts Configuration' },
   { id: 'compose_response', label: 'Response', short: 'Narrative Composition' },
 ]
@@ -73,6 +75,24 @@ const getConversationalSummary = (steps: TransparencyStep[], isLoading: boolean)
     }
   }
 
+  // 3.5 DBA SQL Review
+  const reviewSqlStep = findStep('review_sql')
+  if (reviewSqlStep) {
+    const isDone = isStepComplete('review_sql')
+    if (isDone) {
+      const sqlValidated = reviewSqlStep.data?.sql_validated
+      if (sqlValidated) {
+        parts.push("🛡️ The query plan was checked by my database administrator review layer and passed all safety and ClickHouse syntax compliance checks.")
+      } else {
+        const feedback = reviewSqlStep.data?.dba_feedback || 'Syntax issue detected.'
+        parts.push(`🛡️ The database administrator review flagged issues: "${feedback}". Correcting the query...`)
+      }
+    } else {
+      parts.push("🛡️ I am sending the drafted SQL query plan to my DBA Review Agent to verify syntactic safety and database performance guidelines before execution...")
+      return parts.join(" ")
+    }
+  }
+
   // 4. Execution
   const execStep = findStep('execute_sql')
   if (execStep) {
@@ -92,9 +112,27 @@ const getConversationalSummary = (steps: TransparencyStep[], isLoading: boolean)
     const isDone = isStepComplete('analyze_insights')
     if (isDone) {
       const insights = analysisStep.data?.insights || []
-      parts.push(`📊 After pulling the numbers, I ran statistical checks to spot performance patterns. I've distilled **${insights.length}** critical takeaways, highlighting positive milestones, potential anomalies, and platform performance.`)
+      parts.push(`📊 After pulling the numbers, I ran statistical checks to spot performance patterns. I've distilled **${insights.length}** takeaways, highlighting milestones and anomalies.`)
     } else {
-      parts.push("📊 I have the raw numbers! Now, I am running deep statistical summaries to highlight key metrics, identify unexpected anomalies, compare performance across platforms, and extract the most valuable takeaways for you...")
+      parts.push("📊 I have the raw numbers! Now, I am running deep statistical summaries to highlight key metrics, identify unexpected anomalies, compare performance across platforms, and extract the takeaways...")
+      return parts.join(" ")
+    }
+  }
+
+  // 5.5 Critic Review
+  const reviewInsightsStep = findStep('review_insights')
+  if (reviewInsightsStep) {
+    const isDone = isStepComplete('review_insights')
+    if (isDone) {
+      const validated = reviewInsightsStep.data?.insights_validated
+      if (validated) {
+        parts.push("🎯 The generated insights have been validated against the raw data rows and passed all reflection and factual consistency checks.")
+      } else {
+        const feedback = reviewInsightsStep.data?.critic_feedback || 'Mismatch detected.'
+        parts.push(`🎯 The Critic Reflection agent flagged a discrepancy: "${feedback}". Re-generating insights with correction feedback...`)
+      }
+    } else {
+      parts.push("🎯 I am auditing the insights against the raw database rows using a Critic Reflection check to eliminate any numerical hallucinations or mismatches...")
       return parts.join(" ")
     }
   }
@@ -238,6 +276,34 @@ export const CommunicationAgent: React.FC<Props> = ({ steps, isLoading, theme = 
       }
     }
 
+    // 3.5 DBA SQL Review
+    const reviewSqlStep = findStep('review_sql')
+    if (reviewSqlStep) {
+      const isDone = isStepComplete('review_sql')
+      list.push({
+        id: 'review_sql_start',
+        text: "🛡️ I am reviewing the generated SQL query via a DBA review agent to verify ClickHouse compliance and syntax accuracy...",
+        status: isDone ? 'success' : 'pending',
+      })
+      if (isDone) {
+        const sqlValidated = reviewSqlStep.data?.sql_validated
+        if (sqlValidated) {
+          list.push({
+            id: 'review_sql_end',
+            text: "✅ SQL query validated! Passed all syntax compliance and business safety rules.",
+            status: 'success',
+          })
+        } else {
+          const feedback = reviewSqlStep.data?.dba_feedback || 'Syntax issue detected.'
+          list.push({
+            id: 'review_sql_end',
+            text: `⚠️ SQL review failed: "${feedback}". Retrying SQL generation with corrections...`,
+            status: 'error',
+          })
+        }
+      }
+    }
+
     // 4. Execution
     const execStep = findStep('execute_sql')
     if (execStep) {
@@ -274,6 +340,34 @@ export const CommunicationAgent: React.FC<Props> = ({ steps, isLoading, theme = 
           text: `📈 Statistical analysis finalized!${insightsStr}`,
           status: 'success',
         })
+      }
+    }
+
+    // 5.5 Critic Review
+    const reviewInsightsStep = findStep('review_insights')
+    if (reviewInsightsStep) {
+      const isDone = isStepComplete('review_insights')
+      list.push({
+        id: 'review_insights_start',
+        text: "🎯 I am performing a Critic Reflection review to cross-check all insights, math, and trend directions against raw DB columns...",
+        status: isDone ? 'success' : 'pending',
+      })
+      if (isDone) {
+        const validated = reviewInsightsStep.data?.insights_validated
+        if (validated) {
+          list.push({
+            id: 'review_insights_end',
+            text: "✅ Critic review passed! Zero mathematical discrepancies or hallucinations detected.",
+            status: 'success',
+          })
+        } else {
+          const feedback = reviewInsightsStep.data?.critic_feedback || 'Discrepancy detected.'
+          list.push({
+            id: 'review_insights_end',
+            text: `⚠️ Critic audit failed: "${feedback}". Re-routing to Analyst for self-correction...`,
+            status: 'error',
+          })
+        }
       }
     }
 

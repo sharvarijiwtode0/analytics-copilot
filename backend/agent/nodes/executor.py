@@ -131,6 +131,22 @@ async def execute_sql(state: AnalyticsState) -> AnalyticsState:
 
     log.error("sql.execution_failed", error=error_msg[:200], sql=sql[:150])
 
+    # Attempt automatic fix if ClickHouse and error is fixable
+    if datasource_id == "limese" and error_msg and _is_fixable(error_msg):
+        log.info("executor.attempting_auto_fix", error=error_msg[:100])
+        fixed_sql = await _try_fix_sql(sql, error_msg, state.get("user_question", ""), datasource_id)
+        if fixed_sql:
+            log.info("executor.auto_fix_succeeded", fixed_sql=fixed_sql[:200])
+            query_results, error_msg_fixed = await _run_query(fixed_sql)
+            if query_results is not None:
+                return {
+                    **state,
+                    "sql_query": fixed_sql,
+                    "query_results": query_results,
+                    "error": None,
+                }
+            error_msg = f"{error_msg} (Auto-fix failed with: {error_msg_fixed})"
+
     # Increment retry count and save error in state to route back
     retry_count = state.get("sql_retry_count", 0)
     return {

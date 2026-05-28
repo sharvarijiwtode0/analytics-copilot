@@ -486,13 +486,13 @@ async def generate_viz_config(state: AnalyticsState) -> AnalyticsState:
     columns = query_results.get("columns", [])
 
     if not rows:
-        return {**state, "viz_config": {}, "viz_type": "table"}
+        return {"viz_config": {}, "viz_type": "table"}
 
     # Suppress charts for qualitative/analytical questions (prefer point format/text only)
     qualitative_keywords = ["reason", "factor", "cause", "why", "explain", "influence", "driver"]
     if any(k in question.lower() for k in qualitative_keywords):
         log.info("viz.suppressed_for_qualitative_query", question=question)
-        return {**state, "viz_config": None, "viz_type": None}
+        return {"viz_config": None, "viz_type": None}
 
     # Suppress charts for single month queries (if exactly 1 month is asked, return only text/insights)
     import re
@@ -505,7 +505,7 @@ async def generate_viz_config(state: AnalyticsState) -> AnalyticsState:
     is_trend_query = any(w in q_lower for w in ["trend", "daily", "weekly", "chart", "graph", "plot", "map", "viz", "visualization"])
     if (has_month_word or has_digit_month) and len(rows) == 1 and not is_trend_query:
         log.info("viz.suppressed_for_single_month", question=question)
-        return {**state, "viz_config": None, "viz_type": None}
+        return {"viz_config": None, "viz_type": None}
 
     # Step 1: Determine chart type
     chart_hint = intent.get("chart_type_hint")
@@ -531,7 +531,7 @@ async def generate_viz_config(state: AnalyticsState) -> AnalyticsState:
         viz_config["graphic"] = []  # Could add annotation overlays here
 
     log.info("viz.generated", type=viz_type, columns=len(columns))
-    return {**state, "viz_config": viz_config, "viz_type": viz_type}
+    return {"viz_config": viz_config, "viz_type": viz_type}
 
 
 def _auto_select_chart_type(columns: list, rows: list, intent: dict, question: str = "") -> str:
@@ -546,7 +546,13 @@ def _auto_select_chart_type(columns: list, rows: list, intent: dict, question: s
     if "funnel" in q or "conversion" in q or "stages" in q:
         return "funnel"
 
-    if "gauge" in q or ("total" in q and row_count == 1):
+    # A gauge chart is only relatable for explicit gauge requests, or target completion percentages/rates.
+    # It should NEVER be returned for simple scalar numbers like total counts, sums, or general row counts.
+    is_gauge_relatable = (
+        "gauge" in q or 
+        (any(w in q for w in ["target", "progress", "achievement", "completion", "rate", "percentage", "%"]) and row_count == 1)
+    )
+    if is_gauge_relatable:
         return "gauge"
 
     if len(columns) == 3 and row_count > 10:

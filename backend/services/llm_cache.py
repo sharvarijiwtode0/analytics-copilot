@@ -45,8 +45,8 @@ class LLMCache:
 
     def _make_key(self, question: str, datasource_id: str, user_id: str = "anonymous", metadata_hash: str = "") -> str:
         normalized = question.lower().strip()
-        # Key is based on user_id, question, and datasource to enforce user-level isolation.
-        raw = f"{user_id}:{datasource_id}:{normalized}"
+        # Shared database cache key across all users for maximum dashboard performance
+        raw = f"{datasource_id}:{normalized}"
         return hashlib.sha256(raw.encode()).hexdigest()[:32]
 
     def get(self, question: str, datasource_id: str, user_id: str = "anonymous", metadata_hash: str = "") -> dict | None:

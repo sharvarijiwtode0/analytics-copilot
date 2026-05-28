@@ -130,43 +130,37 @@ Rules:
 - Include product_master when products/categories/SKUs are mentioned
 - Include inventory_sales_overview_new for stock/inventory questions"""
 
-    selected_names: list[str] = []
-    suggested_joins: list[str] = []
+    # Use selected tables: 
+    # (a) Locked tables from clarification
+    # (b) Top candidate tables from semantic scoring
+    # (c) Fallback to keyword matching
+    selected_names = []
+    if state.get("locked_tables"):
+        selected_names = state["locked_tables"]
+    elif state.get("candidate_tables"):
+        # Select positive scoring tables
+        selected_names = [t["name"] for t in state["candidate_tables"] if t.get("score", 0.0) > 0.0]
 
-    try:
-        resp = await call_llm(
-            messages=[{"role": "user", "content": prompt}],
-            task="routing",
-            max_tokens=200,
-            temperature=0.0,
-        )
-        raw = resp.content.strip()
-        # Strip markdown fences if present
-        if "```" in raw:
-            raw = raw.split("```")[1].replace("json", "").strip()
-        parsed = json.loads(raw)
-        raw_tables = parsed.get("relevant_tables", [])
-        # Accept both string list and object list formats
-        for t in raw_tables:
-            if isinstance(t, str):
-                selected_names.append(t)
-            elif isinstance(t, dict) and "name" in t:
-                selected_names.append(t["name"])
-        suggested_joins = parsed.get("suggested_joins", [])
-    except Exception as exc:
-        log.warning("schema.llm_selection_failed", error=str(exc))
-        # Smart keyword fallback instead of blind tables[:3]
+    if not selected_names:
         selected_names = _keyword_select_tables(question, tables)
 
-    # Validate — only keep table names that actually exist
-    valid_names = [n for n in selected_names if n in all_table_names]
-    if not valid_names:
-        valid_names = _keyword_select_tables(question, tables)
+    # Record table access in user history to learn user profile affinities
+    try:
+        from backend.services.user_history import record_table_access
+        record_table_access(
+            user_id=state.get("user_id", "anonymous"),
+            table_names=selected_names,
+            session_id=state.get("session_id")
+        )
+    except Exception as exc:
+        log.warning("schema.record_history_failed", error=str(exc))
+
+    suggested_joins = []
 
     # Enrich with full column metadata from the real schema
     table_map = {t["name"]: t for t in tables}
     relevant_tables = []
-    for name in valid_names[:4]:
+    for name in selected_names[:4]:
         full_table = table_map.get(name, {"name": name, "columns": []})
         relevant_tables.append({
             "name": name,

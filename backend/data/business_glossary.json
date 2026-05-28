@@ -1,0 +1,26 @@
+{
+  "ambiguous_terms": {
+    "roi": {
+      "keyword": "ROI",
+      "options": [
+        "Return on Investment",
+        "Republic of India",
+        "Rate of Interest"
+      ]
+    },
+    "yoy": {
+      "keyword": "YoY",
+      "options": [
+        "Year over Year",
+        "Youth of Year"
+      ]
+    },
+    "inventory": {
+      "keyword": "Inventory",
+      "options": [
+        "Current Stock Levels (inventory_sales_overview_new)",
+        "Historical Stock Data"
+      ]
+    }
+  }
+}

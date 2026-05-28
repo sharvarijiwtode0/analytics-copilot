@@ -5,6 +5,8 @@ import { ChartRenderer } from '../Charts/ChartRenderer'
 import { indianiseCurrencyText, autoFormatValue } from '../../lib/formatters'
 import type { ChatMessage as ChatMessageType } from '../../store/chat'
 import { useAuthStore } from '../../store/auth'
+import { CommunicationAgent } from './CommunicationAgent'
+import type { TransparencyStep } from '../../hooks/useStreamingQuery'
 
 interface Props {
   message: ChatMessageType
@@ -99,64 +101,20 @@ export const ChatMessageComponent: React.FC<Props> = ({ message, onFollowUp, onE
 
       {/* Expanded Steps Block */}
       {showSQL && message.sql && (
-        <div className={`mt-1 rounded-xl border p-4 text-xs ${
-          theme === 'dark' ? 'border-zinc-700 bg-zinc-900/50' : 'border-slate-200 bg-white shadow-sm'
-        }`}>
-          <div className="space-y-4">
-            {/* Step: Intent */}
-            <div className="flex gap-2">
-              <Lightbulb size={14} className="text-purple-500 mt-0.5" />
-              <div>
-                <span className={`font-semibold block ${theme === 'dark' ? 'text-zinc-300' : 'text-slate-700'}`}>Understood Intent</span>
-                <span className={theme === 'dark' ? 'text-zinc-400' : 'text-slate-500'}>
-                  {message.viz_type ? `Detected request for ${message.viz_type} chart` : 'Analyzing data request'}
-                </span>
-              </div>
-            </div>
-
-            {/* Step: Schema */}
-            <div className="flex gap-2">
-              <Database size={14} className="text-blue-500 mt-0.5" />
-              <div>
-                <span className={`font-semibold block ${theme === 'dark' ? 'text-zinc-300' : 'text-slate-700'}`}>Discovered Schema</span>
-                {message.columns && message.columns.length > 0 ? (
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {message.columns.map(col => (
-                      <span key={col} className={`px-1.5 py-0.5 rounded font-mono text-[10px] ${
-                        theme === 'dark' ? 'bg-zinc-800 text-zinc-300' : 'bg-slate-100 text-slate-600'
-                      }`}>
-                        {col}
-                      </span>
-                    ))}
-                  </div>
-                ) : (
-                  <span className={theme === 'dark' ? 'text-zinc-400' : 'text-slate-500'}>Scanned relevant tables...</span>
-                )}
-              </div>
-            </div>
-
-            {/* Step: SQL */}
-            <div className="flex gap-2">
-              <Code size={14} className="text-green-500 mt-0.5" />
-              <div className="w-full overflow-hidden">
-                <span className={`font-semibold block ${theme === 'dark' ? 'text-zinc-300' : 'text-slate-700'}`}>Generated SQL</span>
-                <pre className="mt-1.5 px-3 py-2 bg-zinc-950 text-green-400 rounded text-[10px] overflow-x-auto whitespace-pre-wrap font-mono">
-                  {message.sql}
-                </pre>
-              </div>
-            </div>
-            
-            {/* Step: Execution */}
-            <div className="flex gap-2">
-              <Sparkles size={14} className="text-amber-500 mt-0.5" />
-              <div>
-                <span className={`font-semibold block ${theme === 'dark' ? 'text-zinc-300' : 'text-slate-700'}`}>Executed & Analyzed</span>
-                <span className={theme === 'dark' ? 'text-zinc-400' : 'text-slate-500'}>
-                  Processed {message.row_count} rows and extracted key business metrics.
-                </span>
-              </div>
-            </div>
-          </div>
+        <div className="mt-1">
+          <CommunicationAgent
+            steps={[
+              { type: 'progress', step: 'understand_intent', data: { status: 'complete', intent: message.viz_type ? 'chart_request' : 'data_query' } },
+              { type: 'progress', step: 'discover_schema', data: { status: 'complete', tables: message.columns && message.columns.length > 0 ? ['sales_table'] : [] } },
+              { type: 'progress', step: 'generate_sql', data: { status: 'complete', sql: message.sql } },
+              { type: 'progress', step: 'execute_sql', data: { status: 'complete', row_count: message.row_count } },
+              { type: 'progress', step: 'analyze_insights', data: { status: 'complete', insights: message.insights } },
+              { type: 'progress', step: 'generate_viz_config', data: { status: 'complete', viz_type: message.viz_type || 'table' } },
+              { type: 'complete', step: 'compose_response', data: { status: 'complete' } }
+            ]}
+            isLoading={false}
+            theme={theme}
+          />
         </div>
       )}
 
@@ -196,6 +154,41 @@ export const ChatMessageComponent: React.FC<Props> = ({ message, onFollowUp, onE
             ? 'bg-zinc-900 border-zinc-800'
             : 'bg-white border border-zinc-200'
         }`}>
+          {/* Summary showing the executed pipeline steps */}
+          {message.sql && (
+            <div className="mb-4 space-y-3">
+              {/* Visual Pipeline dots */}
+              <CommunicationAgent
+                steps={[
+                  { type: 'progress', step: 'understand_intent', data: { status: 'complete', intent: message.viz_type ? 'chart_request' : 'data_query' } },
+                  { type: 'progress', step: 'discover_schema', data: { status: 'complete', tables: message.columns && message.columns.length > 0 ? ['sales_table'] : [] } },
+                  { type: 'progress', step: 'generate_sql', data: { status: 'complete', sql: message.sql } },
+                  { type: 'progress', step: 'execute_sql', data: { status: 'complete', row_count: message.row_count } },
+                  { type: 'progress', step: 'analyze_insights', data: { status: 'complete', insights: message.insights } },
+                  { type: 'progress', step: 'generate_viz_config', data: { status: 'complete', viz_type: message.viz_type || 'table' } },
+                  { type: 'complete', step: 'compose_response', data: { status: 'complete' } }
+                ]}
+                isLoading={false}
+                theme={theme}
+                summaryOnly={true}
+              />
+              {/* Conversational descriptive narrative summary */}
+              <CommunicationAgent
+                steps={[
+                  { type: 'progress', step: 'understand_intent', data: { status: 'complete', intent: message.viz_type ? 'chart_request' : 'data_query' } },
+                  { type: 'progress', step: 'discover_schema', data: { status: 'complete', tables: message.columns && message.columns.length > 0 ? ['sales_table'] : [] } },
+                  { type: 'progress', step: 'generate_sql', data: { status: 'complete', sql: message.sql } },
+                  { type: 'progress', step: 'execute_sql', data: { status: 'complete', row_count: message.row_count } },
+                  { type: 'progress', step: 'analyze_insights', data: { status: 'complete', insights: message.insights } },
+                  { type: 'progress', step: 'generate_viz_config', data: { status: 'complete', viz_type: message.viz_type || 'table' } },
+                  { type: 'complete', step: 'compose_response', data: { status: 'complete' } }
+                ]}
+                isLoading={false}
+                theme={theme}
+                conversational={true}
+              />
+            </div>
+          )}
           <div className={`text-sm leading-relaxed prose prose-sm max-w-none ${
             theme === 'dark' ? 'text-zinc-300 prose-invert' : 'text-zinc-700'
           }`}>

@@ -11,6 +11,7 @@ import Sidebar from '../components/Layout/Sidebar'
 import TransparencyPanel from '../components/TransparencyPanel'
 import AgentSidebar, { type AgentRun } from '../components/AgentSidebar'
 import { useStreamingQuery, type TransparencyStep } from '../hooks/useStreamingQuery'
+import { CommunicationAgent } from '../components/Chat/CommunicationAgent'
 
 export const CopilotPage: React.FC = () => {
   const {
@@ -150,7 +151,7 @@ export const CopilotPage: React.FC = () => {
       id: runId,
       question,
       startedAt: Date.now(),
-      nodes: {},
+      nodes: [],
     }
 
     // Use streaming query for real-time updates
@@ -374,7 +375,34 @@ export const CopilotPage: React.FC = () => {
                         theme={theme}
                       />
                     ))}
-                    {isLoading && <ThinkingIndicator seconds={elapsedSeconds} theme={theme} />}
+                    {isLoading && (
+                      <div className="flex flex-col gap-3 mb-6 animate-in fade-in duration-300">
+                        {/* Avatar and name header */}
+                        <div className="flex items-center flex-wrap gap-2 text-xs text-zinc-500">
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">
+                            🤖
+                          </div>
+                          <span className="font-semibold text-zinc-800 dark:text-zinc-200">Limese Copilot</span>
+                          <span className="flex items-center gap-1 text-[10px] text-blue-500 font-mono">
+                            <Clock size={10} />
+                            {elapsedSeconds}s
+                          </span>
+                        </div>
+                        {/* Real-time active steps */}
+                        <div className={`rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm border ${
+                          theme === 'dark'
+                            ? 'bg-zinc-900 border-zinc-800 text-zinc-300'
+                            : 'bg-white border border-slate-200 text-slate-700'
+                        }`}>
+                          <CommunicationAgent
+                            steps={transparencySteps}
+                            isLoading={isLoading}
+                            theme={theme}
+                            conversational={true}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </>
                 )}
                 <div ref={bottomRef} />
@@ -394,7 +422,7 @@ export const CopilotPage: React.FC = () => {
             )}
 
             {/* Input */}
-            <div className={`border-t ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'}`}>
+            <div className={`border-t ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'} pt-3`}>
               <div className="max-w-3xl mx-auto">
                 <ChatInput
                   value={chatInputValue}
@@ -412,7 +440,6 @@ export const CopilotPage: React.FC = () => {
           <AgentSidebar
             steps={transparencySteps}
             isStreaming={isStreaming || isLoading}
-            currentQuestion={activeSession?.messages.filter(m => m.role === 'user').slice(-1)[0]?.content || ''}
             history={agentHistory}
           />
         </div>
@@ -522,50 +549,64 @@ interface TableSchema {
   sample_data?: any[]
 }
 
-const generateSuggestedQueries = (tables: TableSchema[]): { q: string; icon: string }[] => {
+const generateSuggestedQueries = (tables: TableSchema[], datasourceId: string): { q: string; icon: string }[] => {
+  const isLimese = datasourceId === 'limese' || tables.some(t => 
+    t.name.toLowerCase() === 'combined_sales_final' || 
+    t.name.toLowerCase().startsWith('shopify_') || 
+    t.name.toLowerCase().startsWith('zoho_')
+  )
+
+  if (isLimese) {
+    return [
+      { q: "Show total sales revenue and units ordered across all retail channels", icon: "📊" },
+      { q: "What is the monthly sales trend of Shopify storefront orders?", icon: "📈" },
+      { q: "Show inventory balance stock levels and burn rates of high priority products", icon: "📦" },
+      { q: "What is the breakdown of Zoho B2B ERP bookings by customer?", icon: "💼" },
+      { q: "Show overall catalog margins and average profit margins per product", icon: "💰" },
+      { q: "Show all tables in this database and their row counts", icon: "🔍" }
+    ]
+  }
+
+  const isSQLiteDemo = datasourceId === 'default' || tables.some(t => 
+    t.name.toLowerCase() === 'support_tickets' || 
+    t.name.toLowerCase() === 'sales'
+  )
+
+  if (isSQLiteDemo) {
+    return [
+      { q: "Show monthly sales trend and total revenue", icon: "📈" },
+      { q: "What is the breakdown of support tickets by status?", icon: "🎫" },
+      { q: "Describe the columns and structure of the sales and tickets tables", icon: "📋" },
+      { q: "Show the top 10 products sold by quantity and profit margin", icon: "🏆" },
+      { q: "What is the daily distribution of support tickets resolved?", icon: "📅" },
+      { q: "Show all tables in this demo database and their row counts", icon: "📊" }
+    ]
+  }
+
   if (!tables || tables.length === 0) {
     return [
-      { q: "Show summary of all tables", icon: "📊" },
+      { q: "Show summary of all tables and their row counts", icon: "📊" },
       { q: "List all schemas in this database", icon: "🔍" },
-      { q: "Show row counts for all tables", icon: "🔢" },
-      { q: "Describe the database details", icon: "📋" }
+      { q: "Describe the database details", icon: "📋" },
+      { q: "Explain how to query this database", icon: "💡" }
     ]
   }
 
   const suggestions: { q: string; icon: string }[] = []
-  
-  // Sort tables by row count descending
   const sortedTables = [...tables].sort((a, b) => b.row_count - a.row_count)
   const primaryTable = sortedTables[0]
-  
-  // Find a category-like column in primary table (string column that isn't ID)
-  const categoryCol = primaryTable.columns.find((c: ColumnSchema) => {
-    const n = c.name.toLowerCase()
-    const t = c.type.toLowerCase()
-    return (t.includes('str') || t.includes('char') || t.includes('text')) && !n.includes('id') && !n.includes('url') && !n.includes('image')
-  })
-  
-  // Find a numeric column in primary table
-  const numericCol = primaryTable.columns.find((c: ColumnSchema) => {
-    const n = c.name.toLowerCase()
-    const t = c.type.toLowerCase()
-    return n !== 'id' && (t.includes('int') || t.includes('dec') || t.includes('float') || t.includes('double') || t.includes('num') || t.includes('real'))
-  })
 
-  // Find a date column in primary table
-  const dateCol = primaryTable.columns.find((c: ColumnSchema) => {
-    const n = c.name.toLowerCase()
-    const t = c.type.toLowerCase()
-    return n.includes('date') || n.includes('time') || n.includes('created') || t.includes('date') || t.includes('time')
-  })
-
-  // Question 1: Basic row count or listing
   suggestions.push({
     q: `Show total number of records in ${primaryTable.name}`,
     icon: "🔢"
   })
 
-  // Question 2: Grouping by category
+  const categoryCol = primaryTable.columns.find((c: ColumnSchema) => {
+    const n = c.name.toLowerCase()
+    const t = c.type.toLowerCase()
+    return (t.includes('str') || t.includes('char') || t.includes('text')) && !n.includes('id') && !n.includes('url')
+  })
+
   if (categoryCol) {
     suggestions.push({
       q: `Show breakdown of ${primaryTable.name} by ${categoryCol.name}`,
@@ -573,61 +614,19 @@ const generateSuggestedQueries = (tables: TableSchema[]): { q: string; icon: str
     })
   }
 
-  // Question 3: Numeric sum/average
+  const numericCol = primaryTable.columns.find((c: ColumnSchema) => {
+    const n = c.name.toLowerCase()
+    const t = c.type.toLowerCase()
+    return n !== 'id' && (t.includes('int') || t.includes('dec') || t.includes('float') || t.includes('double') || t.includes('num'))
+  })
+
   if (numericCol && categoryCol) {
     suggestions.push({
       q: `What is the total ${numericCol.name} grouped by ${categoryCol.name}?`,
       icon: "💰"
     })
-  } else if (numericCol) {
-    suggestions.push({
-      q: `What is the average ${numericCol.name} in ${primaryTable.name}?`,
-      icon: "📈"
-    })
   }
 
-  // Question 4: Date trend
-  if (dateCol && numericCol) {
-    suggestions.push({
-      q: `What is the monthly trend of ${numericCol.name} over time?`,
-      icon: "📈"
-    })
-  } else if (dateCol) {
-    suggestions.push({
-      q: `How many ${primaryTable.name} were created by day/month?`,
-      icon: "📅"
-    })
-  }
-
-  // Question 5: Top 10 listing
-  if (numericCol) {
-    suggestions.push({
-      q: `Show the top 10 ${primaryTable.name} based on ${numericCol.name}`,
-      icon: "🏆"
-    })
-  }
-
-  // Question 6: A query on the second table if available
-  if (sortedTables.length > 1) {
-    const secTable = sortedTables[1]
-    const secNumericCol = secTable.columns.find((c: ColumnSchema) => 
-      c.name.toLowerCase() !== 'id' && 
-      (c.type.toLowerCase().includes('int') || c.type.toLowerCase().includes('dec') || c.type.toLowerCase().includes('float') || c.type.toLowerCase().includes('num'))
-    )
-    if (secNumericCol) {
-      suggestions.push({
-        q: `Analyze ${secTable.name} by ${secNumericCol.name}`,
-        icon: "⚖️"
-      })
-    } else {
-      suggestions.push({
-        q: `Show a preview of data from ${secTable.name}`,
-        icon: "🔍"
-      })
-    }
-  }
-
-  // Ensure we have at least 4 suggestions, if not fallback
   while (suggestions.length < 4 && tables.length > 0) {
     const randomTable = tables[Math.floor(Math.random() * tables.length)]
     suggestions.push({
@@ -652,8 +651,8 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onQuestionClick, theme, s
 
   // Generate suggested queries using our helper
   const suggestions = React.useMemo(() => {
-    return generateSuggestedQueries(tables)
-  }, [tables])
+    return generateSuggestedQueries(tables, datasourceId)
+  }, [tables, datasourceId])
 
   const dbName = datasourceId === 'default' ? 'SQLite Demo' : datasourceId === 'limese' ? 'Limese ClickHouse' : datasourceId
   const dbType = datasourceId === 'limese' ? 'ClickHouse' : 'SQLite/Local'

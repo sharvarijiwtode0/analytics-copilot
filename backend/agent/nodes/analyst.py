@@ -169,10 +169,11 @@ async def analyze_insights(state: AnalyticsState) -> AnalyticsState:
     columns = query_results.get("columns", [])
 
     if not rows:
-        return {**state,
-                "insights": ["No data found for this query."],
-                "key_metrics": {},
-                "anomalies": []}
+        return {
+            "insights": ["No data found for this query."],
+            "key_metrics": {},
+            "anomalies": []
+        }
 
     # Compute stats locally
     basic_stats = _compute_basic_stats(rows, columns)
@@ -236,12 +237,18 @@ Format large numbers in Indian style: e.g. ₹23.8 Cr (monetary), 2.8 L units (c
             max_tokens=600,
             temperature=0.2,
         )
+        import re
         raw = resp.content.strip()
         if not raw:
             raise ValueError("Empty LLM response")
-        if "```" in raw:
-            raw = raw.split("```")[1].replace("json", "").strip()
-        analysis = json.loads(raw)
+        
+        # Robust regex-based JSON extraction to isolate the target object
+        json_match = re.search(r'(\{.*\})', raw, re.DOTALL)
+        raw_json = json_match.group(1) if json_match else raw
+        
+        if "```" in raw_json:
+            raw_json = raw_json.split("```")[1].replace("json", "").strip()
+        analysis = json.loads(raw_json)
     except Exception as exc:
         log.warning("analyst.parse_failed_using_dynamic_fallback", error=str(exc))
         analysis = _generate_rule_based_fallback_insights(rows, columns, basic_stats, question)
@@ -254,7 +261,6 @@ Format large numbers in Indian style: e.g. ₹23.8 Cr (monetary), 2.8 L units (c
 
     log.info("analyst.complete", insight_count=len(cleaned_insights))
     return {
-        **state,
         "insights": cleaned_insights,
         "key_metrics": analysis.get("key_metrics", {}),
         "anomalies": analysis.get("anomalies", []),

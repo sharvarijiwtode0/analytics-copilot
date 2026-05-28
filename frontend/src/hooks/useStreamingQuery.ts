@@ -8,6 +8,7 @@ export interface TransparencyStep {
   progress?: number
   message?: string
   data?: {
+    status?: string
     intent?: string
     rephrased_question?: string
     sql?: string

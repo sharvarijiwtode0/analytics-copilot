@@ -238,8 +238,9 @@ def _build_universal_schema_prompt(relevant_tables: list[dict]) -> str:
 
 
 async def generate_sql(state: AnalyticsState) -> AnalyticsState:
-    # Skip if SQL already provided by semantic cache
-    if state.get("sql_query"):
+    is_retry = state.get("sql_retry_count", 0) > 0
+    # Skip if SQL already provided by semantic cache AND not a retry
+    if state.get("sql_query") and not is_retry:
         return state
 
     intent = state.get("intent", {})
@@ -249,6 +250,27 @@ async def generate_sql(state: AnalyticsState) -> AnalyticsState:
     tables = schema_context.get("relevant_tables", [])
     datasource_id = state.get("datasource_id", "")
     is_clickhouse = datasource_id == "limese"
+
+    from backend.agent.nodes.dynamic_schema import DynamicSchemaAgent
+    schema_agent = DynamicSchemaAgent()
+
+    # Interactively expand relevant tables if we detect keywords in question (0ms overhead)
+    tables_in_context = [t.get("name") for t in tables if t.get("name")]
+    expanded_table_names = schema_agent.scan_question_for_missing_tables(question, tables_in_context)
+    
+    if len(expanded_table_names) > len(tables_in_context):
+        log.info("sql_gen.schema_expanded_interactively", original=tables_in_context, expanded=expanded_table_names)
+        tables = []
+        db_ctx = schema_agent.context.get("tables", {})
+        for name in expanded_table_names:
+            if name in db_ctx:
+                tables.append({
+                    "name": name,
+                    "columns": db_ctx[name].get("columns", []),
+                    "sample_data": db_ctx[name].get("sample_data"),
+                    "row_count": db_ctx[name].get("row_count"),
+                    "description": db_ctx[name].get("description", ""),
+                })
 
     # Load DB intelligence context (cached on disk — instant load)
     db_intelligence_context = ""
@@ -380,8 +402,33 @@ CRITICAL COLUMN SELECTION RULES:
         yr = years[0]
         extra_warning += f"\n⚠️ STRICT DATE FILTERING WARNING: The user asked specifically for the year {yr}. You MUST restrict the ClickHouse date range strictly to this year: `date_created >= '{yr}-01-01' AND date_created <= '{yr}-12-31'`. Do NOT select any data from other years.\n"
 
-    prompt = f"""You are a {"ClickHouse" if is_clickhouse else "SQL"} expert with READ-ONLY database access generating a query for an analytics question.
+    retry_context = ""
+    if is_retry and state.get("error"):
+        failed_sql = state.get("sql_query", "")
+        error_msg = state.get("error", "")
+        
+        # Use DynamicSchemaAgent to parse error and provide corrective advice!
+        error_resolution = schema_agent.resolve_execution_error(error_msg, failed_sql)
+        resolution_hint = f"\n💡 SCHEMA CORRECTION ADVICE: {error_resolution}\n" if error_resolution else ""
+        
+        retry_context = f"""
+❌ RETRY ATTEMPT #{state.get("sql_retry_count")}
+Your previous ClickHouse SQL query failed with an execution error. You must rewrite it to correct this error.
 
+FAILED SQL QUERY:
+{failed_sql}
+
+DATABASE ERROR MESSAGE:
+{error_msg}
+{resolution_hint}
+Ensure that you:
+1. Address the database error above.
+2. Fix all syntax, column name, or table join mismatches.
+3. Review aliases and ClickHouse aggregate grouping safety.
+"""
+
+    prompt = f"""You are a {"ClickHouse" if is_clickhouse else "SQL"} expert with READ-ONLY database access generating a query for an analytics question.
+{retry_context}
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║                       READ-ONLY ACCESS - CRITICAL RULE                         ║
 ╠══════════════════════════════════════════════════════════════════════════════╣
@@ -447,4 +494,5 @@ Generate a complete, correct SQL query. Return ONLY this JSON (no other text):
         "sql_validated": True,
         "sql_explanation": meta.get("explanation", ""),
         "model_used": resp.model,
+        "error": None,  # Clear any previous execution errors
     }

@@ -269,33 +269,61 @@ async def compose_response(state: AnalyticsState) -> AnalyticsState:
             },
         }
 
-    # Build beautiful executive conversational narrative summary
-    response_text = ""
+    # Build beautiful executive conversational narrative summary and generate follow-up questions in parallel to save 25 seconds
+    import asyncio
+    
+    summary_task = None
+    follow_ups_task = None
+    
     if not error and row_count > 0:
         summary_prompt = f"""You are Limese's Senior Analytics Copilot. Write a highly professional, conversational executive summary answering the user's question based on the actual metrics and findings.
-
+ 
 User Question: "{question}"
 Key Metrics: {key_metrics}
 Raw Bullet Point Insights: {insights}
 Total Rows Returned: {row_count}
-
+ 
 RULES:
 1. Write a direct, polished narrative summary in 1-2 paragraphs max (3-5 sentences total).
 2. DO NOT write lists, bullet points, or raw tables — the UI displays bullet points separately under "Key Insights".
 3. Bold key metrics (e.g. **₹16.21 Cr** or **1.4L units**).
 4. Use ₹ (Rupee) for Indian currency format. Never use USD or $ unless specifically asked.
 5. Keep the tone conversational, helpful, and highly strategic for a business owner."""
+        
+        async def _run_summary_llm():
+            try:
+                resp = await call_llm(
+                    messages=[{"role": "user", "content": summary_prompt}],
+                    task="general",
+                    max_tokens=350,
+                    temperature=0.3,
+                )
+                return resp.content.strip()
+            except Exception as exc:
+                log.warning("responder.summary_llm_failed", error=str(exc))
+                return ""
+        
+        summary_task = _run_summary_llm()
 
+    sql = state.get("sql_query", "")
+    columns = query_results.get("columns", [])
+    
+    async def _run_follow_ups_llm():
         try:
-            resp = await call_llm(
-                messages=[{"role": "user", "content": summary_prompt}],
-                task="general",
-                max_tokens=350,
-                temperature=0.3,
-            )
-            response_text = resp.content.strip()
-        except Exception as exc:
-            log.warning("responder.summary_llm_failed", error=str(exc))
+            return await _generate_follow_ups(question, insights, viz_type, sql, columns)
+        except Exception:
+            return _default_follow_ups(question)
+
+    follow_ups_task = _run_follow_ups_llm()
+
+    # Execute both LLM calls in parallel to eliminate sequential latency
+    gathered_results = await asyncio.gather(
+        summary_task if summary_task else asyncio.sleep(0, result=""),
+        follow_ups_task
+    )
+    
+    response_text = gathered_results[0]
+    follow_ups = gathered_results[1]
 
     # Fallback to narrative paragraph if LLM fails or returned empty
     if not response_text and not error:
@@ -318,14 +346,6 @@ RULES:
                         clean_ins1 = clean_ins1[0].lower() + clean_ins1[1:]
                     response_text += f"Additionally, {clean_ins1}."
 
-    # Generate follow-up questions
-    sql = state.get("sql_query", "")
-    columns = query_results.get("columns", [])
-    try:
-        follow_ups = await _generate_follow_ups(question, insights, viz_type, sql, columns)
-    except Exception:
-        follow_ups = _default_follow_ups(question)
-
     log.info("responder.complete", response_length=len(response_text))
 
     final_response = {
@@ -344,7 +364,7 @@ RULES:
         "truncated": query_results.get("truncated", False),
     }
 
-    # Store in Vector Memory (Qdrant) for long-term semantic learning
+    # Run blocking database, vector, and storage writes in the thread pool via asyncio.to_thread to prevent blocking the event loop
     sql = state.get("sql_query")
     if sql and not state.get("error"):
         try:

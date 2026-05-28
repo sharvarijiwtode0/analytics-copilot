@@ -26,25 +26,34 @@ log = structlog.get_logger(__name__)
 litellm.set_verbose = False
 
 
+def _is_valid_key(key: str | None) -> bool:
+    if not key:
+        return False
+    key_strip = key.strip()
+    if not key_strip or "*" in key_strip or "placeholder" in key_strip.lower() or "your_" in key_strip.lower():
+        return False
+    return True
+
+
 def _inject_keys() -> None:
-    if settings.groq_api_key:
+    if _is_valid_key(settings.groq_api_key):
         os.environ["GROQ_API_KEY"] = settings.groq_api_key
-    if settings.anthropic_api_key:
+    if _is_valid_key(settings.anthropic_api_key):
         os.environ["ANTHROPIC_API_KEY"] = settings.anthropic_api_key
-    if settings.openai_api_key:
+    if _is_valid_key(settings.openai_api_key):
         os.environ["OPENAI_API_KEY"] = settings.openai_api_key
-    if settings.gemini_api_key:
+    if _is_valid_key(settings.gemini_api_key):
         os.environ["GEMINI_API_KEY"] = settings.gemini_api_key
         os.environ["GOOGLE_API_KEY"] = settings.gemini_api_key
-    if settings.mistral_api_key:
+    if _is_valid_key(settings.mistral_api_key):
         os.environ["MISTRAL_API_KEY"] = settings.mistral_api_key
-    if settings.openrouter_api_key:
+    if _is_valid_key(settings.openrouter_api_key):
         os.environ["OPENROUTER_API_KEY"] = settings.openrouter_api_key
-    if settings.deepseek_api_key:
+    if _is_valid_key(settings.deepseek_api_key):
         os.environ["DEEPSEEK_API_KEY"] = settings.deepseek_api_key
-    if settings.cohere_api_key:
+    if _is_valid_key(settings.cohere_api_key):
         os.environ["COHERE_API_KEY"] = settings.cohere_api_key
-    if settings.zhipu_api_key:
+    if _is_valid_key(settings.zhipu_api_key):
         os.environ["ZHIPU_API_KEY"] = settings.zhipu_api_key
 
 
@@ -61,6 +70,8 @@ class LLMResponse:
 
 
 def _get_key(model: str) -> str | None:
+    if "openrouter" in model:
+        return settings.openrouter_api_key or None
     if "groq" in model:
         return settings.groq_api_key or None
     if "claude" in model or "anthropic" in model:
@@ -71,8 +82,6 @@ def _get_key(model: str) -> str | None:
         return settings.gemini_api_key or None
     if "mistral" in model:
         return settings.mistral_api_key or None
-    if "openrouter" in model:
-        return settings.openrouter_api_key or None
     if "deepseek" in model:
         return settings.deepseek_api_key or None
     if "cohere" in model or "command" in model:
@@ -84,41 +93,54 @@ def _get_key(model: str) -> str | None:
 
 def _build_fallback_chain(primary: str, task: str) -> list[str]:
     """
-    Build the ordered fallback model list for a given task.
-
-    routing  → fast 8B only (+ gemini if available)
-    sql      → smart 70B → fast 8B → gemini-2.5-flash → gemini-flash-latest
-    analysis → smart 70B → fast 8B → gemini-2.5-flash → gemini-flash-latest
-    general  → same as sql
+    Build the ordered fallback model list for a given task,
+    filtering to only include models with active API keys to prevent error delays.
     """
     chain: list[str] = [primary]
 
-    if task == "routing":
-        # Routing only needs a fast model; add Gemini 1.5 Flash as last resort (1500 req/day)
-        if settings.gemini_api_key and "gemini" not in primary:
-            chain.append("gemini/gemini-1.5-flash")
-        return chain
+    # 1. Zhipu GLM fallback (if active key is present and not primary)
+    if _is_valid_key(settings.zhipu_api_key):
+        if "zhipu/glm-5-turbo" not in chain:
+            chain.append("zhipu/glm-5-turbo")
 
-    # For sql / analysis / general:
-    # Add Groq 8B as second option (handles simpler queries)
-    fast = settings.llm_fast_model
-    if fast not in chain:
-        chain.append(fast)
+    # 2. OpenRouter fallback (uses llama-3.3-70b-instruct or gemini-2.5-flash)
+    if _is_valid_key(settings.openrouter_api_key):
+        if task == "routing":
+            if "openrouter/google/gemini-2.5-flash" not in chain:
+                chain.append("openrouter/google/gemini-2.5-flash")
+        else:
+            if "openrouter/meta-llama/llama-3.3-70b-instruct" not in chain:
+                chain.append("openrouter/meta-llama/llama-3.3-70b-instruct")
+            if "openrouter/google/gemini-2.5-flash" not in chain:
+                chain.append("openrouter/google/gemini-2.5-flash")
 
-    # Add Gemini models as further fallbacks
-    # gemini-1.5-flash: 1,500 req/day free — much more generous than 2.5-flash (20/day)
-    # gemini-1.5-pro: 50 req/day free — higher quality, good for complex SQL
-    if settings.gemini_api_key:
+    # 3. Gemini fallback (if active key is present)
+    if _is_valid_key(settings.gemini_api_key):
         if "gemini/gemini-1.5-flash" not in chain:
             chain.append("gemini/gemini-1.5-flash")
-        if "gemini/gemini-1.5-pro" not in chain:
+        if task != "routing" and "gemini/gemini-1.5-pro" not in chain:
             chain.append("gemini/gemini-1.5-pro")
 
-    # Mistral / DeepSeek as last resort if keys exist
-    if settings.deepseek_api_key and "deepseek" not in primary:
-        chain.append("deepseek/deepseek-coder")
-    if settings.mistral_api_key and "mistral" not in primary:
-        chain.append("mistral/mistral-large-latest")
+    # 4. Groq fallback (if active key is present)
+    if _is_valid_key(settings.groq_api_key):
+        if task == "routing":
+            if "groq/llama-3.1-8b-instant" not in chain:
+                chain.append("groq/llama-3.1-8b-instant")
+        else:
+            if "groq/llama-3.3-70b-versatile" not in chain:
+                chain.append("groq/llama-3.3-70b-versatile")
+            if "groq/llama-3.1-8b-instant" not in chain:
+                chain.append("groq/llama-3.1-8b-instant")
+
+    # 5. DeepSeek fallback (if active key is present)
+    if _is_valid_key(settings.deepseek_api_key):
+        if "deepseek/deepseek-coder" not in chain:
+            chain.append("deepseek/deepseek-coder")
+
+    # 6. Mistral fallback (if active key is present)
+    if _is_valid_key(settings.mistral_api_key):
+        if "mistral/mistral-large-latest" not in chain:
+            chain.append("mistral/mistral-large-latest")
 
     return chain
 
@@ -175,6 +197,14 @@ async def call_llm(
                     if api_key:
                         kwargs["api_key"] = api_key
 
+                # Use dynamic task-specific timeouts to prevent premature aborts on heavy generations
+                task_timeouts = {
+                    "routing": 8.0,
+                    "sql": 12.0,
+                    "analysis": 18.0,
+                    "general": 18.0,
+                }
+                kwargs["timeout"] = task_timeouts.get(task, 12.0)
                 resp = await litellm.acompletion(**kwargs)
                 latency_ms = int((time.perf_counter() - t0) * 1000)
                 usage = resp.usage

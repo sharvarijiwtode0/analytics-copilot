@@ -15,6 +15,9 @@ import structlog
 log = structlog.get_logger(__name__)
 
 
+_client_cache: dict[tuple[str, int, str, str, str], Any] = {}
+
+
 class ClickHouseConnector:
     def __init__(self, host: str, port: int, username: str, password: str, database: str) -> None:
         self.host = host
@@ -22,11 +25,13 @@ class ClickHouseConnector:
         self.username = username
         self.password = password
         self.database = database
-        self._client = None
 
     def _get_client(self) -> Any:
-        if self._client is None:
-            self._client = clickhouse_connect.get_client(
+        key = (self.host, self.port, self.username, self.password, self.database)
+        global _client_cache
+        if key not in _client_cache or _client_cache[key] is None:
+            log.info("clickhouse.create_new_client_instance", host=self.host, port=self.port, database=self.database)
+            _client_cache[key] = clickhouse_connect.get_client(
                 host=self.host,
                 port=self.port,
                 username=self.username,
@@ -35,7 +40,7 @@ class ClickHouseConnector:
                 connect_timeout=10,
                 query_limit=100000,
             )
-        return self._client
+        return _client_cache[key]
 
     async def execute(self, sql: str, timeout: int = 30) -> dict:
         """Execute a SQL query and return {columns, rows}."""
@@ -90,16 +95,6 @@ class ClickHouseConnector:
             tables_result = client.query(f"SHOW TABLES FROM {self.database}")
             all_tables = [row[0] for row in tables_result.result_rows if not row[0].startswith(".")]
 
-            # Load existing db_intelligence if available to preserve descriptions/annotations
-            db_intel_path = Path(__file__).parent.parent / "data" / "db_intelligence.json"
-            existing_tables = {}
-            if db_intel_path.exists():
-                try:
-                    with open(db_intel_path, "r") as f:
-                        existing_tables = json.load(f).get("tables", {})
-                except Exception as e:
-                    log.warning("schema.load_db_intel_failed", error=str(e))
-
             # Priority tables — the most useful for analytics, we scan these first
             PRIORITY_TABLES = [
                 "combined_sales_final",
@@ -116,86 +111,87 @@ class ClickHouseConnector:
                 "lead_time",
             ]
 
-            # Reorder all_tables to prioritize PRIORITY_TABLES
-            tables_to_scan = []
-            seen = set()
-            for t in PRIORITY_TABLES:
-                if t in all_tables:
-                    tables_to_scan.append(t)
-                    seen.add(t)
-            for t in all_tables:
-                if t not in seen:
-                    tables_to_scan.append(t)
+            # Load existing db_intelligence if available to preserve descriptions/annotations
+            db_intel_path = Path(__file__).parent.parent / "data" / "db_intelligence.json"
+            existing_tables = {}
+            if db_intel_path.exists():
+                try:
+                    with open(db_intel_path, "r") as f:
+                        existing_tables = json.load(f).get("tables", {})
+                except Exception as e:
+                    log.warning("schema.load_db_intel_failed", error=str(e))
 
+            # FAST PATH: If db_intelligence cache exists, use it directly!
+            if existing_tables:
+                tables = []
+                for table_name in PRIORITY_TABLES:
+                    if table_name in existing_tables and table_name in all_tables:
+                        tdata = existing_tables[table_name]
+                        cols = []
+                        for col in tdata.get("columns", []):
+                            cols.append({
+                                "name": col.get("name"),
+                                "type": col.get("type"),
+                                "default": col.get("default", ""),
+                                "null_count": col.get("null_count", 0),
+                                "annotation": col.get("annotation", ""),
+                            })
+                        tables.append({
+                            "name": table_name,
+                            "columns": cols,
+                            "row_count": tdata.get("row_count", 0),
+                            "sample_data": tdata.get("sample_data", []),
+                            "description": tdata.get("description") or TABLE_DESCRIPTIONS.get(table_name, ""),
+                        })
+                log.info("schema.loaded_from_db_intelligence_cache", count=len(tables))
+                return {
+                    "tables": tables,
+                    "database": self.database,
+                    "total_tables": len(all_tables),
+                    "scanned_tables_count": len(tables),
+                }
+
+            # FALLBACK PATH: Fast live scan if cache is missing (skips the heavy null counting)
+            log.warning("schema.db_intelligence_cache_missing_running_fast_live_fallback")
+            tables_to_scan = [t for t in PRIORITY_TABLES if t in all_tables]
             tables = []
             for table_name in tables_to_scan:
                 try:
                     desc = client.query(f"DESCRIBE TABLE {self.database}.{table_name}")
                     columns = [
-                        {"name": row[0], "type": row[1], "default": row[2]}
+                        {
+                            "name": row[0],
+                            "type": row[1],
+                            "default": row[2],
+                            "null_count": 0,
+                            "annotation": "",
+                        }
                         for row in desc.result_rows
                     ]
                     count_result = client.query(f"SELECT count() FROM {self.database}.{table_name}")
                     row_count = count_result.result_rows[0][0]
 
-                    # Calculate null counts for all columns
-                    null_counts = {}
-                    if row_count > 0 and columns:
-                        select_parts = [f"count() - count(`{col['name']}`)" for col in columns]
-                        nulls_sql = f"SELECT {', '.join(select_parts)} FROM {self.database}.{table_name}"
-                        try:
-                            nulls_result = client.query(nulls_sql)
-                            if nulls_result.result_rows:
-                                row_vals = nulls_result.result_rows[0]
-                                for col, val in zip(columns, row_vals):
-                                    null_counts[col["name"]] = int(val)
-                        except Exception as e:
-                            log.warning("schema.null_count_failed", table=table_name, error=str(e))
-
-                    # Preserve/apply annotations to each column
-                    for col in columns:
-                        col["null_count"] = null_counts.get(col["name"], 0)
-                        
-                        # Find custom annotation in existing DB intelligence json
-                        annotation = ""
-                        if table_name in existing_tables:
-                            old_cols = existing_tables[table_name].get("columns", [])
-                            for old_col in old_cols:
-                                if old_col.get("name") == col["name"]:
-                                    annotation = old_col.get("annotation") or ""
-                                    break
-                        if not annotation:
-                            # Fallback to COLUMN_ANNOTATIONS in db_intelligence
-                            try:
-                                from backend.services.db_intelligence import COLUMN_ANNOTATIONS as IntelAnnotations
-                                annotation = IntelAnnotations.get(table_name, {}).get(col["name"], "")
-                            except Exception:
-                                pass
-                        col["annotation"] = annotation
-
-                    # Sample 2 rows
-                    sample_result = client.query(f"SELECT * FROM {self.database}.{table_name} LIMIT 2")
-                    sample_cols = list(sample_result.column_names)
-                    sample_rows = [
-                        {col: str(val) for col, val in zip(sample_cols, row)}
-                        for row in sample_result.result_rows
-                    ]
-
-                    # Preserve table description
-                    description = TABLE_DESCRIPTIONS.get(table_name, "")
-                    if table_name in existing_tables:
-                        description = existing_tables[table_name].get("description") or description
+                    # Retrieve 2 sample rows quickly
+                    try:
+                        sample_result = client.query(f"SELECT * FROM {self.database}.{table_name} LIMIT 2")
+                        sample_cols = list(sample_result.column_names)
+                        sample_rows = [
+                            {col: str(val) for col, val in zip(sample_cols, row)}
+                            for row in sample_result.result_rows
+                        ]
+                    except Exception:
+                        sample_rows = []
 
                     tables.append({
                         "name": table_name,
                         "columns": columns,
                         "row_count": row_count,
                         "sample_data": sample_rows,
-                        "description": description,
+                        "description": TABLE_DESCRIPTIONS.get(table_name, ""),
                     })
-                    log.debug("schema.table_loaded", table=table_name, rows=row_count)
+                    log.debug("schema.table_loaded_fallback", table=table_name, rows=row_count)
                 except Exception as exc:
-                    log.warning("schema.table_failed", table=table_name, error=str(exc))
+                    log.warning("schema.table_failed_fallback", table=table_name, error=str(exc))
 
             return {
                 "tables": tables,

@@ -74,3 +74,9 @@ class AnalyticsState(TypedDict, total=False):
     total_latency_ms: int
     error: str | None
     step_errors: list[str]
+    sql_retry_count: int
+
+    # Routing and Clarification
+    candidate_tables: list[dict]
+    ambiguity_score: float
+    locked_tables: list[str]

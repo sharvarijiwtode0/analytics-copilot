@@ -37,7 +37,7 @@
               "name": "suborder_code",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 209935,
+              "null_count": 209955,
               "annotation": ""
             },
             {
@@ -51,7 +51,7 @@
               "name": "internal_sku",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 336571,
+              "null_count": 336591,
               "annotation": "Join key \u2192 product_master.internal_sku for product names and category."
             },
             {
@@ -65,14 +65,14 @@
               "name": "invoice_number",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 337772,
+              "null_count": 337792,
               "annotation": ""
             },
             {
               "name": "invoice_date",
               "type": "Nullable(DateTime64(3))",
               "default": "",
-              "null_count": 341455,
+              "null_count": 341475,
               "annotation": ""
             },
             {
@@ -86,14 +86,14 @@
               "name": "date_completed",
               "type": "Nullable(DateTime64(3))",
               "default": "",
-              "null_count": 166703,
+              "null_count": 166721,
               "annotation": ""
             },
             {
               "name": "shipped_on",
               "type": "Nullable(DateTime64(3))",
               "default": "",
-              "null_count": 209935,
+              "null_count": 209955,
               "annotation": ""
             },
             {
@@ -121,7 +121,7 @@
               "name": "product_mrp",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 146053,
+              "null_count": 146059,
               "annotation": ""
             },
             {
@@ -135,14 +135,14 @@
               "name": "row_mrp",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 146053,
+              "null_count": 146059,
               "annotation": ""
             },
             {
               "name": "row_subtotal",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 5383,
+              "null_count": 5384,
               "annotation": "REVENUE per line item \u2014 USE THIS for revenue/sales. Do NOT use order_price (full order total)."
             },
             {
@@ -163,21 +163,21 @@
               "name": "discount_amount",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 11219,
+              "null_count": 11220,
               "annotation": ""
             },
             {
               "name": "shipping_total",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 203056,
+              "null_count": 203057,
               "annotation": ""
             },
             {
               "name": "cod_fees",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 341455,
+              "null_count": 341475,
               "annotation": ""
             },
             {
@@ -191,259 +191,259 @@
               "name": "cancelled_qty",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 315998,
+              "null_count": 316003,
               "annotation": ""
             },
             {
               "name": "shipped_qty",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 341455,
+              "null_count": 341475,
               "annotation": ""
             },
             {
               "name": "rto_qty",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 341455,
+              "null_count": 341475,
               "annotation": ""
             },
             {
               "name": "dto_qty",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 341455,
+              "null_count": 341475,
               "annotation": ""
             },
             {
               "name": "return_qty",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 315998,
+              "null_count": 316003,
               "annotation": ""
             },
             {
               "name": "coupon_code",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 340715,
+              "null_count": 340735,
               "annotation": ""
             },
             {
               "name": "coupon_name",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 341455,
+              "null_count": 341475,
               "annotation": ""
             },
             {
               "name": "ordertype",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 341455,
+              "null_count": 341475,
               "annotation": ""
             },
             {
               "name": "store_code",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 303511,
+              "null_count": 303531,
               "annotation": ""
             },
             {
               "name": "store_name",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 303511,
+              "null_count": 303531,
               "annotation": ""
             },
             {
               "name": "currency",
               "type": "LowCardinality(Nullable(String))",
               "default": "",
-              "null_count": 208329,
+              "null_count": 208344,
               "annotation": ""
             },
             {
               "name": "payment_method_title",
               "type": "LowCardinality(Nullable(String))",
               "default": "",
-              "null_count": 202493,
+              "null_count": 202508,
               "annotation": ""
             },
             {
               "name": "payment_type",
               "type": "LowCardinality(Nullable(String))",
               "default": "",
-              "null_count": 205680,
+              "null_count": 205695,
               "annotation": ""
             },
             {
               "name": "payment_status",
               "type": "LowCardinality(Nullable(String))",
               "default": "",
-              "null_count": 208329,
+              "null_count": 208344,
               "annotation": ""
             },
             {
               "name": "customer_id",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 209935,
+              "null_count": 209955,
               "annotation": ""
             },
             {
               "name": "customer_email",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 334013,
+              "null_count": 334028,
               "annotation": ""
             },
             {
               "name": "customer_mobile",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 333241,
+              "null_count": 333256,
               "annotation": ""
             },
             {
               "name": "gender",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 341455,
+              "null_count": 341475,
               "annotation": ""
             },
             {
               "name": "first_name",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 202493,
+              "null_count": 202508,
               "annotation": ""
             },
             {
               "name": "last_name",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 341455,
+              "null_count": 341475,
               "annotation": ""
             },
             {
               "name": "utm_source_first_touch",
               "type": "LowCardinality(Nullable(String))",
               "default": "",
-              "null_count": 341455,
+              "null_count": 341475,
               "annotation": ""
             },
             {
               "name": "utm_medium_first_touch",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 341455,
+              "null_count": 341475,
               "annotation": ""
             },
             {
               "name": "utm_campaign_first_touch",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 341455,
+              "null_count": 341475,
               "annotation": ""
             },
             {
               "name": "utm_source",
               "type": "LowCardinality(Nullable(String))",
               "default": "",
-              "null_count": 341455,
+              "null_count": 341475,
               "annotation": ""
             },
             {
               "name": "utm_medium",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 341455,
+              "null_count": 341475,
               "annotation": ""
             },
             {
               "name": "utm_campaign",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 341455,
+              "null_count": 341475,
               "annotation": ""
             },
             {
               "name": "full_referrer",
               "type": "LowCardinality(Nullable(String))",
               "default": "",
-              "null_count": 341455,
+              "null_count": 341475,
               "annotation": ""
             },
             {
               "name": "referrer_type",
               "type": "LowCardinality(Nullable(String))",
               "default": "",
-              "null_count": 341455,
+              "null_count": 341475,
               "annotation": ""
             },
             {
               "name": "marketing_channel",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 341455,
+              "null_count": 341475,
               "annotation": ""
             },
             {
               "name": "oms_utm_source",
               "type": "LowCardinality(Nullable(String))",
               "default": "",
-              "null_count": 341455,
+              "null_count": 341475,
               "annotation": ""
             },
             {
               "name": "oms_utm_medium",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 341455,
+              "null_count": 341475,
               "annotation": ""
             },
             {
               "name": "oms_utm_campaign",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 341455,
+              "null_count": 341475,
               "annotation": ""
             },
             {
               "name": "oms_utm_content",
               "type": "LowCardinality(Nullable(String))",
               "default": "",
-              "null_count": 341455,
+              "null_count": 341475,
               "annotation": ""
             },
             {
               "name": "oms_utm_adset",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 341455,
+              "null_count": 341475,
               "annotation": ""
             },
             {
               "name": "shipping_pincode",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 188255,
+              "null_count": 188256,
               "annotation": ""
             },
             {
               "name": "shipping_state",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 338806,
+              "null_count": 338826,
               "annotation": ""
             },
             {
               "name": "courier_name",
               "type": "LowCardinality(Nullable(String))",
               "default": "",
-              "null_count": 203071,
+              "null_count": 203077,
               "annotation": ""
             },
             {
@@ -461,7 +461,7 @@
               "annotation": ""
             }
           ],
-          "row_count": 341455,
+          "row_count": 341475,
           "sample_data": [
             {
               "client_id": "Limese",
@@ -1135,7 +1135,7 @@
               "name": "fulfilled_at",
               "type": "Nullable(DateTime64(3, 'Asia/Kolkata'))",
               "default": "",
-              "null_count": 42,
+              "null_count": 45,
               "annotation": ""
             },
             {
@@ -1184,7 +1184,7 @@
               "name": "discount_code",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 1094,
+              "null_count": 1099,
               "annotation": ""
             },
             {
@@ -1233,7 +1233,7 @@
               "name": "lineitem_compare_at_price",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 1782,
+              "null_count": 1787,
               "annotation": ""
             },
             {
@@ -1289,7 +1289,7 @@
               "name": "billing_address2",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 906,
+              "null_count": 908,
               "annotation": ""
             },
             {
@@ -1359,7 +1359,7 @@
               "name": "shipping_address2",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 904,
+              "null_count": 906,
               "annotation": ""
             },
             {
@@ -1415,14 +1415,14 @@
               "name": "note_attributes",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 490,
+              "null_count": 495,
               "annotation": ""
             },
             {
               "name": "cancelled_at",
               "type": "Nullable(DateTime64(3, 'Asia/Kolkata'))",
               "default": "",
-              "null_count": 1918,
+              "null_count": 1923,
               "annotation": ""
             },
             {
@@ -1471,14 +1471,14 @@
               "name": "location",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 1951,
+              "null_count": 1956,
               "annotation": ""
             },
             {
               "name": "device_id",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 1951,
+              "null_count": 1956,
               "annotation": ""
             },
             {
@@ -1534,14 +1534,14 @@
               "name": "tax_2_name",
               "type": "LowCardinality(Nullable(String))",
               "default": "",
-              "null_count": 1687,
+              "null_count": 1692,
               "annotation": ""
             },
             {
               "name": "tax_2_value",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 1687,
+              "null_count": 1692,
               "annotation": ""
             },
             {
@@ -1555,7 +1555,7 @@
               "name": "tax_3_value",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 1951,
+              "null_count": 1956,
               "annotation": ""
             },
             {
@@ -1569,7 +1569,7 @@
               "name": "tax_4_value",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 1951,
+              "null_count": 1956,
               "annotation": ""
             },
             {
@@ -1583,28 +1583,28 @@
               "name": "tax_5_value",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 1951,
+              "null_count": 1956,
               "annotation": ""
             },
             {
               "name": "phone",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 525,
+              "null_count": 530,
               "annotation": ""
             },
             {
               "name": "receipt_number",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 1951,
+              "null_count": 1956,
               "annotation": ""
             },
             {
               "name": "duties",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 1951,
+              "null_count": 1956,
               "annotation": ""
             },
             {
@@ -1639,7 +1639,7 @@
               "name": "next_payment_due_at",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 1951,
+              "null_count": 1956,
               "annotation": ""
             },
             {
@@ -1650,7 +1650,7 @@
               "annotation": ""
             }
           ],
-          "row_count": 1951,
+          "row_count": 1956,
           "sample_data": [
             {
               "name": "40738",
@@ -1901,7 +1901,7 @@
               "name": "customer_mobile_no",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 148750,
+              "null_count": 148769,
               "annotation": ""
             },
             {
@@ -1943,7 +1943,7 @@
               "name": "product_id",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 100081,
+              "null_count": 100082,
               "annotation": ""
             },
             {
@@ -1964,7 +1964,7 @@
               "name": "shipment_code",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
@@ -1985,154 +1985,154 @@
               "name": "fulfillment_tat",
               "type": "Nullable(DateTime64(3))",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
               "name": "dispatch_time",
               "type": "Nullable(DateTime64(3))",
               "default": "",
-              "null_count": 278626,
+              "null_count": 278639,
               "annotation": ""
             },
             {
               "name": "gift_message",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 313636,
+              "null_count": 313655,
               "annotation": ""
             },
             {
               "name": "item_contains",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
               "name": "products",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
               "name": "shipment_channel",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
               "name": "shipment_status",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
               "name": "shipment_priority",
               "type": "Nullable(UInt8)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
               "name": "picklist",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 278623,
+              "null_count": 278636,
               "annotation": ""
             },
             {
               "name": "invoice_no",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 276403,
+              "null_count": 276416,
               "annotation": ""
             },
             {
               "name": "shipment_on_hold",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
               "name": "state",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
               "name": "regulatory_forms",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 315193,
+              "null_count": 315212,
               "annotation": ""
             },
             {
               "name": "batch_no",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 315186,
+              "null_count": 315205,
               "annotation": ""
             },
             {
               "name": "shipping",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 278498,
+              "null_count": 278511,
               "annotation": ""
             },
             {
               "name": "shipment_payment_method",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
               "name": "action",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 315193,
+              "null_count": 315212,
               "annotation": ""
             },
             {
               "name": "pack_group",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 315193,
+              "null_count": 315212,
               "annotation": ""
             },
             {
               "name": "shipment_display_order_no",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
               "name": "contains_gift_wrap",
               "type": "Nullable(UInt8)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
               "name": "channel_code",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
               "name": "channel_id",
               "type": "Nullable(UInt64)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
@@ -2153,154 +2153,154 @@
               "name": "item_type_ids",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
               "name": "item_id_details",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
               "name": "seller_sku_details",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
               "name": "shipping_provider",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 278495,
+              "null_count": 278508,
               "annotation": ""
             },
             {
               "name": "shipping_provider_code",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 278495,
+              "null_count": 278508,
               "annotation": ""
             },
             {
               "name": "shipping_courier",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 313538,
+              "null_count": 313557,
               "annotation": ""
             },
             {
               "name": "awb",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 278498,
+              "null_count": 278511,
               "annotation": ""
             },
             {
               "name": "shipping_arranged_by",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
               "name": "product_management_switched_odd",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
               "name": "label_format",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
               "name": "item_details_list",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 315193,
+              "null_count": 315212,
               "annotation": ""
             },
             {
               "name": "item_detailing_pending",
               "type": "Nullable(UInt8)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
               "name": "putaway_pending",
               "type": "Nullable(UInt8)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
               "name": "weight",
               "type": "Nullable(Float64)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
               "name": "length",
               "type": "Nullable(Float64)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
               "name": "width",
               "type": "Nullable(Float64)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
               "name": "height",
               "type": "Nullable(Float64)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
               "name": "package_type",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
               "name": "number_of_boxes",
               "type": "Nullable(UInt8)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
               "name": "single_action_invoice_label_new",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
               "name": "order_item_ids",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
               "name": "shipping_package_type_scannable_source",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275856,
+              "null_count": 275869,
               "annotation": ""
             },
             {
@@ -2314,14 +2314,14 @@
               "name": "internal_sku",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 22788,
+              "null_count": 22792,
               "annotation": ""
             },
             {
               "name": "mrp",
               "type": "Nullable(Float64)",
               "default": "",
-              "null_count": 41569,
+              "null_count": 41573,
               "annotation": ""
             },
             {
@@ -2367,7 +2367,7 @@
               "annotation": ""
             }
           ],
-          "row_count": 315193,
+          "row_count": 315212,
           "sample_data": [
             {
               "order_id": "00084743-400a-480e-b6c5-7a508dff36a3",
@@ -5124,7 +5124,7 @@
       "total_tables": 172,
       "scanned_tables_count": 12
     },
-    "refreshed_at": "2026-05-27T12:38:30.438481"
+    "refreshed_at": "2026-05-28T13:39:26.342002"
   },
   "default": {
     "schema": {
@@ -5193,23 +5193,23 @@
           "sample_data": [
             {
               "id": 1,
-              "date": "2025-04-24",
-              "region": "West India",
-              "product": "AIInsights",
-              "category": "SMB",
-              "revenue": 19945.31,
-              "units": 27,
-              "cost": 37998.74
+              "date": "2025-03-20",
+              "region": "South India",
+              "product": "Dashboard Plus",
+              "category": "Startup",
+              "revenue": 52270.22,
+              "units": 36,
+              "cost": 11569.93
             },
             {
               "id": 2,
-              "date": "2025-05-02",
-              "region": "International",
-              "product": "Dashboard Plus",
-              "category": "SaaS",
-              "revenue": 40056.19,
-              "units": 2,
-              "cost": 13311.12
+              "date": "2025-04-23",
+              "region": "South India",
+              "product": "AIInsights",
+              "category": "Startup",
+              "revenue": 141152.27,
+              "units": 30,
+              "cost": 37512.63
             }
           ]
         },
@@ -5279,21 +5279,21 @@
               "id": 1,
               "name": "User 1",
               "email": "user1@example.com",
-              "signup_date": "2025-10-02",
-              "plan": "Starter",
-              "country": "India",
-              "monthly_spend": 7553.06,
+              "signup_date": "2026-04-13",
+              "plan": "Professional",
+              "country": "Singapore",
+              "monthly_spend": 12737.33,
               "is_active": 1
             },
             {
               "id": 2,
               "name": "User 2",
               "email": "user2@example.com",
-              "signup_date": "2026-01-22",
-              "plan": "Free",
-              "country": "UK",
-              "monthly_spend": 26834.69,
-              "is_active": 1
+              "signup_date": "2026-01-16",
+              "plan": "Enterprise",
+              "country": "Australia",
+              "monthly_spend": 15331.83,
+              "is_active": 0
             }
           ]
         },
@@ -5361,28 +5361,28 @@
           "sample_data": [
             {
               "id": 1,
-              "created_at": "2026-05-13T00:00:00",
-              "status": "Resolved",
+              "created_at": "2025-12-29T00:00:00",
+              "status": "Open",
               "priority": "High",
-              "category": "Account",
-              "resolution_time_hours": 32.9,
-              "agent": "Priya",
+              "category": "Bug",
+              "resolution_time_hours": 8.3,
+              "agent": "Alex",
               "rating": 2
             },
             {
               "id": 2,
-              "created_at": "2025-10-02T00:00:00",
-              "status": "Resolved",
-              "priority": "High",
+              "created_at": "2025-12-14T00:00:00",
+              "status": "Open",
+              "priority": "Medium",
               "category": "Bug",
-              "resolution_time_hours": 3.2,
-              "agent": "Rahul",
-              "rating": 5
+              "resolution_time_hours": 31.3,
+              "agent": "Alex",
+              "rating": 2
             }
           ]
         }
       ]
     },
-    "refreshed_at": "2026-05-27T09:45:00.186473"
+    "refreshed_at": "2026-05-28T13:55:23.735885"
   }
 }

@@ -33,49 +33,60 @@ import re
 
 def _keyword_select_tables(question: str, tables: list[dict]) -> list[str]:
     """
-    Fallback: pick tables dynamically by matching keywords in the question
-    against table names, column names, descriptions, and Limese fallbacks.
+    Pick tables dynamically by scoring keyword matches in the question
+    against table names, column names, descriptions, and Limese fallbacks,
+    then sorting to return the most relevant ones.
     """
     q = question.lower()
-    selected = []
+    table_scores = {}
 
-    # 1. Build keyword lists dynamically for all tables
     for table in tables:
         tname = table["name"]
         tname_lower = tname.lower()
+        score = 0
 
-        keywords = {tname_lower, tname_lower.replace("_", " "), tname_lower.replace("-", " ")}
-        # Add parts of table name
-        for part in re.split(r'[-_]', tname_lower):
-            if len(part) > 2:
-                keywords.add(part)
+        # Rule A: Table name match (very high priority)
+        if tname_lower in q:
+            score += 20
+        else:
+            for part in re.split(r'[-_]', tname_lower):
+                if len(part) > 2 and part in q:
+                    score += 15
 
-        # Add column names
+        # Rule B: Specific Limese keywords (high priority)
+        kws = _TABLE_KEYWORDS.get(tname, [])
+        for kw in kws:
+            if kw in q:
+                if kw in ["shopify", "unicomm", "zoho", "nykaa", "myntra"]:
+                    score += 18
+                else:
+                    score += 10
+
+        # Rule C: Column names (medium priority)
         for col in table.get("columns", []):
             cname = col.get("name", "").lower()
-            keywords.add(cname)
-            for part in re.split(r'[-_]', cname):
-                if len(part) > 2:
-                    keywords.add(part)
+            if cname in q:
+                score += 5
+            else:
+                for part in re.split(r'[-_]', cname):
+                    if len(part) > 2 and part in q:
+                        score += 3
 
-        # Add table description keywords
+        # Rule D: Description (low priority)
         desc = table.get("description", "").lower()
         if desc:
             for word in re.findall(r'\b\w{3,}\b', desc):
-                keywords.add(word)
+                if word in q:
+                    score += 2
 
-        if any(kw in q for kw in keywords):
-            selected.append(tname)
+        if score > 0:
+            table_scores[tname] = score
 
-    # 2. Hardcoded fallback checks for Limese specifically (for backwards compatibility)
-    if not selected:
-        for table in tables:
-            tname = table["name"]
-            kws = _TABLE_KEYWORDS.get(tname, [])
-            if any(kw in q for kw in kws):
-                selected.append(tname)
+    # Sort tables by score descending
+    sorted_tables = sorted(table_scores.items(), key=lambda x: x[1], reverse=True)
+    selected = [t[0] for t in sorted_tables]
 
-    # 3. Always ensure a default table is selected if list is empty
+    # Always ensure a default table is selected if list is empty
     if not selected and tables:
         selected.append(tables[0]["name"])
 
@@ -173,6 +184,7 @@ Rules:
     schema_context = {
         "relevant_tables": relevant_tables,
         "suggested_joins": suggested_joins,
+        "all_tables": all_table_names,
     }
 
     log.info("schema.discovered", tables=[t["name"] for t in relevant_tables])

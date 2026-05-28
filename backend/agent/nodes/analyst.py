@@ -184,8 +184,18 @@ async def analyze_insights(state: AnalyticsState) -> AnalyticsState:
 
     stats_summary = json.dumps(basic_stats, indent=2, default=str) if basic_stats else "No numeric columns"
 
-    prompt = f"""You are a data analyst. Analyze this query result and generate business insights.
+    critic_feedback = state.get("critic_feedback", "")
+    critic_warning = ""
+    if critic_feedback:
+        critic_warning = f"""
+⚠️ WARNING: YOUR PREVIOUS INSIGHTS WERE REJECTED BY THE CRITIC AGENT FOR THE FOLLOWING REASONS:
+"{critic_feedback}"
 
+You MUST regenerate the insights and fix these factual or mathematical errors. Double-check your numbers against the raw database rows.
+"""
+
+    prompt = f"""You are a data analyst. Analyze this query result and generate business insights.
+{critic_warning}
 Original question: "{question}"
 Intent: {intent.get("type")} | Time range: {intent.get("time_range")}
 

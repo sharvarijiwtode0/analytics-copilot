@@ -238,7 +238,7 @@ def _build_universal_schema_prompt(relevant_tables: list[dict]) -> str:
 
 
 async def generate_sql(state: AnalyticsState) -> AnalyticsState:
-    is_retry = state.get("sql_retry_count", 0) > 0
+    is_retry = (state.get("sql_retry_count", 0) > 0) or (state.get("review_retry_count", 0) > 0)
     # Skip if SQL already provided by semantic cache AND not a retry
     if state.get("sql_query") and not is_retry:
         return state
@@ -252,11 +252,23 @@ async def generate_sql(state: AnalyticsState) -> AnalyticsState:
     is_clickhouse = datasource_id == "limese"
 
     from backend.agent.nodes.dynamic_schema import DynamicSchemaAgent
-    schema_agent = DynamicSchemaAgent()
+    schema_data = None
+    if datasource_id != "limese":
+        try:
+            from backend.data.connector import get_schema
+            schema_data = await get_schema(datasource_id)
+        except Exception as exc:
+            log.warning("sql_gen.failed_to_fetch_schema", error=str(exc))
+    schema_agent = DynamicSchemaAgent(datasource_id=datasource_id, schema=schema_data)
 
     # Interactively expand relevant tables if we detect keywords in question (0ms overhead)
     tables_in_context = [t.get("name") for t in tables if t.get("name")]
-    expanded_table_names = schema_agent.scan_question_for_missing_tables(question, tables_in_context)
+    all_allowed_tables = schema_context.get("all_tables")
+    expanded_table_names = schema_agent.scan_question_for_missing_tables(
+        question, 
+        tables_in_context, 
+        allowed_tables=all_allowed_tables
+    )
     
     if len(expanded_table_names) > len(tables_in_context):
         log.info("sql_gen.schema_expanded_interactively", original=tables_in_context, expanded=expanded_table_names)
@@ -329,6 +341,9 @@ CLICKHOUSE-SPECIFIC RULES (violations cause runtime errors):
 11. STRICT DATE PERIOD FILTERING: If the user asks for a specific year (e.g. "in 2025"), you MUST include both start and end filters for that exact year, e.g. date_created >= '2025-01-01' AND date_created <= '2025-12-31'. Never let the dates spill into other years.
 12. SINGLE-MONTH TREND QUERY PATTERN: If the user asks specifically for the "trend" of a single month (e.g., "sales trend for January 2025" or "trend in Jan"), you MUST group the sales by day (e.g., `formatDateTime(csf.date_created, '%Y-%m-%d') AS date`) so that multiple rows are returned to plot a daily trend line chart. Do NOT group by month or sum into a single row when a trend is explicitly requested.
 13. ClickHouse Aggregate & GROUP BY Safety: In ClickHouse, every column in the SELECT list that is not a metric/measure MUST be in the GROUP BY clause, and all metric/measure columns (like `row_subtotal` or `quantity_ordered`) MUST be wrapped in aggregate functions (like `SUM(csf.row_subtotal)` or `SUM(csf.quantity_ordered)`). Never select raw `row_subtotal` without an aggregate function if GROUP BY is present.
+14. Shopify orders query routing: If the user specifically asks for "Shopify Storefront Sales" or Shopify storefront orders, you MUST query the "shopify_orders" table instead of combined_sales_final.
+
+
 
 
 
@@ -403,26 +418,26 @@ CRITICAL COLUMN SELECTION RULES:
         extra_warning += f"\n⚠️ STRICT DATE FILTERING WARNING: The user asked specifically for the year {yr}. You MUST restrict the ClickHouse date range strictly to this year: `date_created >= '{yr}-01-01' AND date_created <= '{yr}-12-31'`. Do NOT select any data from other years.\n"
 
     retry_context = ""
-    if is_retry and state.get("error"):
+    if is_retry and (state.get("error") or state.get("dba_feedback")):
         failed_sql = state.get("sql_query", "")
-        error_msg = state.get("error", "")
+        error_msg = state.get("dba_feedback") or state.get("error", "")
         
         # Use DynamicSchemaAgent to parse error and provide corrective advice!
         error_resolution = schema_agent.resolve_execution_error(error_msg, failed_sql)
         resolution_hint = f"\n💡 SCHEMA CORRECTION ADVICE: {error_resolution}\n" if error_resolution else ""
         
         retry_context = f"""
-❌ RETRY ATTEMPT #{state.get("sql_retry_count")}
-Your previous ClickHouse SQL query failed with an execution error. You must rewrite it to correct this error.
+❌ RETRY ATTEMPT (DBA Review or Execution failure)
+Your previous ClickHouse SQL query failed validation or execution. You must rewrite it to correct the error.
 
 FAILED SQL QUERY:
 {failed_sql}
 
-DATABASE ERROR MESSAGE:
+DBA FEEDBACK / ERROR MESSAGE:
 {error_msg}
 {resolution_hint}
 Ensure that you:
-1. Address the database error above.
+1. Address the feedback or error above.
 2. Fix all syntax, column name, or table join mismatches.
 3. Review aliases and ClickHouse aggregate grouping safety.
 """

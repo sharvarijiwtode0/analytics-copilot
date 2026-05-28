@@ -19,7 +19,7 @@ class VectorMemory:
         if not self.client:
             try:
                 self.client = QdrantClient(url=settings.qdrant_url, timeout=5)
-                self.embedding_model = TextEmbedding(model_name="BAAI/bge-small-en-v1.5")
+                self.embedding_model = TextEmbedding(model_name="BAAI/bge-base-en-v1.5")
                 
                 # Check if collection exists
                 collections = self.client.get_collections().collections
@@ -27,7 +27,7 @@ class VectorMemory:
                     self.client.create_collection(
                         collection_name=self.collection_name,
                         vectors_config=models.VectorParams(
-                            size=384, # BAAI/bge-small-en-v1.5 dim
+                            size=768, # BAAI/bge-base-en-v1.5 dim
                             distance=models.Distance.COSINE
                         )
                     )

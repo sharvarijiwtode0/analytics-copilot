@@ -143,3 +143,54 @@ def validate_cache_match(q1: str, q2: str) -> bool:
 
     return True
 
+
+async def compact_history(history: list[dict]) -> list[dict]:
+    """
+    Summarizes older conversation turns to reduce token size while preserving context.
+    If history has more than 6 messages, keeps the last 4 intact and summarizes the rest.
+    """
+    if len(history) <= 6:
+        return history
+
+    try:
+        from backend.agent.llm import call_llm
+        
+        # Split history: parts to summarize, and parts to preserve
+        to_summarize = history[:-4]
+        to_preserve = history[-4:]
+        
+        history_str = "\n".join(
+            f"{m.get('role', 'user').upper()}: {m.get('content', '')[:300]}" 
+            for m in to_summarize
+        )
+        
+        prompt = f"""You are summarizing the context of a conversation between a user and a business database assistant.
+Below is the history of the early part of the conversation. Summarize the key user goals, decisions, metrics discussed, and queries run.
+Be extremely concise (max 3 sentences). Do not lose track of the core user questions.
+
+Conversation History to summarize:
+{history_str}
+
+Summary:"""
+
+        # Call LLM to summarize
+        resp = await call_llm(
+            messages=[{"role": "user", "content": prompt}],
+            task="routing", # Fast model
+            max_tokens=150,
+            temperature=0.0
+        )
+        
+        summary = resp.content.strip()
+        
+        log.info("history.compacted", original_length=len(history), summary=summary[:100])
+        
+        compacted = [
+            {"role": "system", "content": f"Summary of previous discussion: {summary}"}
+        ] + to_preserve
+        
+        return compacted
+    except Exception as exc:
+        log.warning("history.compaction_failed", error=str(exc))
+        return history
+

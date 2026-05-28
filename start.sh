@@ -25,8 +25,8 @@ REQS_HASH_FILE=".reqs_hash"
 CURRENT_HASH=$(md5sum requirements.txt | awk '{print $1}')
 if [ ! -f "$REQS_HASH_FILE" ] || [ "$(cat $REQS_HASH_FILE)" != "$CURRENT_HASH" ]; then
   echo "📥 Installing/Updating dependencies..."
-  pip install -q -r requirements.txt
-  pip install -q qdrant-client fastembed redis
+  pip install -q -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
+  pip install -q -i https://pypi.tuna.tsinghua.edu.cn/simple qdrant-client fastembed redis
   echo "$CURRENT_HASH" > "$REQS_HASH_FILE"
 else
   echo "✅ Dependencies up to date (skipping reinstall)"

@@ -32,7 +32,7 @@ class BusinessKnowledgeService:
                 self.vector_memory.client.create_collection(
                     collection_name=BUSINESS_KNOWLEDGE_COLLECTION,
                     vectors_config=models.VectorParams(
-                        size=384,  # BAAI/bge-small-en-v1.5 dim
+                        size=768,  # BAAI/bge-base-en-v1.5 dim
                         distance=models.Distance.COSINE
                     )
                 )
@@ -231,7 +231,7 @@ class DBKnowledgeService:
                 self.vector_memory.client.create_collection(
                     collection_name=DB_KNOWLEDGE_COLLECTION,
                     vectors_config=models.VectorParams(
-                        size=384,
+                        size=768,
                         distance=models.Distance.COSINE
                     )
                 )
@@ -352,7 +352,7 @@ class QAMemoryService:
                 self.vector_memory.client.create_collection(
                     collection_name=QA_MEMORY_COLLECTION,
                     vectors_config=models.VectorParams(
-                        size=384,
+                        size=768,
                         distance=models.Distance.COSINE
                     )
                 )

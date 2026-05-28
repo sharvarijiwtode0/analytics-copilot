@@ -28,9 +28,13 @@ class Settings(BaseSettings):
 
     # ClickHouse (Analytics DB — optional)
     clickhouse_host: str = "localhost"
+    RECURSIVE_MAX_RETRIES: int = 3
+    CONFIDENCE_THRESHOLD: float = 0.85
     clickhouse_port: int = 8123
     clickhouse_user: str = "default"
     clickhouse_password: str = ""
+    RECURSIVE_MAX_RETRIES: int = 3
+    CONFIDENCE_THRESHOLD: float = 0.85
     clickhouse_database: str = "default"
 
     # LLM Providers (via OpenRouter or direct)
@@ -81,6 +85,13 @@ class Settings(BaseSettings):
     max_rows_returned: int = 10000
     query_timeout_seconds: int = 90
     max_conversation_history: int = 20
+
+    # DB Intelligence scheduled scan
+    # Time of day to run the nightly full deep-scan (24h HH:MM format, server local time).
+    # Set to empty string "" to disable the scheduled scan and rely only on the 24h rolling refresh.
+    db_scan_time: str = "02:00"
+    # How many tables to deep-scan on each run (most-rows-first). Rest get shallow column-type scan.
+    db_scan_deep_table_limit: int = 30
 
 
 @lru_cache

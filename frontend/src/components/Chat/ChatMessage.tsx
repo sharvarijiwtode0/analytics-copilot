@@ -18,7 +18,7 @@ interface Props {
 
 export const ChatMessageComponent: React.FC<Props> = ({ message, onFollowUp, onEdit, onDelete, theme = 'light' }) => {
   const [showSQL, setShowSQL] = useState(false)
-  const [showExplain, setShowExplain] = useState(false)
+  const [showExplain, setShowExplain] = useState(false) // controls insights dropdown
   const { user } = useAuthStore()
   const role = user?.role || 'team_member'
 
@@ -95,6 +95,21 @@ export const ChatMessageComponent: React.FC<Props> = ({ message, onFollowUp, onE
             <Database size={12} />
             <span>Steps Taken</span>
             {showSQL ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+          </button>
+        )}
+        {/* Analysis dropdown toggle */}
+        {message.insights && message.insights.length > 0 && (
+          <button
+            onClick={() => setShowExplain(!showExplain)}
+            className={`flex items-center gap-1.5 px-2 py-1 rounded transition-colors ml-1 ${
+              showExplain 
+                ? theme === 'dark' ? 'bg-zinc-800 text-zinc-300' : 'bg-slate-200 text-slate-700'
+                : theme === 'dark' ? 'hover:bg-zinc-800/50 text-zinc-400' : 'hover:bg-slate-100 text-slate-500'
+            }`}
+          >
+            <Lightbulb size={12} />
+            <span>Analysis</span>
+            {showExplain ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
           </button>
         )}
       </div>
@@ -228,7 +243,7 @@ export const ChatMessageComponent: React.FC<Props> = ({ message, onFollowUp, onE
 
 
       {/* Insights — $→₹ converted */}
-      {message.insights && message.insights.length > 0 && (
+      {showExplain && message.insights && message.insights.length > 0 && (
         <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
           <div className="flex items-center gap-2 text-xs font-semibold text-amber-700 mb-2">
             <Lightbulb size={14} /> Key Insights

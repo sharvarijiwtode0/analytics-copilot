@@ -25,6 +25,9 @@ from backend.agent.nodes.responder import compose_response
 from backend.agent.nodes.insight_followup import handle_insight_followup, _is_insight_followup
 from backend.agent.nodes.disambiguate import disambiguate
 from backend.agent.nodes.route_tables import route_tables
+from backend.agent.nodes.sql_reviewer import review_sql
+from backend.agent.nodes.supervisor import supervisor
+from backend.agent.nodes.critic import review_insights
 
 log = structlog.get_logger(__name__)
 
@@ -85,84 +88,98 @@ def _should_retry_sql(state: AnalyticsState) -> list[str]:
     return ["analyze", "viz"]
 
 
+def _after_sql_review(state: AnalyticsState) -> str:
+    """Route: retry SQL generation or proceed to execution."""
+    validated = state.get("sql_validated", False)
+    retry_count = state.get("review_retry_count", 0)
+
+    if not validated and retry_count < 2:  # allow up to 2 review retry loops
+        log.info("graph.review_sql_retry", retry_count=retry_count, error=state.get("dba_feedback", "")[:120])
+        return "retry"
+    
+    return "execute"
+
+
+def _route_next(state: AnalyticsState) -> str:
+    """The supervisor conditional routing edge."""
+    return state.get("next_step", "compose_response")
+
+
 def build_graph() -> StateGraph:
     """Build and compile the LangGraph pipeline."""
     graph = StateGraph(AnalyticsState)
 
     # Register all nodes
     graph.add_node("check_qa_memory", check_qa_memory)
+    graph.add_node("supervisor", supervisor)
     graph.add_node("understand_intent", understand_intent)
     graph.add_node("disambiguate", disambiguate)
     graph.add_node("general_llm", handle_general_query)
     graph.add_node("route_tables", route_tables)
-    graph.add_node("routing_gatekeeper", routing_gatekeeper)
     graph.add_node("discover_schema", discover_schema)
     graph.add_node("generate_sql", generate_sql)
+    graph.add_node("review_sql", review_sql)
     graph.add_node("execute_sql", execute_sql)
     graph.add_node("analyze_insights", analyze_insights)
     graph.add_node("generate_viz_config", generate_viz_config)
     graph.add_node("compose_response", compose_response)
     graph.add_node("insight_followup", handle_insight_followup)
+    graph.add_node("review_insights", review_insights)
 
     # Entry point: check QA memory first
     graph.set_entry_point("check_qa_memory")
 
-    # Route after cache check: parallel split to understand_intent and route_tables!
+    # Route after cache check: if cache match, skip to response. Else go to supervisor!
+    def _after_cache_check_router(state: AnalyticsState) -> list[str]:
+        if state.get("skip_pipeline") and state.get("pre_filter_response"):
+            return ["compose_response"]
+        return ["supervisor"]
+
     graph.add_conditional_edges(
         "check_qa_memory",
-        _after_cache_check,
+        _after_cache_check_router,
         {
             "compose_response": "compose_response",
+            "supervisor": "supervisor",
+        }
+    )
+
+    # All nodes transition directly back to supervisor
+    graph.add_edge("understand_intent", "supervisor")
+    graph.add_edge("discover_schema", "supervisor")
+    graph.add_edge("generate_sql", "supervisor")
+    graph.add_edge("review_sql", "supervisor")
+    graph.add_edge("execute_sql", "supervisor")
+    graph.add_edge("analyze_insights", "supervisor")
+    graph.add_edge("generate_viz_config", "supervisor")
+    graph.add_edge("general_llm", "supervisor")
+    graph.add_edge("disambiguate", "supervisor")
+    graph.add_edge("insight_followup", "supervisor")
+    graph.add_edge("route_tables", "supervisor")
+    graph.add_edge("review_insights", "supervisor")
+
+    graph.add_conditional_edges(
+        "supervisor",
+        _route_next,
+        {
             "understand_intent": "understand_intent",
-            "route_tables": "route_tables",
-        }
-    )
-
-    # Converge both parallel branches into routing_gatekeeper
-    graph.add_edge("understand_intent", "routing_gatekeeper")
-    graph.add_edge("route_tables", "routing_gatekeeper")
-
-    # Dynamically branch after merging parallel runs
-    graph.add_conditional_edges(
-        "routing_gatekeeper",
-        _after_gatekeeper,
-        {
-            "skip_to_respond": "compose_response",
+            "discover_schema": "discover_schema",
+            "generate_sql": "generate_sql",
+            "review_sql": "review_sql",
+            "execute_sql": "execute_sql",
+            "analyze_insights": "analyze_insights",
+            "generate_viz_config": "generate_viz_config",
+            "review_insights": "review_insights",
+            "compose_response": "compose_response",
             "general_llm": "general_llm",
-            "insight_followup": "insight_followup",
             "disambiguate": "disambiguate",
-            "discover_schema": "discover_schema",
+            "insight_followup": "insight_followup",
+            "route_tables": "route_tables",
+            "__end__": END,
         }
     )
 
-    graph.add_conditional_edges(
-        "disambiguate",
-        _after_disambiguate,
-        {
-            "discover_schema": "discover_schema",
-            "skip_to_respond": "compose_response",
-        }
-    )
-    graph.add_edge("discover_schema", "generate_sql")
-    graph.add_edge("generate_sql", "execute_sql")
-    
-    # Fan-out (Execute SQL loops back to generate_sql on failure, or runs Insights & Visualization in parallel)
-    graph.add_conditional_edges(
-        "execute_sql",
-        _should_retry_sql,
-        {
-            "retry": "generate_sql",
-            "analyze": "analyze_insights",
-            "viz": "generate_viz_config",
-        }
-    )
-    
-    # Fan-in (Insights & Visualization join at Response Compose)
-    graph.add_edge("analyze_insights", "compose_response")
-    graph.add_edge("generate_viz_config", "compose_response")
-    
-    graph.add_edge("insight_followup", "compose_response")
-    graph.add_edge("general_llm", "compose_response")
+    # Compose response goes to END
     graph.add_edge("compose_response", END)
 
     return graph.compile()
@@ -205,6 +222,10 @@ async def run_analytics_agent(
         if minio_history:
             conversation_history = minio_history
             log.info("agent.loaded_minio_history", messages=len(minio_history))
+
+    # Compact history to keep context windows small and save tokens (ReMe pattern)
+    from backend.agent.utils import compact_history
+    conversation_history = await compact_history(conversation_history)
 
     cached_sql = None
     if vector_memory.enabled:

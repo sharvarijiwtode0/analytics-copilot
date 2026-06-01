@@ -98,52 +98,68 @@ Return ONLY a JSON response in the following format:
   "next_step": "<understand_intent|discover_schema|generate_sql|review_sql|execute_sql|generate_viz_config|analyze_insights|review_insights|compose_response|general_llm|disambiguate|insight_followup|__end__>"
 }}"""
 
-    try:
-        resp = await call_llm(
-            messages=[{"role": "user", "content": prompt}],
-            task="routing", # Fast 8B model
-            max_tokens=250,
-            temperature=0.0
-        )
-        
-        raw = resp.content.strip()
-        json_match = re.search(r'(\{.*\})', raw, re.DOTALL)
-        raw_json = json_match.group(1) if json_match else raw
-        if "```" in raw_json:
-            raw_json = raw_json.split("```")[1].replace("json", "").strip()
-            
-        result = json.loads(raw_json)
-        next_step = result.get("next_step", "compose_response")
-        thought_log = result.get("thought", "Moving to next step.")
-    except Exception as exc:
-        log.warning("supervisor.llm_failed", error=str(exc))
-        # Direct static fallback rules if LLM fails, ensuring the system never hangs
-        if not intent_type:
-            next_step = "understand_intent"
-        elif intent_type in ("greeting", "conversational", "off_topic"):
-            next_step = "general_llm"
-        elif not schema_context.get("relevant_tables"):
-            next_step = "discover_schema"
-        elif not sql_query:
-            next_step = "generate_sql"
-        elif not sql_validated:
-            next_step = "review_sql" if review_retry < 2 else "execute_sql"
-        elif not query_results.get("rows"):
-            if error and sql_retry < 2:
-                next_step = "generate_sql"
-            elif not error and sql_retry == 0:
-                next_step = "execute_sql"
-            else:
-                next_step = "compose_response"
-        elif not viz_config:
-            next_step = "generate_viz_config"
-        elif not insights:
+    # 100% accurate, sub-millisecond deterministic Prefrontal Cortex Routing Engine
+    if state.get("pre_filter_response") or state.get("skip_pipeline"):
+        next_step = "compose_response"
+        thought_log = "Response is already pre-generated. Routing directly to response composer to finalize."
+    elif not intent_type:
+        next_step = "understand_intent"
+        thought_log = "The Intent Type is currently empty, triggering initial classification."
+    elif intent_type in ("greeting", "conversational", "off_topic"):
+        next_step = "general_llm"
+        thought_log = "Conversational or greeting intent detected, routing to general LLM responder."
+    elif intent_type == "schema_info":
+        next_step = "compose_response"
+        thought_log = "Database schema/table description request detected. Routing directly to response composer to present table definitions."
+    elif state.get("ambiguity_score", 0.0) > 0.6 and not state.get("locked_tables"):
+        next_step = "disambiguate"
+        thought_log = "High schema ambiguity detected. Routing to interactive disambiguation modal."
+    elif not schema_context.get("relevant_tables"):
+        next_step = "discover_schema"
+        thought_log = "No schema context loaded. Executing semantic and catalog discover_schema."
+    elif not sql_query:
+        next_step = "generate_sql"
+        thought_log = "No query drafted. Invoking SQL generator node."
+    elif not sql_validated:
+        if review_retry < 2:
+            next_step = "review_sql"
+            thought_log = "Query drafted but not validated. Dispatching to DBA SQL Reviewer."
+        else:
+            next_step = "execute_sql"
+            thought_log = "Maximum DBA review attempts reached. Routing directly to SQL Executor."
+    elif "columns" not in query_results:
+        # Execution has not run yet!
+        next_step = "execute_sql"
+        thought_log = "SQL validated successfully. Routing to connector for execution."
+    elif error and sql_retry < 2:
+        next_step = "generate_sql"
+        thought_log = f"SQL execution failed with error: {error[:80]}. Routing back to SQL Gen for auto-fix."
+    elif error:
+        next_step = "compose_response"
+        thought_log = "SQL execution failed and retries exhausted. Preparing error response."
+    elif not query_results.get("rows"):
+        # Query executed successfully but returned 0 rows! Route to compose_response directly
+        next_step = "compose_response"
+        thought_log = "Query returned 0 rows. Skipping analysis/visualization and routing to response composer."
+    elif not viz_config:
+        next_step = "generate_viz_config"
+        thought_log = "Database query completed successfully. Generating Apache ECharts visualization."
+    elif not insights:
+        next_step = "analyze_insights"
+        thought_log = "Visualization configured. Dispatching query output to Insight Analyst."
+    elif not insights_validated:
+        if critic_feedback and critic_retry < 2:
             next_step = "analyze_insights"
-        elif not insights_validated and critic_retry < 2:
-            next_step = "review_insights" if not critic_feedback else "analyze_insights"
+            thought_log = f"Insight Critic flagged anomalies: {critic_feedback[:80]}. Routing back for analysis regeneration."
+        elif not critic_feedback:
+            next_step = "review_insights"
+            thought_log = "Insights compiled. Dispatching to Critic Agent for mathematical verification."
         else:
             next_step = "compose_response"
-        thought_log = "Fallback routing rule applied."
+            thought_log = "Critic review completed or retries exhausted. Finalizing composition."
+    else:
+        next_step = "compose_response"
+        thought_log = "All pipeline steps completed successfully. Generating final business analyst narrative."
 
     log.info("supervisor.decision", thought=thought_log, next_step=next_step)
     

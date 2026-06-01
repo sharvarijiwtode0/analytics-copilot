@@ -251,6 +251,16 @@ async def query(payload: QueryRequest, current_user: UserDep = None) -> QueryRes
     # Check LLM cache first (Canary pattern — 80% latency reduction on repeats)
     cache = _get_llm_cache()
     cached = await cache.get_async(question=payload.question, datasource_id=payload.datasource_id, user_id=user_id)
+    cached_sql = None
+    cached_viz_type = None
+    if cached and cached.get("sql"):
+        import time as _time
+        age = _time.time() - cached.get("cached_at", 0)
+        if age > 300:  # Asked more than 5 minutes ago -> Query caching only (run live)
+            cached_sql = cached.get("sql")
+            cached_viz_type = cached.get("viz_type")
+            cached = None  # Treat as miss for early-return
+
     if cached:
         # Get or create conversation
         conversation_id = payload.conversation_id
@@ -385,6 +395,8 @@ async def query(payload: QueryRequest, current_user: UserDep = None) -> QueryRes
             conversation_id=conversation_id,
             conversation_history=conversation_history,
             user_id=user_id,
+            cached_sql=cached_sql,
+            cached_viz_type=cached_viz_type,
         )
     except PermissionError as exc:
         # Read-only access violation - user-friendly error

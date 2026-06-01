@@ -1,6 +1,6 @@
 """
 LLM Response Cache — ported from Canary's llmCache.ts
-15-minute TTL, keyed by (question + datasource_id + metadata_hash).
+4-hour TTL, keyed by (question + datasource_id + metadata_hash).
 Reduces repeat query latency by ~80%.
 """
 from __future__ import annotations
@@ -17,7 +17,7 @@ from backend.config import settings
 
 log = structlog.get_logger(__name__)
 
-CACHE_TTL_SECONDS = 15 * 60   # 15 minutes
+CACHE_TTL_SECONDS = 4 * 60 * 60   # 4 hours
 MAX_CACHE_SIZE = 200
 
 
@@ -105,6 +105,8 @@ class LLMCache:
         return result
 
     def set(self, question: str, datasource_id: str, result: dict, user_id: str = "anonymous", metadata_hash: str = "") -> None:
+        if "cached_at" not in result:
+            result["cached_at"] = time.time()
         key = self._make_key(question, datasource_id, user_id, metadata_hash)
         with self._lock:
             # Evict oldest entries if at capacity

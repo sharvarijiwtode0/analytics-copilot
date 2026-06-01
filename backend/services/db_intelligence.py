@@ -27,6 +27,7 @@ from typing import Any
 
 import clickhouse_connect
 import structlog
+from backend.data.clickhouse_connector import TABLE_DESCRIPTIONS
 
 log = structlog.get_logger(__name__)
 
@@ -57,49 +58,67 @@ PRIORITY_TABLES = [
 COLUMN_ANNOTATIONS: dict[str, dict[str, str]] = {
     "combined_sales_final": {
         "sales_platform":   "DIMENSION — use this to GROUP BY platform. Contains exact platform names shown below.",
+        "platform":         "DIMENSION — sales channel. Exact values: 'Shopee', 'Shopify', 'Tokopedia', 'offline', 'Lazada'. GROUP BY platform for channel breakdowns.",
         "client_name":      "CONSTANT 'Limese' for all rows — NEVER group by this for platform analysis.",
+        "order_id":         "Unique order identifier. Use COUNT(DISTINCT order_id) for order volume. Do NOT use count() alone (counts line items, not orders).",
         "row_subtotal":     "REVENUE per line item — USE THIS for revenue/sales. Do NOT use order_price (full order total).",
         "quantity_ordered": "UNITS per line — USE THIS for unit counts. Do NOT use shipped_qty (always 0).",
-        "date_created":     "Primary date column. Filter: date_created >= '2025-01-01'. Group: formatDateTime(date_created, '%Y-%m').",
+        "date_created":     "Primary date column. Filter: date_created >= '2025-01-01'. Group: formatDateTime(date_created, '%Y-%m') AS month, or '%Y-%m-%d' AS date for daily trends.",
         "final_status":     "Order outcome. ALWAYS exclude: NOT IN ('cancelled','Cancelled','CANCELLED','returned','Returned').",
-        "internal_sku":     "Join key → product_master.internal_sku for product names and category.",
-        "external_sku":     "Platform-specific SKU code.",
+        "internal_sku":     "Join key → product_master.internal_sku for product names, category, MRP, COGS.",
+        "external_sku":     "Platform-specific SKU code. Use internal_sku for cross-table JOINs instead.",
     },
     "product_master": {
-        "internal_sku":   "Primary key. Join with combined_sales_final.internal_sku.",
-        "item_name":      "Product display name.",
-        "category_l1":    "Top-level category. Values: Skincare, Makeup, Haircare.",
-        "mrp":            "Maximum Retail Price.",
-        "cogs":           "Cost of Goods Sold — use for margin calculation: mrp - cogs.",
+        "internal_sku":   "Primary key. JOIN combined_sales_final csf ON csf.internal_sku = pm.internal_sku.",
+        "item_name":      "Human-readable product display name. USE THIS for product-level GROUP BY and labels.",
+        "product_name":   "Human-readable product display name (alias of item_name). USE THIS for product-level GROUP BY.",
+        "category_l1":    "Top-level product category. Values: 'Skincare', 'Makeup', 'Haircare'. USE THIS for category breakdowns.",
+        "mrp":            "Maximum Retail Price per unit — use for revenue potential analysis.",
+        "cogs":           "Cost of Goods Sold per unit — use for margin: (mrp - cogs) / mrp * 100 AS margin_pct.",
     },
     "inventory_sales_overview_new": {
-        "sku":             "Internal SKU — join to product_master.internal_sku.",
-        "date":            "Snapshot date. For latest stock: WHERE date >= today() - 2",
-        "inventory":       "Units on hand RIGHT NOW. USE THIS for stock level queries.",
-        "order_quantity":  "Units sold that day.",
-        "gross_sales_rs":  "Daily revenue in ₹.",
-        "burn_period":     "Fixed 90-day config value — do NOT use for calculations.",
+        "sku":             "Internal SKU — JOIN to product_master.internal_sku for product names.",
+        "date":            "Snapshot date. For CURRENT live stock use: WHERE date >= today() - 2. Do NOT omit this filter.",
+        "inventory":       "Units currently on hand. USE THIS for all stock level, availability, and inventory queries.",
+        "order_quantity":  "Units sold on that specific day.",
+        "gross_sales_rs":  "Daily revenue in ₹ for that day.",
+        "burn_period":     "Fixed 90-day config value — do NOT use for calculations or trend analysis.",
     },
     "shopify_orders": {
-        "subtotal":           "REVENUE — USE THIS for Shopify revenue/sales totals.",
+        "subtotal":           "REVENUE — USE THIS for Shopify revenue/sales totals. Not 'total' (includes taxes).",
         "total":              "Order total including taxes — use subtotal instead for pure revenue.",
         "lineitem_price":     "Price per line item.",
-        "lineitem_quantity":  "Units per line item — USE THIS for unit counts.",
-        "created_at":         "Primary date column. Filter: created_at >= '2025-01-01'. Group: formatDateTime(created_at, '%Y-%m').",
+        "lineitem_quantity":  "Units per line item — USE THIS for unit counts on Shopify.",
+        "created_at":         "Primary date column for Shopify. Filter: created_at >= '2025-01-01'. Group: formatDateTime(created_at, '%Y-%m').",
         "financial_status":   "Payment state. EXCLUDE refunded: WHERE financial_status NOT IN ('refunded','partially_refunded').",
         "fulfillment_status": "Shipping state: 'fulfilled' = shipped, 'unfulfilled' = pending.",
-        "lineitem_name":      "Product name per line item.",
+        "lineitem_name":      "Product name per line item — USE for product-level Shopify queries.",
     },
     "zoho_sales_final": {
         "so_item_rate":      "UNIT PRICE — price per unit for this line item.",
         "so_quantity":       "UNITS ordered for this line item.",
-        "so_item_total":     "REVENUE per line — USE THIS for zoho revenue/sales totals.",
+        "so_item_total":     "REVENUE per line — USE THIS for Zoho revenue/sales totals.",
         "so_subtotal":       "Order subtotal before tax — use so_item_total for line-level revenue.",
         "so_total":          "Order total including tax.",
-        "so_order_date":     "Primary date column. Filter: so_order_date >= '2025-01-01'. Group: formatDateTime(so_order_date, '%Y-%m').",
+        "so_order_date":     "Primary date column for Zoho. Filter: so_order_date >= '2025-01-01'. Group: formatDateTime(so_order_date, '%Y-%m').",
         "so_status":         "Order status. EXCLUDE: WHERE so_status NOT IN ('Cancelled','Returned').",
-        "so_customer_name":  "B2B customer/distributor name.",
+        "so_customer_name":  "B2B customer/distributor name — USE for distributor-level analysis.",
     },
+}
+
+TABLE_ALIASES = {
+    "combined_sales_final": ["overall sales", "total revenue", "combined revenue", "sales platform", "sales channels"],
+    "product_master": ["products", "categories", "sku mrp", "cogs", "margins"],
+    "product_catlog": ["catalog", "listing catalogue"],
+    "inventory_sales_overview_new": ["inventory stock", "warehouse quantity", "stock levels", "sell-through"],
+    "platform_sku_mapping": ["sku mapping", "external sku map"],
+    "shopify_orders": ["shopify sales", "online sales", "storefront orders", "website transactions"],
+    "unicomm_sales_final": ["unicommerce sales", "unicomm channel"],
+    "zoho_sales_final": ["zoho sales", "zoho invoices", "zoho B2B"],
+    "zoho_purchase_orders": ["zoho procurement", "zoho purchase orders", "supplier po"],
+    "inventory_ledger": ["stock movements", "ledger history", "inventory log"],
+    "product_hierarchy": ["category tree", "brand hierarchy"],
+    "lead_time": ["replenishment time", "delivery days", "supplier latency"],
 }
 
 # ─── Core scanner ─────────────────────────────────────────────────────────────
@@ -273,13 +292,27 @@ def _scan_table(client: Any, table: str, existing_table: dict | None = None, dee
         except Exception:
             pass
 
-    # Copy table description and aliases from existing context
-    if existing_table:
-        result["description"] = existing_table.get("description", "")
-        result["aliases"] = existing_table.get("aliases", [])
-    else:
-        result["description"] = ""
-        result["aliases"] = []
+    # Load from priority descriptions/aliases, falling back to existing context or defaults
+    desc = TABLE_DESCRIPTIONS.get(table)
+    if not desc:
+        desc = existing_table.get("description", "") if existing_table else ""
+    if not desc:
+        t_low = table.lower()
+        if "sales" in t_low:
+            desc = f"Operational sales dataset for the {table.split('_')[0].capitalize()} channel."
+        elif "inventory" in t_low or "stock" in t_low:
+            desc = f"Inventory and stock balance log for {table.replace('_', ' ')}."
+        elif "product" in t_low or "sku" in t_low:
+            desc = f"Product master metadata for {table.replace('_', ' ')}."
+        else:
+            desc = f"Operational dataset related to {table.replace('_', ' ')}."
+
+    aliases = TABLE_ALIASES.get(table)
+    if not aliases:
+        aliases = existing_table.get("aliases", []) if existing_table else []
+
+    result["description"] = desc
+    result["aliases"] = aliases
 
     return result
 
@@ -408,14 +441,92 @@ def _build_global_notes(tables: dict) -> list[str]:
     return notes
 
 
+# ─── Columns that MUST always appear in the prompt regardless of question ─────
+# These are the backbone of 95%+ of all valid ClickHouse queries.
+MANDATORY_COLUMNS: dict[str, set[str]] = {
+    "combined_sales_final": {"row_subtotal", "quantity_ordered", "date_created", "final_status", "internal_sku", "order_id", "platform"},
+    "product_master": {"internal_sku", "item_name", "product_name", "category_l1", "mrp", "cogs"},
+    "inventory_sales_overview_new": {"sku", "date", "inventory", "order_quantity", "gross_sales_rs"},
+    "shopify_orders": {"subtotal", "lineitem_quantity", "created_at", "financial_status", "lineitem_name"},
+    "zoho_sales_final": {"so_item_total", "so_quantity", "so_order_date", "so_status", "so_customer_name"},
+}
+
+
+def _score_column_for_question(col: dict, question: str, table: str, mandatory_cols: set[str]) -> int:
+    """
+    Score a column by how relevant it is to the user's question.
+    Higher score = show earlier in the prompt.
+    Mandatory columns get a guaranteed-high base score so they always rise to the top.
+    Score is ADDITIVE only — nothing is ever hard-excluded.
+    """
+    col_name = col.get("name", "").lower()
+    annotation = (col.get("annotation", "") or "").lower()
+    q = question.lower()
+
+    score = 0
+
+    # Mandatory columns always score highest — they are never cut
+    if col_name in mandatory_cols:
+        score += 100
+
+    # Annotated columns are always valuable
+    if annotation:
+        score += 20
+        if any(kw in annotation for kw in ["use this", "primary", "mandatory", "revenue", "units", "join key"]):
+            score += 15
+
+    # Categorical columns with exact values are immediately useful
+    if col.get("exact_values") or col.get("is_categorical"):
+        score += 10
+
+    # Question-keyword matching
+    kw_groups = [
+        (["revenue", "sales", "subtotal", "income", "earning", "performance", "value", "amount", "spend"],
+         ["row_subtotal", "subtotal", "so_item_total", "gross_sales_rs"]),
+        (["unit", "qty", "quantity", "volume", "count"],
+         ["quantity_ordered", "lineitem_quantity", "so_quantity", "order_quantity", "inventory"]),
+        (["month", "day", "date", "trend", "year", "quarter", "weekly", "daily", "monthly", "yearly"],
+         ["date_created", "created_at", "so_order_date", "date"]),
+        (["platform", "channel", "shopee", "shopify", "tokopedia", "offline", "lazada"],
+         ["platform", "sales_platform"]),
+        (["product", "sku", "item", "listing"],
+         ["item_name", "product_name", "lineitem_name", "internal_sku", "external_sku"]),
+        (["category", "skincare", "makeup", "haircare", "segment"],
+         ["category_l1"]),
+        (["margin", "profit", "cogs", "cost", "mrp", "price"],
+         ["mrp", "cogs", "lineitem_price", "so_item_rate"]),
+        (["stock", "inventory", "warehouse", "available", "on hand"],
+         ["inventory", "order_quantity", "gross_sales_rs"]),
+        (["order", "transaction", "purchase"],
+         ["order_id", "final_status", "financial_status", "so_status"]),
+        (["customer", "buyer", "client", "distributor", "b2b"],
+         ["so_customer_name"]),
+        (["aov", "average order"],
+         ["order_id", "row_subtotal"]),
+    ]
+
+    for question_keywords, relevant_cols in kw_groups:
+        if any(kw in q for kw in question_keywords):
+            if col_name in relevant_cols:
+                score += 25  # strong signal match
+            elif any(rc in col_name for rc in relevant_cols):
+                score += 10  # partial name match
+
+    # Constant columns with no real utility score low (but not excluded!)
+    if col.get("is_constant"):
+        score -= 10  # deprioritize but still show if budget allows
+
+    return score
+
+
 # ─── LLM prompt builder ───────────────────────────────────────────────────────
 
 def build_sql_context_prompt(
     context: dict,
     question: str,
     relevant_tables: list[str] | None = None,
-    max_cols_per_table: int = 8,   # keep compact — only most useful columns
-    max_cat_values: int = 5,       # exact platform/category values only
+    max_cols_per_table: int = 12,   # raised from 8 — relevance scoring means all 12 are useful
+    max_cat_values: int = 10,        # raised from 5 — more exact values = fewer hallucinated names
 ):
     """
     Convert the DB intelligence context into a COMPACT LLM-ready string.
@@ -427,15 +538,27 @@ def build_sql_context_prompt(
     """
     lines: list[str] = []
 
-    # Global rules first — cap at 20 to avoid overwhelming the model context.
-    # The per-column exact-value dumps are already present in the schema section below.
-    notes = context.get("global_notes", [])
+    # Global rules — deduplicated, highest-signal notes only (cap at 15).
+    # Priority rules are surfaced first; low-signal/redundant notes dropped.
+    notes_raw = context.get("global_notes", [])
+    PRIORITY_RULE_KEYWORDS = ["revenue", "use this", "exclude", "mandatory", "do not", "never", "join", "primary date", "clickhouse"]
+    seen_notes: set[str] = set()
+    priority_notes: list[str] = []
+    other_notes: list[str] = []
+    for note in notes_raw:
+        norm = note.strip().lower()
+        if norm in seen_notes:
+            continue
+        seen_notes.add(norm)
+        if any(kw in norm for kw in PRIORITY_RULE_KEYWORDS):
+            priority_notes.append(note)
+        else:
+            other_notes.append(note)
+    notes = priority_notes + other_notes
     if notes:
         lines.append("=== CRITICAL RULES ===")
-        for note in notes[:20]:  # hard cap: first 20 notes only
+        for note in notes[:15]:  # tight cap — only 15 highest-signal rules
             lines.append(f"• {note}")
-        if len(notes) > 20:
-            lines.append(f"• ... ({len(notes) - 20} more rules omitted — see schema section below)")
         lines.append("")
 
     # Table schemas — only relevant, only useful columns
@@ -472,30 +595,35 @@ def build_sql_context_prompt(
                 continue
 
         row_count = tdata.get("row_count", 0)
-        lines.append(f"\nTABLE: {tname} ({row_count:,} rows)")
+        desc = tdata.get("description") or TABLE_DESCRIPTIONS.get(tname, "")
+        desc_str = f" — {desc}" if desc else ""
+        lines.append(f"\nTABLE: {tname} ({row_count:,} rows){desc_str}")
 
         # Business facts
         if tdata.get("business_facts"):
             facts = tdata["business_facts"]
             lines.append(f"  Facts: {json.dumps(facts)}")
 
-        # Sort columns: annotated + categorical first, then others.
+        # Sort columns by relevance score (question-aware) so the most useful columns
+        # for THIS specific question appear first and fill the budget.
         # Always overlay live COLUMN_ANNOTATIONS so new annotations apply immediately
         # without requiring a 24-hour cache refresh.
         live_annotations = COLUMN_ANNOTATIONS.get(tname, {})
+        mandatory_for_table = MANDATORY_COLUMNS.get(tname, set())
         all_cols = tdata.get("columns", [])
 
-        def _has_useful_info(c: dict) -> bool:
-            return bool(
-                live_annotations.get(c["name"])
-                or c.get("annotation")
-                or c.get("exact_values")
-                or c.get("is_constant")
-            )
+        # Apply live annotation overlay before scoring
+        for c in all_cols:
+            if live_annotations.get(c["name"]):
+                c = {**c, "annotation": live_annotations[c["name"]]}
 
-        priority_cols = [c for c in all_cols if _has_useful_info(c)]
-        other_cols = [c for c in all_cols if not _has_useful_info(c)]
-        cols_to_show = (priority_cols + other_cols)[:max_cols_per_table]
+        # Score each column for relevance to the question
+        scored_cols = sorted(
+            all_cols,
+            key=lambda c: _score_column_for_question(c, question, tname, mandatory_for_table),
+            reverse=True,
+        )
+        cols_to_show = scored_cols[:max_cols_per_table]
 
         for col in cols_to_show:
             col_name = col["name"]

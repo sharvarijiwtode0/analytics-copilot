@@ -17,6 +17,10 @@ export interface TransparencyStep {
     columns?: string[]
     insights?: string[]
     key_metrics?: Record<string, string>
+    sql_validated?: boolean
+    dba_feedback?: string
+    insights_validated?: boolean
+    critic_feedback?: string
     viz_type?: string
   }
   result?: QueryResponse

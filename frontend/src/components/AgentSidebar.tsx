@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import { useThemeStore } from '../store/theme'
 import type { TransparencyStep } from '../hooks/useStreamingQuery'
+import ReactMarkdown from 'react-markdown'
 
 export interface AgentRun {
   id: string
@@ -373,9 +374,11 @@ export default function AgentSidebar({ steps, isStreaming, history }: AgentSideb
                           <p className={`text-[10px] uppercase font-bold tracking-wider mb-1 ${sub}`}>Insights</p>
                           <div className="space-y-1">
                             {run.insights.slice(0, 3).map((ins, i) => (
-                              <div key={i} className={`text-[11px] p-1.5 rounded ${
+                              <div key={i} className={`text-[11px] p-1.5 rounded prose prose-sm dark:prose-invert max-w-none ${
                                 dark ? 'bg-amber-900/20 text-amber-300' : 'bg-amber-50 text-amber-800'
-                              }`}>{ins}</div>
+                              }`}>
+                                <ReactMarkdown>{ins}</ReactMarkdown>
+                              </div>
                             ))}
                           </div>
                         </div>

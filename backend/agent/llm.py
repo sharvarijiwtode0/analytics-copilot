@@ -2,11 +2,14 @@
 LLM routing for the Data Visualization Copilot.
 Uses LiteLLM for provider-agnostic calls.
 
-Model assignment by task:
-  routing  → groq/8B (fast, cheap, intent classification)
-  sql      → groq/70B → groq/8B → gemini-2.5-flash → gemini-flash-latest
-  analysis → groq/70B → groq/8B → gemini-2.5-flash → gemini-flash-latest
+Model assignment by task (from .env):
+  routing  → llm_fast_model (zhipu/glm-5-turbo) → openrouter fallback
+  sql      → llm_smart_model (zhipu/glm-5-turbo) → openrouter/llama-3.3-70b → gemini fallback
+  analysis → openrouter/llama-3.3-70b → zhipu → gemini fallback
   general  → same as sql
+
+Timeouts (fail-fast for snappy failover):
+  routing: 8s | sql: 20s | analysis: 15s | general: 15s
 
 On rate limit: retries same model once (0.5s), then falls to next model.
 For non-sql tasks: returns stub on total failure instead of raising.
@@ -165,7 +168,10 @@ async def call_llm(
     temperature = 0.0
 
     if model is None:
-        model = settings.llm_fast_model if task == "routing" else settings.llm_smart_model
+        if task == "analysis" and _is_valid_key(settings.openrouter_api_key):
+            model = "openrouter/meta-llama/llama-3.3-70b-instruct"
+        else:
+            model = settings.llm_fast_model if task == "routing" else settings.llm_smart_model
 
     models_to_try = _build_fallback_chain(model, task)
     last_error: Exception | None = None
@@ -197,14 +203,15 @@ async def call_llm(
                     if api_key:
                         kwargs["api_key"] = api_key
 
-                # Use dynamic task-specific timeouts to prevent premature aborts on heavy generations
+                # Tight timeouts per task — fail fast, failover to next model immediately.
+                # Zhipu/GLM can spike to 15s+ under load; we don't wait forever.
                 task_timeouts = {
-                    "routing": 30.0,
-                    "sql": 45.0,
-                    "analysis": 45.0,
-                    "general": 45.0,
+                    "routing": 8.0,    # intent/schema — must be snappy
+                    "sql": 20.0,       # SQL generation — more tokens needed
+                    "analysis": 15.0,  # insight generation
+                    "general": 15.0,
                 }
-                kwargs["timeout"] = task_timeouts.get(task, 45.0)
+                kwargs["timeout"] = task_timeouts.get(task, 15.0)
                 resp = await litellm.acompletion(**kwargs)
                 latency_ms = int((time.perf_counter() - t0) * 1000)
                 usage = resp.usage

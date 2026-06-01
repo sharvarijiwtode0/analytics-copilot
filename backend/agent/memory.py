@@ -19,19 +19,34 @@ class VectorMemory:
         if not self.client:
             try:
                 self.client = QdrantClient(url=settings.qdrant_url, timeout=5)
-                self.embedding_model = TextEmbedding(model_name="BAAI/bge-base-en-v1.5")
+                self.embedding_model = TextEmbedding(model_name=settings.embedding_model_name)
                 
                 # Check if collection exists
                 collections = self.client.get_collections().collections
-                if not any(c.name == self.collection_name for c in collections):
+                collection_exists = any(c.name == self.collection_name for c in collections)
+                
+                if collection_exists:
+                    # Verify dimensions match
+                    col_info = self.client.get_collection(self.collection_name)
+                    existing_size = col_info.config.params.vectors.size
+                    if existing_size != settings.embedding_model_dim:
+                        log.warning(
+                            "qdrant.dimension_mismatch_recreating",
+                            existing_size=existing_size,
+                            configured_size=settings.embedding_model_dim
+                        )
+                        self.client.delete_collection(self.collection_name)
+                        collection_exists = False
+                
+                if not collection_exists:
                     self.client.create_collection(
                         collection_name=self.collection_name,
                         vectors_config=models.VectorParams(
-                            size=768, # BAAI/bge-base-en-v1.5 dim
+                            size=settings.embedding_model_dim,
                             distance=models.Distance.COSINE
                         )
                     )
-                log.info("qdrant.connected", url=settings.qdrant_url)
+                log.info("qdrant.connected", url=settings.qdrant_url, model=settings.embedding_model_name)
             except Exception as e:
                 # Do NOT permanently disable — reset client so next call retries.
                 # This handles cold-boot race conditions where Qdrant starts after the server.
@@ -85,7 +100,7 @@ class VectorMemory:
                     must=[
                         models.FieldCondition(
                             key="user_id",
-                            match=models.MatchValue(value=user_id)
+                            match=models.MatchAny(any=list(set([user_id, "anonymous"])))
                         )
                     ]
                 ),

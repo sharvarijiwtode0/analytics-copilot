@@ -237,6 +237,17 @@ async def compose_response(state: AnalyticsState) -> AnalyticsState:
             "final_response": state["insight_followup_response"],
         }
 
+    # Check if this is a schema information or catalog request
+    if intent_type == "schema_info":
+        log.info("responder.schema_info")
+        schema_response = await _compose_schema_info_response(question)
+        return {
+            **state,
+            "response_text": schema_response["text"],
+            "follow_up_questions": schema_response.get("follow_up_questions", []),
+            "final_response": schema_response,
+        }
+
     # Check if this is an analytical question - generate narrative response
     intent_type = state.get("intent", {}).get("type", "")
     if intent_type == "analytical_question":
@@ -687,5 +698,101 @@ async def _compose_analytical_no_data_response(state: AnalyticsState) -> dict:
             "row_count": 0,
             "viz_type": None,
         },
+    }
+
+
+async def _compose_schema_info_response(question: str) -> dict:
+    from backend.services.db_intelligence import get_db_context, PRIORITY_TABLES, TABLE_DESCRIPTIONS
+    
+    db_ctx = get_db_context()
+    tables = db_ctx.get("tables", {})
+    q_lower = question.lower()
+    
+    target_table = None
+    
+    # 1. Match exact table name
+    for tname in tables.keys():
+        t_clean = tname.lower().replace("_", " ").replace("-", " ")
+        if tname.lower() in q_lower or t_clean in q_lower:
+            target_table = tname
+            break
+            
+    # 2. Match aliases or keywords
+    if not target_table:
+        for tname, tdata in tables.items():
+            for alias in tdata.get("aliases", []):
+                if alias.lower() in q_lower:
+                    target_table = tname
+                    break
+            if target_table:
+                break
+                
+    if target_table:
+        tdata = tables[target_table]
+        row_count = tdata.get("row_count", 0)
+        cols = tdata.get("columns", [])
+        desc = tdata.get("description") or TABLE_DESCRIPTIONS.get(target_table, "Operational dataset.")
+        
+        # Build premium table summary
+        response_text = (
+            f"### 📊 Schema Analysis: `{target_table}`\n\n"
+            f"**Description:**\n{desc}\n\n"
+            f"#### Table Statistics\n"
+            f"- **Total Columns:** {len(cols)}\n"
+            f"- **Estimated Row Count:** {row_count:,} rows\n\n"
+            f"#### Column Definitions\n"
+            f"| Column Name | Data Type | Business Description |\n"
+            f"| :--- | :--- | :--- |\n"
+        )
+        
+        for col in cols[:40]:  # limit to 40 columns for readable markdown response
+            cname = col.get("name", "")
+            ctype = col.get("type", "String")
+            canno = col.get("annotation") or ""
+            response_text += f"| `{cname}` | `{ctype}` | {canno or 'No annotation available'} |\n"
+            
+        if len(cols) > 40:
+            response_text += f"\n*...and {len(cols) - 40} more columns. Use a targeted query to view them.*"
+            
+        # Contextual follow-up questions
+        follow_ups = [
+            f"Show me the first 5 rows of {target_table}",
+            f"How many rows are in the {target_table} table?",
+            f"Analyze sales and trends in {target_table}",
+        ]
+    else:
+        # General catalog request: "show all tables"
+        response_text = (
+            f"### 🗃️ Database Table Catalog\n\n"
+            f"Here are the key business tables available for querying inside the Limese ClickHouse database:\n\n"
+            f"| Table Name | Description |\n"
+            f"| :--- | :--- |\n"
+        )
+        for tname in PRIORITY_TABLES:
+            if tname in tables:
+                desc = TABLE_DESCRIPTIONS.get(tname, tables[tname].get("description", "Operational dataset."))
+                response_text += f"| `{tname}` | {desc[:120]}... |\n"
+                
+        response_text += (
+            f"\nThere are a total of **{len(tables)} tables** in the database. "
+            f"The 12 tables listed above contain all core revenue, product, and inventory metrics. "
+            f"You can query or analyze any of them by asking a direct question!"
+        )
+        
+        follow_ups = [
+            "Show me columns inside combined_sales_final",
+            "What tables contain inventory metrics?",
+            "Show monthly sales trend",
+        ]
+        
+    return {
+        "text": response_text,
+        "chart": None,
+        "insights": [],
+        "key_metrics": {},
+        "follow_up_questions": follow_ups,
+        "sql": "",
+        "row_count": 0,
+        "viz_type": None,
     }
 

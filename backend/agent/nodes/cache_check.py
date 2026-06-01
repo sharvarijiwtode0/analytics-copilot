@@ -15,10 +15,37 @@ async def check_qa_memory(state: AnalyticsState) -> AnalyticsState:
 
         user_id = state.get("user_id", "anonymous")
 
-        # First check: high similarity (≥0.92) = return cached answer
+        # First check: high similarity (≥0.92)
         cached = qa_service.search(question, user_id=user_id, threshold=0.92)
         if cached:
-            log.info("cache_check.hit_high_similarity", question=question[:50], similarity="≥0.92")
+            # If it's a data query (contains SQL), DO NOT skip pipeline.
+            # Reuse cached SQL but execute live for fresh data!
+            if cached.get("sql"):
+                log.info("cache_check.hit_high_similarity_query", question=question[:50], similarity="≥0.92")
+                from backend.services.db_intelligence import get_db_context
+                db_ctx = get_db_context()
+                tables = db_ctx.get("tables", {})
+                matched_tables = []
+                sql_lower = cached.get("sql", "").lower()
+                for tname in tables.keys():
+                    if tname.lower() in sql_lower:
+                        matched_tables.append({"name": tname})
+                return {
+                    **state,
+                    "sql_query": cached.get("sql", ""),
+                    "sql_validated": True,
+                    "intent": {
+                        "type": "data_query",
+                        "confidence": 1.0,
+                        "rephrased_question": question
+                    },
+                    "schema_context": {
+                        "relevant_tables": matched_tables
+                    }
+                }
+            
+            # Normal conversational/greeting question: return cached answer directly
+            log.info("cache_check.hit_high_similarity_conversational", question=question[:50], similarity="≥0.92")
             return {
                 **state,
                 "skip_pipeline": True,
@@ -28,7 +55,7 @@ async def check_qa_memory(state: AnalyticsState) -> AnalyticsState:
                     "insights": [],
                     "key_metrics": {},
                     "follow_up_questions": [],
-                    "sql": cached.get("sql", ""),
+                    "sql": "",
                     "sql_explanation": "",
                     "row_count": 0,
                     "viz_type": cached.get("viz_type"),
@@ -44,12 +71,25 @@ async def check_qa_memory(state: AnalyticsState) -> AnalyticsState:
         cached_sql = qa_service.search(question, user_id=user_id, threshold=0.75)
         if cached_sql and cached_sql.get("sql"):
             log.info("cache_check.hit_medium_similarity", question=question[:50], similarity="0.75-0.92")
+            from backend.services.db_intelligence import get_db_context
+            db_ctx = get_db_context()
+            tables = db_ctx.get("tables", {})
+            matched_tables = []
+            sql_lower = cached_sql.get("sql", "").lower()
+            for tname in tables.keys():
+                if tname.lower() in sql_lower:
+                    matched_tables.append({"name": tname})
             return {
                 **state,
                 "sql_query": cached_sql.get("sql", ""),
-                "cached_sql_context": {
-                    "tables": cached_sql.get("tables", []),
-                    "question": cached_sql.get("question", "")
+                "sql_validated": True,
+                "intent": {
+                    "type": "data_query",
+                    "confidence": 1.0,
+                    "rephrased_question": question
+                },
+                "schema_context": {
+                    "relevant_tables": matched_tables
                 }
             }
 

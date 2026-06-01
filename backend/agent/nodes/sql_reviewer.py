@@ -15,12 +15,14 @@ from backend.agent.llm import call_llm
 log = structlog.get_logger(__name__)
 
 # Strict rule check on the Python side before hitting LLM (fast, lightweight guardrails)
-def _fast_regex_pre_check(sql: str, datasource_id: str) -> str | None:
+def _fast_regex_pre_check(sql: str, datasource_id: str, question: str, review_count: int) -> str | None:
     """Perform quick regex syntax & business logic checks."""
     if not sql:
         return "Empty SQL query."
         
-    sql_upper = sql.upper()
+    sql_upper = sql.upper().strip()
+    sql_lower = sql.lower().strip()
+    q_lower = question.lower()
     
     # 1. Safety check
     from backend.agent.nodes.sql_gen import _is_safe_sql
@@ -28,12 +30,16 @@ def _fast_regex_pre_check(sql: str, datasource_id: str) -> str | None:
     if not is_safe:
         return f"Safety violation: {reason}"
         
-    # 2. ClickHouse business rule checks
+    # Verify basic SQL syntax - matching parentheses
+    if sql.count('(') != sql.count(')'):
+        return "ClickHouse syntax error: Mismatched parentheses in query."
+        
+    # 2. ClickHouse / Limese business rule checks
     if datasource_id == "limese":
-        # Cancelled/Returned exclusion check for combined_sales_final
+        # Rule 1: Exclude cancelled or returned orders when querying combined_sales_final
         if "COMBINED_SALES_FINAL" in sql_upper:
             # Check for final_status filter
-            status_match = re.search(r"FINAL_STATUS\s+NOT\s+IN\s*\(", sql_upper)
+            status_match = re.search(r"final_status\s+not\s+in\s*\(", sql_lower)
             if not status_match:
                 return (
                     "Business rule violation: You must ALWAYS exclude cancelled or returned orders "
@@ -41,19 +47,51 @@ def _fast_regex_pre_check(sql: str, datasource_id: str) -> str | None:
                     "final_status NOT IN ('cancelled','Cancelled','CANCELLED','returned','Returned')"
                 )
             
-            # Check for revenue/sales field selection
-            if "REVENUE" in sql_upper or "SALES" in sql_upper:
-                # Should not select order_price as revenue
-                if "ORDER_PRICE" in sql_upper and "ROW_SUBTOTAL" not in sql_upper:
+            # Exclusion must cover both cancelled and returned
+            if "cancelled" not in sql_lower or "returned" not in sql_lower:
+                return (
+                    "Business rule violation: Exclusion filter for combined_sales_final must cover "
+                    "both cancelled and returned statuses. Use: "
+                    "final_status NOT IN ('cancelled','Cancelled','CANCELLED','returned','Returned')"
+                )
+            
+        # Rule 2: For revenue/sales queries on combined_sales_final, use row_subtotal, NEVER order_price
+        if "combined_sales_final" in sql_lower:
+            is_revenue_query = any(w in q_lower for w in ["revenue", "sales", "turnover", "income", "amount", "value"])
+            if is_revenue_query:
+                if "order_price" in sql_lower and "row_subtotal" not in sql_lower:
                     return (
                         "Business rule violation: For revenue queries on 'combined_sales_final', "
                         "you must use 'row_subtotal' as the revenue column. 'order_price' contains full order values, "
                         "which results in double-counting when grouped by line item."
                     )
-        
-        # ClickHouse function checks
-        if " LAG(" in sql_upper or " LEAD(" in sql_upper:
+                    
+        # Rule 3: For units/quantities queries on combined_sales_final, use quantity_ordered, NEVER shipped_qty
+        if "combined_sales_final" in sql_lower:
+            is_units_query = any(w in q_lower for w in ["quantity", "units", "items", "count", "qty", "volume"])
+            if is_units_query:
+                if "shipped_qty" in sql_lower:
+                    return (
+                        "Business rule violation: Use 'quantity_ordered' for ordered units/quantities. "
+                        "'shipped_qty' is always 0 in the current schema."
+                    )
+
+        # Rule 4: Date Filtering - do not use toYear() or dynamic date functions (timezone issues)
+        if "toyear(" in sql_lower or "today(" in sql_lower or "now(" in sql_lower:
+            return (
+                "Business rule violation: Do not use toYear() or dynamic date functions (like today() or now()). "
+                "Instead, apply static date filters such as: date_created >= '2025-01-01'."
+            )
+
+        # Rule 6: ClickHouse function checks (lag/lead)
+        if re.search(r"\blag\s*\((?!inframe)", sql_lower) or re.search(r"\blead\s*\((?!inframe)", sql_lower):
             return "ClickHouse syntax error: Use lagInFrame() instead of lag(), and leadInFrame() instead of lead()."
+            
+        # Rule 7: Select Clause Check
+        if "row_subtotal" in sql_lower and "quantity_ordered" in sql_lower:
+            is_revenue_only = any(w in q_lower for w in ["revenue", "sales"]) and not any(w in q_lower for w in ["quantity", "units", "items", "qty"])
+            if is_revenue_only and review_count == 0:
+                return "Business rule violation: The query select clause contains 'quantity_ordered' but the user only requested revenue/sales."
             
     return None
 
@@ -61,13 +99,11 @@ def _fast_regex_pre_check(sql: str, datasource_id: str) -> str | None:
 async def review_sql(state: AnalyticsState) -> AnalyticsState:
     """
     DBA Review Node.
-    Validates SQL query safety, compliance, and correctness.
+    Validates SQL query safety, compliance, and correctness locally with zero latency.
     """
     sql = state.get("sql_query", "")
     datasource_id = state.get("datasource_id", "")
     question = state.get("user_question", "")
-    intent = state.get("intent", {})
-    rephrased = intent.get("rephrased_question") or question
     
     # Initialize count if not set
     review_count = state.get("review_retry_count", 0)
@@ -76,12 +112,13 @@ async def review_sql(state: AnalyticsState) -> AnalyticsState:
     if state.get("error") and not state.get("sql_query"):
         return state
         
-    log.info("sql_reviewer.started", review_count=review_count, sql_preview=sql[:150])
+    log.info("sql_reviewer.started_local_critic", review_count=review_count, sql_preview=sql[:150])
     
-    # 1. Run fast local check
-    local_err = _fast_regex_pre_check(sql, datasource_id)
+    # Run the comprehensive local DBA compliance critic
+    local_err = _fast_regex_pre_check(sql, datasource_id, question, review_count)
+    
     if local_err:
-        log.warning("sql_reviewer.local_check_failed", error=local_err)
+        log.warning("sql_reviewer.local_critic_failed", error=local_err)
         return {
             **state,
             "sql_validated": False,
@@ -90,75 +127,10 @@ async def review_sql(state: AnalyticsState) -> AnalyticsState:
             "error": f"DBA Review failed: {local_err}"
         }
         
-    # 2. Query LLM to perform deep semantic review against instructions
-    prompt = f"""You are a Database Administrator (DBA) reviewing a SQL query generated by an AI assistant for a database.
-Your job is to ensure the query is syntactically correct, safe, and complies with all database business rules.
-
-User's Original Question: "{question}"
-Rephrased Standalone Question: "{rephrased}"
-Database Type / Datasource: "{datasource_id}"
-
-Generated SQL Query under review:
-```sql
-{sql}
-```
-
-CLIKHOUSE & DATABASE COMPLIANCE RULES:
-1. EXCLUDE CANCELLED ORDERS: When querying `combined_sales_final`, the query MUST explicitly exclude cancelled/returned orders: `final_status NOT IN ('cancelled','Cancelled','CANCELLED','returned','Returned')`.
-2. REVENUE COLUMN: For revenue/sales, use `row_subtotal`. NEVER use `order_price` (this is the full order total, grouping by line items will multiply the revenue incorrectly).
-3. UNITS COLUMN: For units/quantities, use `quantity_ordered`. NEVER use `shipped_qty` (always 0).
-4. DATE FILTERING: date_created >= '2025-01-01'. Do NOT use toYear(date_created) or dynamic timezone functions.
-5. TABLE ALIASES: All columns in joins MUST be prefixed with correct table aliases.
-6. WINDOW FUNCTIONS: ClickHouse does not support standard lag() or lead(). You MUST use lagInFrame() or leadInFrame().
-7. SELECT CLAUSE: If the user asks ONLY for revenue, the query must NOT select quantities/units unless explicitly asked.
-8. safety: Query must start with SELECT and have NO modifying queries (INSERT, UPDATE, DELETE, etc.).
-
-Analyze the generated SQL. If it violates any rules or has syntax bugs, set "sql_validated" to false and explain the exact issue in "dba_feedback".
-If the SQL is completely correct and ready to execute, set "sql_validated" to true and leave "dba_feedback" empty.
-
-Respond ONLY with this JSON structure:
-{{
-  "sql_validated": <true|false>,
-  "dba_feedback": "<description of the issue or empty string>"
-}}"""
-
-    try:
-        resp = await call_llm(
-            messages=[{"role": "user", "content": prompt}],
-            task="routing", # Use fast model for routing/review
-            max_tokens=300,
-            temperature=0.0,
-        )
-        
-        raw = resp.content.strip()
-        json_match = re.search(r'(\{.*\})', raw, re.DOTALL)
-        raw_json = json_match.group(1) if json_match else raw
-        if "```" in raw_json:
-            raw_json = raw_json.split("```")[1].replace("json", "").strip()
-            
-        result = json.loads(raw_json)
-        validated = bool(result.get("sql_validated"))
-        feedback = result.get("dba_feedback", "")
-    except Exception as exc:
-        log.warning("sql_reviewer.llm_parse_failed", error=str(exc))
-        # Fall back to passing if LLM fails to review, preventing pipeline block
-        validated = True
-        feedback = ""
-        
-    if validated:
-        log.info("sql_reviewer.passed")
-        return {
-            **state,
-            "sql_validated": True,
-            "dba_feedback": "",
-            "error": None
-        }
-    else:
-        log.warning("sql_reviewer.failed", feedback=feedback)
-        return {
-            **state,
-            "sql_validated": False,
-            "dba_feedback": feedback,
-            "review_retry_count": review_count + 1,
-            "error": f"DBA Review failed: {feedback}"
-        }
+    log.info("sql_reviewer.passed_local_critic")
+    return {
+        **state,
+        "sql_validated": True,
+        "dba_feedback": "",
+        "error": None
+    }

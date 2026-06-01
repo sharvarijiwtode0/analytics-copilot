@@ -600,6 +600,24 @@ def _auto_select_chart_type(columns: list, rows: list, intent: dict, question: s
     row_count = len(rows)
     q = question.lower()
 
+    # Rule-based overrides based on explicit user keyword specifications
+    if "line chart" in q or "line graph" in q or "lines" in q:
+        return "line"
+    if "bar chart" in q or "bar graph" in q or "bars" in q:
+        return "bar"
+    if "pie chart" in q or "pie" in q:
+        return "pie"
+    if "funnel" in q or "conversion funnel" in q:
+        return "funnel"
+    if "gauge" in q or "meter" in q:
+        return "gauge"
+    if "heatmap" in q or "heat map" in q:
+        return "heatmap"
+    if "scatter" in q or "bubble" in q:
+        return "scatter"
+    if "table" in q or "grid" in q or "tabular" in q:
+        return "table"
+
     if intent_type == "trend_analysis" or "time" in str(columns).lower() or "date" in str(columns).lower():
         return "line"
 

@@ -22,6 +22,16 @@ export const ChatMessageComponent: React.FC<Props> = ({ message, onFollowUp, onE
   const { user } = useAuthStore()
   const role = user?.role || 'team_member'
 
+  const getTablesForMessage = (msg: any): string[] => {
+    if (msg.sql_query) {
+      const sql = msg.sql_query.toLowerCase()
+      const candidates = ['combined_sales_final', 'product_master', 'product_catlog', 'inventory_sales_overview_new', 'shopify_orders']
+      const matched = candidates.filter(t => sql.includes(t))
+      if (matched.length > 0) return matched
+    }
+    return msg.columns && msg.columns.length > 0 ? ['shopify_orders'] : []
+  }
+
   if (message.role === 'user') {
     return (
       <div className="flex justify-end mb-4 group relative">
@@ -120,7 +130,7 @@ export const ChatMessageComponent: React.FC<Props> = ({ message, onFollowUp, onE
           <CommunicationAgent
             steps={[
               { type: 'progress', step: 'understand_intent', data: { status: 'complete', intent: message.viz_type ? 'chart_request' : 'data_query' } },
-              { type: 'progress', step: 'discover_schema', data: { status: 'complete', tables: message.columns && message.columns.length > 0 ? ['sales_table'] : [] } },
+              { type: 'progress', step: 'discover_schema', data: { status: 'complete', tables: getTablesForMessage(message) } },
               { type: 'progress', step: 'generate_sql', data: { status: 'complete', sql: message.sql } },
               { type: 'progress', step: 'execute_sql', data: { status: 'complete', row_count: message.row_count } },
               { type: 'progress', step: 'analyze_insights', data: { status: 'complete', insights: message.insights } },
@@ -169,41 +179,7 @@ export const ChatMessageComponent: React.FC<Props> = ({ message, onFollowUp, onE
             ? 'bg-zinc-900 border-zinc-800'
             : 'bg-white border border-zinc-200'
         }`}>
-          {/* Summary showing the executed pipeline steps */}
-          {message.sql && (
-            <div className="mb-4 space-y-3">
-              {/* Visual Pipeline dots */}
-              <CommunicationAgent
-                steps={[
-                  { type: 'progress', step: 'understand_intent', data: { status: 'complete', intent: message.viz_type ? 'chart_request' : 'data_query' } },
-                  { type: 'progress', step: 'discover_schema', data: { status: 'complete', tables: message.columns && message.columns.length > 0 ? ['sales_table'] : [] } },
-                  { type: 'progress', step: 'generate_sql', data: { status: 'complete', sql: message.sql } },
-                  { type: 'progress', step: 'execute_sql', data: { status: 'complete', row_count: message.row_count } },
-                  { type: 'progress', step: 'analyze_insights', data: { status: 'complete', insights: message.insights } },
-                  { type: 'progress', step: 'generate_viz_config', data: { status: 'complete', viz_type: message.viz_type || 'table' } },
-                  { type: 'complete', step: 'compose_response', data: { status: 'complete' } }
-                ]}
-                isLoading={false}
-                theme={theme}
-                summaryOnly={true}
-              />
-              {/* Conversational descriptive narrative summary */}
-              <CommunicationAgent
-                steps={[
-                  { type: 'progress', step: 'understand_intent', data: { status: 'complete', intent: message.viz_type ? 'chart_request' : 'data_query' } },
-                  { type: 'progress', step: 'discover_schema', data: { status: 'complete', tables: message.columns && message.columns.length > 0 ? ['sales_table'] : [] } },
-                  { type: 'progress', step: 'generate_sql', data: { status: 'complete', sql: message.sql } },
-                  { type: 'progress', step: 'execute_sql', data: { status: 'complete', row_count: message.row_count } },
-                  { type: 'progress', step: 'analyze_insights', data: { status: 'complete', insights: message.insights } },
-                  { type: 'progress', step: 'generate_viz_config', data: { status: 'complete', viz_type: message.viz_type || 'table' } },
-                  { type: 'complete', step: 'compose_response', data: { status: 'complete' } }
-                ]}
-                isLoading={false}
-                theme={theme}
-                conversational={true}
-              />
-            </div>
-          )}
+
           <div className={`text-sm leading-relaxed prose prose-sm max-w-none ${
             theme === 'dark' ? 'text-zinc-300 prose-invert' : 'text-zinc-700'
           }`}>
@@ -244,15 +220,26 @@ export const ChatMessageComponent: React.FC<Props> = ({ message, onFollowUp, onE
 
       {/* Insights — $→₹ converted */}
       {showExplain && message.insights && message.insights.length > 0 && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
-          <div className="flex items-center gap-2 text-xs font-semibold text-amber-700 mb-2">
-            <Lightbulb size={14} /> Key Insights
+        <div className={`border rounded-xl px-4 py-3.5 shadow-sm leading-relaxed transition-all duration-300 ${
+          theme === 'dark'
+            ? 'bg-amber-500/5 border-amber-500/20 text-amber-100'
+            : 'bg-amber-50 border border-amber-200 text-amber-800'
+        }`}>
+          <div className={`flex items-center gap-2 text-xs font-semibold mb-2.5 ${
+            theme === 'dark' ? 'text-amber-400' : 'text-amber-700'
+          }`}>
+            <Lightbulb size={14} className="text-amber-500 animate-pulse" />
+            <span>Key Business Insights & Reasoning</span>
           </div>
-          <ul className="space-y-1">
+          <ul className="space-y-2">
             {message.insights.map((ins, i) => (
-              <li key={i} className="text-xs text-amber-800 flex gap-2">
-                <span className="text-amber-400 mt-0.5">•</span>
-                {indianiseCurrencyText(ins)}
+              <li key={i} className={`text-xs flex gap-2.5 items-start ${
+                theme === 'dark' ? 'text-zinc-300' : 'text-slate-700'
+              }`}>
+                <span className="text-amber-500 mt-1 select-none">•</span>
+                <div className="prose prose-sm dark:prose-invert max-w-none text-xs flex-1">
+                  <ReactMarkdown>{indianiseCurrencyText(ins)}</ReactMarkdown>
+                </div>
               </li>
             ))}
           </ul>

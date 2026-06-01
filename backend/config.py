@@ -61,6 +61,8 @@ class Settings(BaseSettings):
     qdrant_url: str = "http://localhost:6333"
     qdrant_collection: str = "dvc_memory"
     qdrant_enabled: bool = True   # Enabled for v2 knowledge features
+    embedding_model_name: str = "BAAI/bge-base-en-v1.5"
+    embedding_model_dim: int = 768
 
     # MinIO (Conversation History Storage)
     minio_endpoint: str = ""   # e.g., "localhost:9000" or "minio.example.com:9000"

@@ -228,13 +228,13 @@ Return JSON:
 
 Keep insights actionable and business-focused. Use specific numbers from the data.
 
-CRITICAL REASONING & CONTENT RULES:
-1. DO NOT just read out or repeat the numbers from the data. That is useless.
-2. You MUST analyze the trend: identify peaks, troughs, overall direction (growth/decline), and significant month-over-month or period-over-period changes.
-3. Provide business justification or highlight the significance of the data pattern shown in the visualization. If a value drops significantly, call it out as an anomaly or point of interest.
-4. If the user asks for "reasons", "causes", "factors", or "drivers" of a trend (decline/growth/change):
-   - Every single bullet point in the "insights" list MUST represent a specific, concrete reason, factor, or driver based on the data.
-   - Answer the "why" directly using the data points.
+CRITICAL REASONING, VISUAL CORRELATION & CONTENT RULES:
+1. DEEP CAUSAL ANALYSIS: Do NOT just read out or repeat the raw numbers from the data. That is useless. You must analyze the "why" behind the numbers. Identify contributing factors (e.g. category-specific performance, SKU patterns, platform-specific differences, or seasonal shifts) from the data columns, and provide highly reasonable, logical business explanations/justifications (such as stockouts, marketing/promotional campaigns, pricing shifts, or operational delays).
+2. VISUAL CORRELATION: Explicitly correlate your findings with the visualization. Point out what the user should look for in the chart (e.g. "You can see a sharp peak in November in the chart...", or "The visualization clearly shows a downward trend for beauty products...").
+3. TREND & ANOMALY REASONING: You MUST analyze the trend's shape: identify the peak, trough, overall slope (growth or decline), and highlight significant month-over-month or period-over-period changes. Call out anomalies or sudden drops as points of interest and justify their occurrence.
+4. CAUSES & DRIVERS: If the user asks for "reasons", "causes", "factors", or "drivers" of a trend (decline/growth/change):
+   - Every single bullet point in the "insights" list MUST be a specific, concrete reason, factor, or driver supported by the data sample.
+   - Address the "why" directly using comparative segments (e.g. comparing the top category vs. declining ones).
 
 IMPORTANT: Use ₹ (Rupee) symbol ONLY for monetary values (Revenue, Sales, Spend, Profit).
 Do NOT use ₹ for counts (Orders, Units, Users, Tickets).
@@ -263,10 +263,9 @@ Format large numbers in Indian style: e.g. ₹23.8 Cr (monetary), 2.8 L units (c
         log.warning("analyst.parse_failed_using_dynamic_fallback", error=str(exc))
         analysis = _generate_rule_based_fallback_insights(rows, columns, basic_stats, question)
 
-    # Clean up any leftover double quotes or stars from previous attempts
     cleaned_insights = []
     for ins in analysis.get("insights", []):
-        s = str(ins).replace('"', '').replace('**', '')
+        s = str(ins).replace('"', '')
         cleaned_insights.append(s)
 
     log.info("analyst.complete", insight_count=len(cleaned_insights))

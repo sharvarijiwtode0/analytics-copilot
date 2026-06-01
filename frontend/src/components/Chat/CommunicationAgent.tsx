@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Check, Loader, Terminal, Play, AlertCircle, MessageSquare } from 'lucide-react'
 import type { TransparencyStep } from '../../hooks/useStreamingQuery'
 
+import ReactMarkdown from 'react-markdown'
+
 interface Props {
   steps: TransparencyStep[]
   isLoading: boolean
@@ -37,128 +39,127 @@ const getConversationalSummary = (steps: TransparencyStep[], isLoading: boolean)
     return steps.slice(idx + 1).some(s => s.step && s.step !== stepName)
   }
 
-  // 1. Intent Classification
-  const intentStep = findStep('understand_intent')
-  if (intentStep) {
-    const isDone = isStepComplete('understand_intent')
-    if (isDone) {
-      const intentType = intentStep.data?.intent || 'query'
-      parts.push(`🔍 I started by reading your question very closely. I've successfully interpreted your intent as a custom business **${intentType.replace('_', ' ')}** request, meaning you're looking for structured data trends.`)
-    } else {
-      parts.push("🔍 I am carefully reading your question to decode exactly what you are asking. I'm checking the words to figure out if you're looking for a timeline, a summary total, a visual chart, or a detailed breakdown of your storefront metrics...")
-      return parts.join(" ")
-    }
-  }
+  const orderedStepIds = [
+    'understand_intent',
+    'discover_schema',
+    'generate_sql',
+    'review_sql',
+    'execute_sql',
+    'analyze_insights',
+    'review_insights',
+    'generate_viz_config',
+    'compose_response'
+  ]
 
-  // 2. Schema Selection
-  const schemaStep = findStep('discover_schema')
-  if (schemaStep) {
-    const isDone = isStepComplete('discover_schema')
-    if (isDone) {
-      const tablesStr = schemaStep.data?.tables?.join(', ') || 'sales'
-      parts.push(`📂 Next, I opened our business data registry and scanned the indexes. I found the exact tables containing your metrics (referencing tables: **${tablesStr}**). This makes sure we only pull authentic, high-precision datasets and ignore any cancelled orders.`)
-    } else {
-      parts.push("📂 I am opening our brand's secure data registry to find exactly where this information lives. I'm scanning our table dictionary to pick the correct fields, ensuring we ignore unrelated details and pull only clean, high-precision records...")
-      return parts.join(" ")
-    }
-  }
+  for (const stepId of orderedStepIds) {
+    // Search reversed to get the latest emitted step update (which has the latest message and details)
+    const stepObj = [...steps].reverse().find(s => s.step === stepId)
+    if (!stepObj) continue
 
-  // 3. SQL Gen
-  const sqlStep = findStep('generate_sql')
-  if (sqlStep) {
-    const isDone = isStepComplete('generate_sql')
-    if (isDone) {
-      parts.push("⚙️ With the correct fields mapped, I drafted a highly optimized data retrieval instructions plan. This plan acts as a blueprint, telling our systems exactly how to query the tables, aggregate dates, and filter out cancelled or returned products.")
-    } else {
-      parts.push("⚙️ Now, I am crafting a custom data retrieval plan. I am translating our goals into precise instructions, building the exact logic to query the registry, aggregate dates, exclude cancellations, and align with the correct platforms...")
-      return parts.join(" ")
+    // 1. Prioritize live dynamically paraphrased narrative message streamed from the backend
+    if (stepObj.message) {
+      parts.push(stepObj.message)
+      continue
     }
-  }
 
-  // 3.5 DBA SQL Review
-  const reviewSqlStep = findStep('review_sql')
-  if (reviewSqlStep) {
-    const isDone = isStepComplete('review_sql')
-    if (isDone) {
-      const sqlValidated = reviewSqlStep.data?.sql_validated
-      if (sqlValidated) {
-        parts.push("🛡️ The query plan was checked by my database administrator review layer and passed all safety and ClickHouse syntax compliance checks.")
+    // 2. Otherwise fall back to the premium conversational static template logic (for chat history / old sessions)
+    if (stepId === 'understand_intent') {
+      const isDone = isStepComplete('understand_intent')
+      if (isDone) {
+        const intentType = stepObj.data?.intent || 'query'
+        parts.push(`🔍 I started by reading your question very closely. I've successfully interpreted your intent as a custom business **${intentType.replace('_', ' ')}** request, meaning you're looking for structured data trends.`)
       } else {
-        const feedback = reviewSqlStep.data?.dba_feedback || 'Syntax issue detected.'
-        parts.push(`🛡️ The database administrator review flagged issues: "${feedback}". Correcting the query...`)
+        parts.push("🔍 I am carefully reading your question to decode exactly what you are asking. I'm checking the words to figure out if you're looking for a timeline, a summary total, a visual chart, or a detailed breakdown of your storefront metrics...")
+        break
       }
-    } else {
-      parts.push("🛡️ I am sending the drafted SQL query plan to my DBA Review Agent to verify syntactic safety and database performance guidelines before execution...")
-      return parts.join(" ")
     }
-  }
-
-  // 4. Execution
-  const execStep = findStep('execute_sql')
-  if (execStep) {
-    const isDone = isStepComplete('execute_sql')
-    if (isDone) {
-      const count = execStep.data?.row_count || 0
-      parts.push(`✅ I then opened a secure connection to our database servers, executed the retrieval, and successfully brought back **${count}** raw data records for analysis.`)
-    } else {
-      parts.push("🔋 I am connecting to our secure database servers to execute our query plan. I am initiating the query and waiting for the data rows to stream back safely...")
-      return parts.join(" ")
-    }
-  }
-
-  // 5. Analysis
-  const analysisStep = findStep('analyze_insights')
-  if (analysisStep) {
-    const isDone = isStepComplete('analyze_insights')
-    if (isDone) {
-      const insights = analysisStep.data?.insights || []
-      parts.push(`📊 After pulling the numbers, I ran statistical checks to spot performance patterns. I've distilled **${insights.length}** takeaways, highlighting milestones and anomalies.`)
-    } else {
-      parts.push("📊 I have the raw numbers! Now, I am running deep statistical summaries to highlight key metrics, identify unexpected anomalies, compare performance across platforms, and extract the takeaways...")
-      return parts.join(" ")
-    }
-  }
-
-  // 5.5 Critic Review
-  const reviewInsightsStep = findStep('review_insights')
-  if (reviewInsightsStep) {
-    const isDone = isStepComplete('review_insights')
-    if (isDone) {
-      const validated = reviewInsightsStep.data?.insights_validated
-      if (validated) {
-        parts.push("🎯 The generated insights have been validated against the raw data rows and passed all reflection and factual consistency checks.")
+    else if (stepId === 'discover_schema') {
+      const isDone = isStepComplete('discover_schema')
+      if (isDone) {
+        const tablesStr = stepObj.data?.tables?.join(', ') || 'sales'
+        parts.push(`📂 Next, I opened our business data registry and scanned the indexes. I found the exact tables containing your metrics (referencing tables: **${tablesStr}**). This makes sure we only pull authentic, high-precision datasets and ignore any cancelled orders.`)
       } else {
-        const feedback = reviewInsightsStep.data?.critic_feedback || 'Mismatch detected.'
-        parts.push(`🎯 The Critic Reflection agent flagged a discrepancy: "${feedback}". Re-generating insights with correction feedback...`)
+        parts.push("📂 I am opening our brand's secure data registry to find exactly where this information lives. I'm scanning our table dictionary to pick the correct fields, ensuring we ignore unrelated details and pull only clean, high-precision records...")
+        break
       }
-    } else {
-      parts.push("🎯 I am auditing the insights against the raw database rows using a Critic Reflection check to eliminate any numerical hallucinations or mismatches...")
-      return parts.join(" ")
     }
-  }
-
-  // 6. Viz Config
-  const vizStep = findStep('generate_viz_config')
-  if (vizStep) {
-    const isDone = isStepComplete('generate_viz_config')
-    if (isDone) {
-      const chart = vizStep.data?.viz_type || 'table'
-      parts.push(`🎨 To make the findings easy to digest, I customized an interactive **${chart}** layout, choosing the best color palette and structure to present your trends visually.`)
-    } else {
-      parts.push("🎨 Next, I am designing a beautiful, interactive visual chart. I'm choosing the perfect layout (like a trend line, a bar breakdown, or a structured comparison table) and customizing the color palettes so it looks clean and professional...")
-      return parts.join(" ")
+    else if (stepId === 'generate_sql') {
+      const isDone = isStepComplete('generate_sql')
+      if (isDone) {
+        parts.push("⚙️ With the correct fields mapped, I drafted a highly optimized data retrieval instructions plan. This plan acts as a blueprint, telling our systems exactly how to query the tables, aggregate dates, and filter out cancelled or returned products.")
+      } else {
+        parts.push("⚙️ Now, I am crafting a custom data retrieval plan. I am translating our goals into precise instructions, building the exact logic to query the registry, aggregate dates, exclude cancellations, and align with the correct platforms...")
+        break
+      }
     }
-  }
-
-  // 7. Responder
-  const respStep = findStep('compose_response')
-  if (respStep) {
-    const isDone = isStepComplete('compose_response') || steps.some(s => s.type === 'complete')
-    if (isDone) {
-      parts.push("🏁 Lastly, I have organized the metrics, interactive charts, and insights into a cohesive, conversational summary in plain English. Your final analysis is fully rendered and ready below!")
-    } else {
-      parts.push("💬 We are almost there! I am weaving the insights, visual charts, and key metrics into a clean, easy-to-read narrative and brainstorming some smart follow-up suggestions to help you drill deeper...")
-      return parts.join(" ")
+    else if (stepId === 'review_sql') {
+      const isDone = isStepComplete('review_sql')
+      if (isDone) {
+        const sqlValidated = stepObj.data?.sql_validated
+        if (sqlValidated) {
+          parts.push("🛡️ The query plan was checked by my database administrator review layer and passed all safety and ClickHouse syntax compliance checks.")
+        } else {
+          const feedback = stepObj.data?.dba_feedback || 'Syntax issue detected.'
+          parts.push(`🛡️ The database administrator review flagged issues: "${feedback}". Correcting the query...`)
+        }
+      } else {
+        parts.push("🛡️ I am sending the drafted SQL query plan to my DBA Review Agent to verify syntactic safety and database performance guidelines before execution...")
+        break
+      }
+    }
+    else if (stepId === 'execute_sql') {
+      const isDone = isStepComplete('execute_sql')
+      if (isDone) {
+        const count = stepObj.data?.row_count || 0
+        parts.push(`✅ I then opened a secure connection to our database servers, executed the retrieval, and successfully brought back **${count}** raw data records for analysis.`)
+      } else {
+        parts.push("🔋 I am connecting to our secure database servers to execute our query plan. I am initiating the query and waiting for the data rows to stream back safely...")
+        break
+      }
+    }
+    else if (stepId === 'analyze_insights') {
+      const isDone = isStepComplete('analyze_insights')
+      if (isDone) {
+        const insights = stepObj.data?.insights || []
+        parts.push(`📊 After pulling the numbers, I ran statistical checks to spot performance patterns. I've distilled **${insights.length}** takeaways, highlighting milestones and anomalies.`)
+      } else {
+        parts.push("📊 I have the raw numbers! Now, I am running deep statistical summaries to highlight key metrics, identify unexpected anomalies, compare performance across platforms, and extract the takeaways...")
+        break
+      }
+    }
+    else if (stepId === 'review_insights') {
+      const isDone = isStepComplete('review_insights')
+      if (isDone) {
+        const validated = stepObj.data?.insights_validated
+        if (validated) {
+          parts.push("🎯 The generated insights have been validated against the raw data rows and passed all reflection and factual consistency checks.")
+        } else {
+          const feedback = stepObj.data?.critic_feedback || 'Mismatch detected.'
+          parts.push(`🎯 The Critic Reflection agent flagged a discrepancy: "${feedback}". Re-generating insights with correction feedback...`)
+        }
+      } else {
+        parts.push("🎯 I am auditing the insights against the raw database rows using a Critic Reflection check to eliminate any numerical hallucinations or mismatches...")
+        break
+      }
+    }
+    else if (stepId === 'generate_viz_config') {
+      const isDone = isStepComplete('generate_viz_config')
+      if (isDone) {
+        const chart = stepObj.data?.viz_type || 'table'
+        parts.push(`🎨 To make the findings easy to digest, I customized an interactive **${chart}** layout, choosing the best color palette and structure to present your trends visually.`)
+      } else {
+        parts.push("🎨 Next, I am designing a beautiful, interactive visual chart. I'm choosing the perfect layout (like a trend line, a bar breakdown, or a structured comparison table) and customizing the color palettes so it looks clean and professional...")
+        break
+      }
+    }
+    else if (stepId === 'compose_response') {
+      const isDone = isStepComplete('compose_response') || steps.some(s => s.type === 'complete')
+      if (isDone) {
+        parts.push("🏁 Lastly, I have organized the metrics, interactive charts, and insights into a cohesive, conversational summary in plain English. Your final analysis is fully rendered and ready below!")
+      } else {
+        parts.push("💬 We are almost there! I am weaving the insights, visual charts, and key metrics into a clean, easy-to-read narrative and brainstorming some smart follow-up suggestions to help you drill deeper...")
+        break
+      }
     }
   }
 
@@ -431,9 +432,9 @@ export const CommunicationAgent: React.FC<Props> = ({ steps, isLoading, theme = 
       }`}>
         <div className="flex items-start gap-2.5">
           <div className="flex-1">
-            <span className="font-medium inline-block text-slate-800 dark:text-zinc-200">
-              {summaryText}
-            </span>
+            <div className="font-medium prose prose-sm dark:prose-invert max-w-none text-slate-800 dark:text-zinc-200">
+              <ReactMarkdown>{summaryText}</ReactMarkdown>
+            </div>
             {isLoading && (
               <span className="inline-flex gap-1 ml-2 items-center">
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: '0ms' }} />
@@ -531,46 +532,16 @@ export const CommunicationAgent: React.FC<Props> = ({ steps, isLoading, theme = 
           )
         })}
       </div>
-
-      {/* Persistent Messenger Conversation Log */}
+      {/* Conversational Steps Narrative Summary */}
       {!summaryOnly && (
-        <div className={`text-xs p-2.5 rounded-xl border flex flex-col gap-2.5 max-h-48 overflow-y-auto ${
+        <div className={`text-xs p-3.5 mb-3.5 rounded-xl border leading-relaxed ${
           theme === 'dark'
             ? 'bg-zinc-950/60 border-zinc-800 text-zinc-300'
-            : 'bg-slate-50/80 border-slate-100 text-slate-600'
+            : 'bg-slate-50/80 border-slate-100/80 text-slate-600'
         }`}>
-          {agentMessages.map((msg, index) => (
-            <div
-              key={msg.id}
-              className={`flex items-start gap-2.5 animate-in fade-in slide-in-from-bottom-2 duration-300`}
-              style={{ animationDelay: `${index * 50}ms` }}
-            >
-              {/* Status indicator icon for bubble */}
-              <div className="mt-0.5 flex-shrink-0">
-                {msg.status === 'success' ? (
-                  <div className="w-4 h-4 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500">
-                    <Check size={10} strokeWidth={3} />
-                  </div>
-                ) : msg.status === 'error' ? (
-                  <div className="w-4 h-4 rounded-full bg-red-500/10 flex items-center justify-center text-red-500">
-                    <AlertCircle size={10} />
-                  </div>
-                ) : (
-                  <div className="w-4 h-4 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 animate-spin">
-                    <Loader size={10} />
-                  </div>
-                )}
-              </div>
-
-              {/* Message Text bubble */}
-              <div className="flex-1 text-[11px] leading-relaxed">
-                <p className="font-medium text-zinc-800 dark:text-zinc-200">
-                  {msg.text}
-                </p>
-              </div>
-            </div>
-          ))}
-          {/* Anchor for auto-scroll */}
+          <div className="font-medium prose prose-sm dark:prose-invert max-w-none text-xs text-slate-700 dark:text-zinc-300">
+            <ReactMarkdown>{getConversationalSummary(steps, isLoading)}</ReactMarkdown>
+          </div>
           <div ref={messagesEndRef} />
         </div>
       )}

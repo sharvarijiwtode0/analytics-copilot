@@ -261,13 +261,12 @@ async def generate_sql(state: AnalyticsState) -> AnalyticsState:
             log.warning("sql_gen.failed_to_fetch_schema", error=str(exc))
     schema_agent = DynamicSchemaAgent(datasource_id=datasource_id, schema=schema_data)
 
-    # Interactively expand relevant tables if we detect keywords in question (0ms overhead)
+    # Interactively expand relevant tables if we detect keywords or exact table names in question (0ms overhead)
     tables_in_context = [t.get("name") for t in tables if t.get("name")]
-    all_allowed_tables = schema_context.get("all_tables")
     expanded_table_names = schema_agent.scan_question_for_missing_tables(
         question, 
         tables_in_context, 
-        allowed_tables=all_allowed_tables
+        allowed_tables=None  # Bypass priority list restriction to allow querying any of the 172 tables on explicit request
     )
     
     if len(expanded_table_names) > len(tables_in_context):

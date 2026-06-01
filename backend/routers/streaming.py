@@ -131,112 +131,128 @@ async def _stream_agent_execution(
         yield f"data: {json.dumps({'type': 'complete', 'result': result})}\n\n"
         return
 
+    cached_sql = None
+    cached_viz_type = None
+
     # ─── QA MEMORY CHECK ─────────────────────────────────────────────────────
     try:
         from backend.services.knowledge.business_knowledge import get_qa_memory_service
         qa_service = get_qa_memory_service()
         cached = qa_service.search(question, user_id=user_id, threshold=0.92)
         if cached and cached.get("question"):
-            from backend.agent.utils import validate_cache_match
-            if validate_cache_match(question, cached["question"]):
-                async with AsyncSessionLocal() as session:
-                    # Save assistant message to database
-                    assistant_msg = Message(
-                        id=str(uuid.uuid4()),
-                        conversation_id=conv_id,
-                        role="assistant",
-                        content=cached.get("answer", ""),
-                        sql_query=cached.get("sql", ""),
-                        query_results={
-                            "columns": cached.get("columns", []),
-                            "rows": [],
-                            "row_count": 0,
-                        },
-                        viz_config=None,
-                        insights=[],
-                        follow_up_questions=[],
-                        model_used="qa_memory_cache",
-                        latency_ms=50,
-                        error=None,
-                    )
-                    session.add(assistant_msg)
-                    await session.commit()
-
-                result = {
-                    "conversation_id": conv_id,
-                    "message_id": assistant_msg.id,
-                    "text": cached.get("answer", ""),
-                    "chart": None,
-                    "insights": [],
-                    "key_metrics": {},
-                    "follow_up_questions": [],
-                    "sql": cached.get("sql", ""),
-                    "sql_explanation": "",
-                    "row_count": 0,
-                    "viz_type": cached.get("viz_type"),
-                    "columns": cached.get("columns", []),
-                    "rows": [],
-                    "total_latency_ms": 50,
-                    "model_used": "qa_memory_cache",
-                }
-                yield f"data: {json.dumps({'type': 'complete', 'result': result})}\n\n"
-                return
+            if cached.get("sql"):
+                # Database question: save query and bypass early-return
+                cached_sql = cached.get("sql")
+                cached_viz_type = cached.get("viz_type")
             else:
-                structlog.get_logger(__name__).info("stream_cache_check.rejected_due_to_mismatch", question=question, matched=cached["question"])
+                from backend.agent.utils import validate_cache_match
+                if validate_cache_match(question, cached["question"]):
+                    async with AsyncSessionLocal() as session:
+                        # Save assistant message to database
+                        assistant_msg = Message(
+                            id=str(uuid.uuid4()),
+                            conversation_id=conv_id,
+                            role="assistant",
+                            content=cached.get("answer", ""),
+                            sql_query="",
+                            query_results={
+                                "columns": cached.get("columns", []),
+                                "rows": [],
+                                "row_count": 0,
+                            },
+                            viz_config=None,
+                            insights=[],
+                            follow_up_questions=[],
+                            model_used="qa_memory_cache",
+                            latency_ms=50,
+                            error=None,
+                        )
+                        session.add(assistant_msg)
+                        await session.commit()
+
+                    result = {
+                        "conversation_id": conv_id,
+                        "message_id": assistant_msg.id,
+                        "text": cached.get("answer", ""),
+                        "chart": None,
+                        "insights": [],
+                        "key_metrics": {},
+                        "follow_up_questions": [],
+                        "sql": "",
+                        "sql_explanation": "",
+                        "row_count": 0,
+                        "viz_type": cached.get("viz_type"),
+                        "columns": cached.get("columns", []),
+                        "rows": [],
+                        "total_latency_ms": 50,
+                        "model_used": "qa_memory_cache",
+                    }
+                    yield f"data: {json.dumps({'type': 'complete', 'result': result})}\n\n"
+                    return
+                else:
+                    structlog.get_logger(__name__).info("stream_cache_check.rejected_due_to_mismatch", question=question, matched=cached["question"])
     except Exception as e:
         structlog.get_logger(__name__).warning("stream_cache_check.failed", error=str(e))
 
     # ─── LLM CACHE CHECK ──────────────────────────────────────────────────────
-    try:
-        from backend.services.llm_cache import get_cache as _get_llm_cache
-        cache = _get_llm_cache()
-        cached_llm = await cache.get_async(question=question, datasource_id=datasource_id, user_id=user_id)
-        if cached_llm:
-            async with AsyncSessionLocal() as session:
-                # Save assistant message to database
-                assistant_msg = Message(
-                    id=str(uuid.uuid4()),
-                    conversation_id=conv_id,
-                    role="assistant",
-                    content=cached_llm.get("text", ""),
-                    sql_query=cached_llm.get("sql", ""),
-                    query_results={
-                        "columns": cached_llm.get("columns", []),
-                        "rows": cached_llm.get("rows", [])[:50],
-                        "row_count": cached_llm.get("row_count", 0),
-                    },
-                    viz_config=cached_llm.get("chart"),
-                    insights=cached_llm.get("insights", []),
-                    follow_up_questions=cached_llm.get("follow_up_questions", []),
-                    model_used=cached_llm.get("model_used", "cache"),
-                    latency_ms=0,
-                    error=None,
-                )
-                session.add(assistant_msg)
-                await session.commit()
+    if not cached_sql:
+        try:
+            from backend.services.llm_cache import get_cache as _get_llm_cache
+            cache = _get_llm_cache()
+            cached_llm = await cache.get_async(question=question, datasource_id=datasource_id, user_id=user_id)
+            if cached_llm:
+                import time as _time
+                age = _time.time() - cached_llm.get("cached_at", 0)
+                if cached_llm.get("sql") and age > 300:
+                    # Database question and older than 5 minutes -> Query Caching only (run live)
+                    cached_sql = cached_llm.get("sql")
+                    cached_viz_type = cached_llm.get("viz_type")
+                else:
+                    async with AsyncSessionLocal() as session:
+                        # Save assistant message to database
+                        assistant_msg = Message(
+                            id=str(uuid.uuid4()),
+                            conversation_id=conv_id,
+                            role="assistant",
+                            content=cached_llm.get("text", ""),
+                            sql_query="",
+                            query_results={
+                                "columns": cached_llm.get("columns", []),
+                                "rows": cached_llm.get("rows", [])[:50],
+                                "row_count": cached_llm.get("row_count", 0),
+                            },
+                            viz_config=cached_llm.get("chart"),
+                            insights=cached_llm.get("insights", []),
+                            follow_up_questions=cached_llm.get("follow_up_questions", []),
+                            model_used=cached_llm.get("model_used", "cache"),
+                            latency_ms=0,
+                            error=None,
+                        )
+                        session.add(assistant_msg)
+                        await session.commit()
 
-            result = {
-                "conversation_id": conv_id,
-                "message_id": assistant_msg.id,
-                "text": cached_llm.get("text", ""),
-                "chart": cached_llm.get("chart"),
-                "insights": cached_llm.get("insights", []),
-                "key_metrics": cached_llm.get("key_metrics", {}),
-                "follow_up_questions": cached_llm.get("follow_up_questions", []),
-                "sql": cached_llm.get("sql", ""),
-                "sql_explanation": cached_llm.get("sql_explanation", ""),
-                "row_count": cached_llm.get("row_count", 0),
-                "viz_type": cached_llm.get("viz_type"),
-                "columns": cached_llm.get("columns", []),
-                "rows": cached_llm.get("rows", []),
-                "total_latency_ms": 0,
-                "model_used": cached_llm.get("model_used", "cache"),
-            }
-            yield f"data: {json.dumps({'type': 'progress', 'step': 'cache_hit', 'progress': 100, 'message': 'Loaded from cache'})}\n\n"
-            yield f"data: {json.dumps({'type': 'complete', 'result': result})}\n\n"
-            return
-    except Exception as e:
-        structlog.get_logger(__name__).warning("stream_llm_cache_check.failed", error=str(e))
+                    result = {
+                        "conversation_id": conv_id,
+                        "message_id": assistant_msg.id,
+                        "text": cached_llm.get("text", ""),
+                        "chart": cached_llm.get("chart"),
+                        "insights": cached_llm.get("insights", []),
+                        "key_metrics": cached_llm.get("key_metrics", {}),
+                        "follow_up_questions": cached_llm.get("follow_up_questions", []),
+                        "sql": "",
+                        "sql_explanation": "",
+                        "row_count": cached_llm.get("row_count", 0),
+                        "viz_type": cached_llm.get("viz_type"),
+                        "columns": cached_llm.get("columns", []),
+                        "rows": [],
+                        "total_latency_ms": 0,
+                        "model_used": cached_llm.get("model_used", "cache"),
+                    }
+                    yield f"data: {json.dumps({'type': 'progress', 'step': 'cache_hit', 'progress': 100, 'message': 'Loaded from cache'})}\n\n"
+                    yield f"data: {json.dumps({'type': 'complete', 'result': result})}\n\n"
+                    return
+        except Exception as e:
+            structlog.get_logger(__name__).warning("stream_llm_cache_check.failed", error=str(e))
 
     # Run agent with REAL progress tracking
     try:
@@ -250,6 +266,31 @@ async def _stream_agent_execution(
             user_id=user_id,
             step_errors=[],
         )
+        if cached_sql:
+            initial_state["sql_query"] = cached_sql
+            initial_state["sql_validated"] = True
+            initial_state["intent"] = {
+                "type": "data_query",
+                "confidence": 1.0,
+                "rephrased_question": question,
+                "chart_type_hint": cached_viz_type
+            }
+            from backend.services.db_intelligence import get_db_context
+            try:
+                db_ctx = get_db_context()
+                tables = db_ctx.get("tables", {})
+                matched_tables = []
+                sql_lower = cached_sql.lower()
+                for tname in tables.keys():
+                    if tname.lower() in sql_lower:
+                        matched_tables.append({"name": tname})
+                initial_state["schema_context"] = {
+                    "relevant_tables": matched_tables
+                }
+            except Exception:
+                initial_state["schema_context"] = {
+                    "relevant_tables": [{"name": "combined_sales_final"}]
+                }
 
         # Stream real progress from graph execution
         async for update in graph_runner.astream(initial_state):

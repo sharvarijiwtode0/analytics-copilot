@@ -17,15 +17,34 @@ log = structlog.get_logger(__name__)
 
 # Keyword → table mapping for instant fallback when LLM JSON fails
 _TABLE_KEYWORDS: dict[str, list[str]] = {
-    "combined_sales_final":          ["revenue", "sales", "order", "platform", "channel", "subtotal", "amount", "income"],
-    "product_master":                ["product", "item", "sku", "category", "brand", "name", "skincare", "makeup", "haircare"],
+    "combined_sales_final":          ["revenue", "sales", "order", "platform", "channel", "subtotal", "amount", "income", "growth", "total sales", "overall revenue"],
+    "product_master":                ["product", "item", "sku", "category", "brand", "name", "skincare", "makeup", "haircare", "mrp", "cogs", "margin", "wholesale cost"],
     "product_catlog":                ["catalog", "catlog", "catalogue", "listing"],
-    "inventory_sales_overview_new":  ["inventory", "stock", "warehouse", "restock", "supply", "on hand", "low stock"],
-    "platform_sku_mapping":          ["mapping", "external sku", "platform sku"],
-    "shopify_orders":                ["shopify", "online store", "website"],
-    "unicomm_sales_final":           ["unicomm", "unicommerce"],
-    "zoho_sales_final":              ["zoho"],
-    "lead_time":                     ["lead time", "replenishment", "delivery days"],
+    "inventory_sales_overview_new":  ["inventory", "stock", "warehouse", "restock", "supply", "on hand", "low stock", "sell-through", "stock level"],
+    "platform_sku_mapping":          ["mapping", "external sku", "platform sku", "sku map"],
+    "shopify_orders":                ["shopify", "online store", "website", "storefront", "web order"],
+    "unicomm_sales_final":           ["unicomm", "unicommerce", "marketplace"],
+    "zoho_sales_final":              ["zoho", "zoho sales", "b2b sales", "distributor invoice"],
+    "zoho_purchase_orders":          ["purchase order", "po", "zoho po", "procurement", "supply purchase"],
+    "inventory_ledger":              ["ledger", "stock ledger", "inventory ledger", "stock adjustments"],
+    "product_hierarchy":             ["hierarchy", "category tree", "taxonomies"],
+    "lead_time":                     ["lead time", "supplier delay", "shipment days", "replenishment days"],
+}
+
+# 1-2 sentence business purpose descriptions for compact schema selection context
+_TABLE_PURPOSES: dict[str, str] = {
+    "combined_sales_final":          "Overall sales, revenue, orders, growth, and channel aggregates across Nykaa, POS, Myntra, Shopify, AJIO, direct, POS, and all platforms. Use this for general revenue and sales volume analysis.",
+    "product_master":                "Master catalog of products, categories (Skincare, Makeup, Haircare), brand names, MRP, COGS, and margins. Join with sales/inventory tables via internal_sku.",
+    "product_catlog":                "Platform SKU mappings and specific listings.",
+    "inventory_sales_overview_new":  "Daily inventory snapshots, warehouse stock levels, stock on hand (OOS/low stock), facilities, and sell-through metrics.",
+    "platform_sku_mapping":          "Mapping of external platform SKUs to internal SKUs.",
+    "shopify_orders":                "Shopify website/online storefront D2C orders only. Use only if Shopify/website is explicitly requested.",
+    "unicomm_sales_final":           "Unicommerce marketplace OMS orders and channel shipments.",
+    "zoho_sales_final":              "Zoho invoices, B2B wholesale orders, and trade customer sales.",
+    "zoho_purchase_orders":          "Zoho Purchase Orders (procurement, supplier orders, incoming receipts).",
+    "inventory_ledger":              "Inventory ledger transaction logs showing detailed stock inflows/outflows over time.",
+    "product_hierarchy":             "Product tree parent-child relationships for combo/kit/variant products.",
+    "lead_time":                     "Supplier lead times, average replenishment delay, and vendor shipment days.",
 }
 
 
@@ -115,10 +134,9 @@ async def discover_schema(state: AnalyticsState) -> AnalyticsState:
     if not tables:
         return {**state, "schema_context": {"relevant_tables": [], "error": "No tables found"}}
 
-    # Build a COMPACT schema summary — only table name + column names (no types, no row counts)
-    # This keeps the prompt under 400 tokens so the 8B model returns valid JSON reliably.
+    # Build a COMPACT schema summary — includes table name, its high-signal business purpose, and column names
     schema_summary = "\n".join(
-        f"{t['name']}: {', '.join(c['name'] for c in t.get('columns', [])[:25])}"
+        f"- {t['name']} ({_TABLE_PURPOSES.get(t['name'], t.get('description') or 'Operational dataset')}) - Columns: {', '.join(c['name'] for c in t.get('columns', [])[:20])}"
         for t in tables[:20]
     )
 

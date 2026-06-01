@@ -118,10 +118,28 @@ class StreamingGraphRunner:
                 "message": f"Processing {step}...",
                 "description": ""
             })
+            
+            # Dynamic Paraphraser Integration!
+            # Generate descriptive, highly warm analyst narratives locally.
+            from backend.services.hf_loader import hf_loader
+            tables = None
+            if data and isinstance(data, dict):
+                tables = data.get("tables")
+            
+            warm_message = hf_loader.generate_warm_narrative(
+                step=step,
+                tables=tables,
+                domain="E-Commerce"
+            )
+            
             self.progress_callback(
                 step,
                 step_info["progress"],
-                {**step_info, "data": data or {}}
+                {
+                    **step_info,
+                    "message": warm_message, # Override with our beautifully dynamic human message
+                    "data": data or {}
+                }
             )
 
     def _wrap_node(self, original_func, node_name: str):
@@ -152,8 +170,16 @@ class StreamingGraphRunner:
 
                 elif node_name == "discover_schema":
                     # Emit tables being used
-                    relevant_tables = result.get("relevant_tables", [])
-                    partial_data["tables"] = relevant_tables
+                    sc = result.get("schema_context", {})
+                    relevant_tables = sc.get("relevant_tables", [])
+                    table_names = []
+                    if isinstance(relevant_tables, list):
+                        for t in relevant_tables:
+                            if isinstance(t, dict) and "name" in t:
+                                table_names.append(t["name"])
+                            elif isinstance(t, str):
+                                table_names.append(t)
+                    partial_data["tables"] = table_names
 
                 elif node_name == "generate_sql":
                     partial_data["sql"] = result.get("sql_query", "")

@@ -1,12 +1,12 @@
 {
   "database": "limese",
   "host": "118.95.209.221:8123",
-  "scanned_at": "2026-05-28T08:37:21.297042",
-  "scan_duration_seconds": 423.9,
+  "scanned_at": "2026-06-01T05:47:23.794643",
+  "scan_duration_seconds": 288.2,
   "tables": {
     "all_sales": {
       "table": "all_sales",
-      "row_count": 354540,
+      "row_count": 354572,
       "total_columns": 79,
       "columns": [
         {
@@ -406,8 +406,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to core Limese channel.",
+      "aliases": [
+        "sales",
+        "all",
+        "core"
+      ]
     },
     "all_sales_archive": {
       "table": "all_sales_archive",
@@ -806,8 +810,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "sales",
+        "all",
+        "staging",
+        "archive"
+      ]
     },
     "all_sales_final": {
       "table": "all_sales_final",
@@ -1206,8 +1215,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to core Limese channel.",
+      "aliases": [
+        "sales",
+        "all",
+        "core",
+        "final"
+      ]
     },
     "all_sales_table": {
       "table": "all_sales_table",
@@ -1261,8 +1275,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to core Limese channel.",
+      "aliases": [
+        "sales",
+        "all",
+        "core",
+        "table"
+      ]
     },
     "all_sales_temp": {
       "table": "all_sales_temp",
@@ -1661,8 +1680,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "sales",
+        "all",
+        "temp",
+        "staging"
+      ]
     },
     "all_sales_view": {
       "table": "all_sales_view",
@@ -1716,8 +1740,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to core Limese channel.",
+      "aliases": [
+        "sales",
+        "all",
+        "view",
+        "core"
+      ]
     },
     "b2b_outward_sales": {
       "table": "b2b_outward_sales",
@@ -1751,8 +1780,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to core Limese channel.",
+      "aliases": [
+        "sales",
+        "outward",
+        "core",
+        "b2b"
+      ]
     },
     "b2b_sales_overview": {
       "table": "b2b_sales_overview",
@@ -1806,8 +1840,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to core Limese channel.",
+      "aliases": [
+        "sales",
+        "core",
+        "overview",
+        "b2b"
+      ]
     },
     "combined_sales": {
       "table": "combined_sales",
@@ -2136,12 +2175,16 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to core Limese channel.",
+      "aliases": [
+        "sales",
+        "core",
+        "combined"
+      ]
     },
     "combined_sales_final": {
       "table": "combined_sales_final",
-      "row_count": 341475,
+      "row_count": 341507,
       "total_columns": 65,
       "columns": [
         {
@@ -2149,7 +2192,7 @@
           "type": "LowCardinality(String)",
           "annotation": "",
           "unique_count": 1,
-          "non_null_count": 341475,
+          "non_null_count": 341507,
           "null_count": 0,
           "constant_value": "Limese",
           "is_constant": true
@@ -2159,7 +2202,7 @@
           "type": "LowCardinality(String)",
           "annotation": "CONSTANT 'Limese' for all rows \u2014 NEVER group by this for platform analysis.",
           "unique_count": 1,
-          "non_null_count": 341475,
+          "non_null_count": 341507,
           "null_count": 0,
           "constant_value": "Limese",
           "is_constant": true
@@ -2169,7 +2212,7 @@
           "type": "LowCardinality(Nullable(String))",
           "annotation": "DIMENSION \u2014 use this to GROUP BY platform. Contains exact platform names shown below.",
           "unique_count": 13,
-          "non_null_count": 341475,
+          "non_null_count": 341507,
           "null_count": 0,
           "exact_values": [
             "AJIO Online",
@@ -2192,8 +2235,8 @@
           "name": "oms_order_no",
           "type": "String",
           "annotation": "",
-          "unique_count": 27630,
-          "non_null_count": 341475,
+          "unique_count": 27632,
+          "non_null_count": 341507,
           "null_count": 0
         },
         {
@@ -2202,14 +2245,14 @@
           "annotation": "",
           "unique_count": 5426,
           "non_null_count": 131520,
-          "null_count": 209955
+          "null_count": 209987
         },
         {
           "name": "external_sku",
           "type": "Nullable(String)",
           "annotation": "Platform-specific SKU code.",
           "unique_count": 3104,
-          "non_null_count": 341470,
+          "non_null_count": 341502,
           "null_count": 5
         },
         {
@@ -2218,23 +2261,23 @@
           "annotation": "Join key \u2192 product_master.internal_sku for product names and category.",
           "unique_count": 516,
           "non_null_count": 4884,
-          "null_count": 336591
+          "null_count": 336623
         },
         {
           "name": "erp_order_no",
           "type": "String",
           "annotation": "",
-          "unique_count": 27572,
-          "non_null_count": 341475,
+          "unique_count": 27578,
+          "non_null_count": 341507,
           "null_count": 0
         },
         {
           "name": "invoice_number",
           "type": "Nullable(String)",
           "annotation": "",
-          "unique_count": 1642,
-          "non_null_count": 3683,
-          "null_count": 337792
+          "unique_count": 1646,
+          "non_null_count": 3688,
+          "null_count": 337819
         },
         {
           "name": "invoice_date",
@@ -2242,7 +2285,7 @@
           "annotation": "",
           "unique_count": 0,
           "non_null_count": 0,
-          "null_count": 341475,
+          "null_count": 341507,
           "date_range": {
             "min": "None",
             "max": "None"
@@ -2252,12 +2295,12 @@
           "name": "date_created",
           "type": "DateTime64(3)",
           "annotation": "Primary date column. Filter: date_created >= '2025-01-01'. Group: formatDateTime(date_created, '%Y-%m').",
-          "unique_count": 22431,
-          "non_null_count": 341475,
+          "unique_count": 22433,
+          "non_null_count": 341507,
           "null_count": 0,
           "date_range": {
             "min": "2025-01-01 00:00:00.000",
-            "max": "2026-05-27 16:29:21.000"
+            "max": "2026-05-28 00:00:00.000"
           }
         },
         {
@@ -2266,7 +2309,7 @@
           "annotation": "",
           "unique_count": 1815,
           "non_null_count": 174754,
-          "null_count": 166721,
+          "null_count": 166753,
           "date_range": {
             "min": "2025-01-01 00:00:00.000",
             "max": "2026-05-27 14:38:13.000"
@@ -2278,7 +2321,7 @@
           "annotation": "",
           "unique_count": 270,
           "non_null_count": 131520,
-          "null_count": 209955,
+          "null_count": 209987,
           "date_range": {
             "min": "1970-01-01 05:30:00.000",
             "max": "2026-05-02 00:00:00.000"
@@ -2289,7 +2332,7 @@
           "type": "LowCardinality(Nullable(String))",
           "annotation": "",
           "unique_count": 18,
-          "non_null_count": 164439,
+          "non_null_count": 164471,
           "null_count": 177036,
           "exact_values": [
             "C",
@@ -2318,7 +2361,7 @@
           "type": "LowCardinality(Nullable(String))",
           "annotation": "",
           "unique_count": 18,
-          "non_null_count": 164439,
+          "non_null_count": 164471,
           "null_count": 177036,
           "exact_values": [
             "C",
@@ -2347,7 +2390,7 @@
           "type": "LowCardinality(Nullable(String))",
           "annotation": "Order outcome. ALWAYS exclude: NOT IN ('cancelled','Cancelled','CANCELLED','returned','Returned').",
           "unique_count": 6,
-          "non_null_count": 341475,
+          "non_null_count": 341507,
           "null_count": 0,
           "exact_values": [
             "Cancelled",
@@ -2365,7 +2408,7 @@
           "annotation": "",
           "unique_count": 269,
           "non_null_count": 195416,
-          "null_count": 146059,
+          "null_count": 146091,
           "numerical_range": {
             "min": 0.0,
             "max": 9620.0,
@@ -2376,8 +2419,8 @@
           "name": "product_sp",
           "type": "Nullable(Float32)",
           "annotation": "",
-          "unique_count": 111035,
-          "non_null_count": 341475,
+          "unique_count": 111046,
+          "non_null_count": 341507,
           "null_count": 0,
           "numerical_range": {
             "min": 0.0,
@@ -2391,7 +2434,7 @@
           "annotation": "",
           "unique_count": 4061,
           "non_null_count": 195416,
-          "null_count": 146059,
+          "null_count": 146091,
           "numerical_range": {
             "min": 0.0,
             "max": 10400850.0,
@@ -2404,7 +2447,7 @@
           "annotation": "REVENUE per line item \u2014 USE THIS for revenue/sales. Do NOT use order_price (full order total).",
           "unique_count": 36685,
           "non_null_count": 336091,
-          "null_count": 5384,
+          "null_count": 5416,
           "numerical_range": {
             "min": -7518.14990234375,
             "max": 26688616.0,
@@ -2415,26 +2458,26 @@
           "name": "row_sp",
           "type": "Nullable(Float32)",
           "annotation": "",
-          "unique_count": 130178,
-          "non_null_count": 341475,
+          "unique_count": 130182,
+          "non_null_count": 341507,
           "null_count": 0,
           "numerical_range": {
             "min": -2000.0,
             "max": 26688472.0,
-            "avg": 18946.14
+            "avg": 18944.6
           }
         },
         {
           "name": "order_price",
           "type": "Nullable(Float32)",
           "annotation": "",
-          "unique_count": 7781,
-          "non_null_count": 341475,
+          "unique_count": 7783,
+          "non_null_count": 341507,
           "null_count": 0,
           "numerical_range": {
             "min": 0.0,
             "max": 75683928.0,
-            "avg": 2950110.42
+            "avg": 2949837.85
           }
         },
         {
@@ -2443,7 +2486,7 @@
           "annotation": "",
           "unique_count": 96116,
           "non_null_count": 330255,
-          "null_count": 11220,
+          "null_count": 11252,
           "numerical_range": {
             "min": -10825.0,
             "max": 4044606.0,
@@ -2456,7 +2499,7 @@
           "annotation": "",
           "unique_count": 63,
           "non_null_count": 138418,
-          "null_count": 203057,
+          "null_count": 203089,
           "exact_values": [
             "0.0",
             "100.0",
@@ -2530,14 +2573,14 @@
           "annotation": "",
           "unique_count": 0,
           "non_null_count": 0,
-          "null_count": 341475
+          "null_count": 341507
         },
         {
           "name": "quantity_ordered",
           "type": "Nullable(Float32)",
           "annotation": "UNITS per line \u2014 USE THIS for unit counts. Do NOT use shipped_qty (always 0).",
           "unique_count": 1449,
-          "non_null_count": 341475,
+          "non_null_count": 341507,
           "null_count": 0,
           "numerical_range": {
             "min": -1.0,
@@ -2550,7 +2593,7 @@
           "type": "Nullable(Float32)",
           "annotation": "",
           "unique_count": 11,
-          "non_null_count": 25472,
+          "non_null_count": 25504,
           "null_count": 316003,
           "exact_values": [
             "0.0",
@@ -2573,7 +2616,7 @@
           "annotation": "",
           "unique_count": 0,
           "non_null_count": 0,
-          "null_count": 341475
+          "null_count": 341507
         },
         {
           "name": "rto_qty",
@@ -2581,7 +2624,7 @@
           "annotation": "",
           "unique_count": 0,
           "non_null_count": 0,
-          "null_count": 341475
+          "null_count": 341507
         },
         {
           "name": "dto_qty",
@@ -2589,14 +2632,14 @@
           "annotation": "",
           "unique_count": 0,
           "non_null_count": 0,
-          "null_count": 341475
+          "null_count": 341507
         },
         {
           "name": "return_qty",
           "type": "Nullable(Float32)",
           "annotation": "",
           "unique_count": 7,
-          "non_null_count": 25472,
+          "non_null_count": 25504,
           "null_count": 316003,
           "exact_values": [
             "0.0",
@@ -2615,7 +2658,7 @@
           "annotation": "",
           "unique_count": 129,
           "non_null_count": 740,
-          "null_count": 340735,
+          "null_count": 340767,
           "exact_values": [
             "",
             "0ad512f6c8a7",
@@ -2755,7 +2798,7 @@
           "annotation": "",
           "unique_count": 0,
           "non_null_count": 0,
-          "null_count": 341475
+          "null_count": 341507
         },
         {
           "name": "ordertype",
@@ -2763,7 +2806,7 @@
           "annotation": "",
           "unique_count": 0,
           "non_null_count": 0,
-          "null_count": 341475
+          "null_count": 341507
         },
         {
           "name": "store_code",
@@ -2771,7 +2814,7 @@
           "annotation": "",
           "unique_count": 183,
           "non_null_count": 37944,
-          "null_count": 303531,
+          "null_count": 303563,
           "exact_values": [
             "L27",
             "L28",
@@ -2965,7 +3008,7 @@
           "annotation": "",
           "unique_count": 185,
           "non_null_count": 37944,
-          "null_count": 303531,
+          "null_count": 303563,
           "exact_values": [
             "",
             "Nykaa Airport GMR Hyderabad",
@@ -3161,7 +3204,7 @@
           "annotation": "",
           "unique_count": 1,
           "non_null_count": 133131,
-          "null_count": 208344,
+          "null_count": 208376,
           "constant_value": "None",
           "is_constant": true
         },
@@ -3171,7 +3214,7 @@
           "annotation": "",
           "unique_count": 13,
           "non_null_count": 138967,
-          "null_count": 202508,
+          "null_count": 202540,
           "exact_values": [
             "01. Razorpay UPI, Cards, Wallets",
             "1Razorpay - UPI, Cards, Wallets, NB",
@@ -3195,7 +3238,7 @@
           "annotation": "",
           "unique_count": 13,
           "non_null_count": 135780,
-          "null_count": 205695,
+          "null_count": 205727,
           "exact_values": [
             "0",
             "01. Razorpay UPI, Cards, Wallets",
@@ -3219,7 +3262,7 @@
           "annotation": "",
           "unique_count": 8,
           "non_null_count": 133131,
-          "null_count": 208344,
+          "null_count": 208376,
           "exact_values": [
             "Due on Receipt",
             "Net 15",
@@ -3238,7 +3281,7 @@
           "annotation": "",
           "unique_count": 144,
           "non_null_count": 131520,
-          "null_count": 209955,
+          "null_count": 209987,
           "exact_values": [
             "2327129000000077517",
             "2327129000000077545",
@@ -3393,7 +3436,7 @@
           "annotation": "",
           "unique_count": 951,
           "non_null_count": 7447,
-          "null_count": 334028
+          "null_count": 334060
         },
         {
           "name": "customer_mobile",
@@ -3401,7 +3444,7 @@
           "annotation": "",
           "unique_count": 978,
           "non_null_count": 8219,
-          "null_count": 333256
+          "null_count": 333288
         },
         {
           "name": "gender",
@@ -3409,7 +3452,7 @@
           "annotation": "",
           "unique_count": 0,
           "non_null_count": 0,
-          "null_count": 341475
+          "null_count": 341507
         },
         {
           "name": "first_name",
@@ -3417,7 +3460,7 @@
           "annotation": "",
           "unique_count": 1128,
           "non_null_count": 138967,
-          "null_count": 202508
+          "null_count": 202540
         },
         {
           "name": "last_name",
@@ -3425,7 +3468,7 @@
           "annotation": "",
           "unique_count": 0,
           "non_null_count": 0,
-          "null_count": 341475
+          "null_count": 341507
         },
         {
           "name": "utm_source_first_touch",
@@ -3433,7 +3476,7 @@
           "annotation": "",
           "unique_count": 0,
           "non_null_count": 0,
-          "null_count": 341475
+          "null_count": 341507
         },
         {
           "name": "utm_medium_first_touch",
@@ -3441,7 +3484,7 @@
           "annotation": "",
           "unique_count": 0,
           "non_null_count": 0,
-          "null_count": 341475
+          "null_count": 341507
         },
         {
           "name": "utm_campaign_first_touch",
@@ -3449,7 +3492,7 @@
           "annotation": "",
           "unique_count": 0,
           "non_null_count": 0,
-          "null_count": 341475
+          "null_count": 341507
         },
         {
           "name": "utm_source",
@@ -3457,7 +3500,7 @@
           "annotation": "",
           "unique_count": 0,
           "non_null_count": 0,
-          "null_count": 341475
+          "null_count": 341507
         },
         {
           "name": "utm_medium",
@@ -3465,7 +3508,7 @@
           "annotation": "",
           "unique_count": 0,
           "non_null_count": 0,
-          "null_count": 341475
+          "null_count": 341507
         },
         {
           "name": "utm_campaign",
@@ -3473,7 +3516,7 @@
           "annotation": "",
           "unique_count": 0,
           "non_null_count": 0,
-          "null_count": 341475
+          "null_count": 341507
         },
         {
           "name": "full_referrer",
@@ -3481,7 +3524,7 @@
           "annotation": "",
           "unique_count": 0,
           "non_null_count": 0,
-          "null_count": 341475
+          "null_count": 341507
         },
         {
           "name": "referrer_type",
@@ -3489,7 +3532,7 @@
           "annotation": "",
           "unique_count": 0,
           "non_null_count": 0,
-          "null_count": 341475
+          "null_count": 341507
         },
         {
           "name": "marketing_channel",
@@ -3497,7 +3540,7 @@
           "annotation": "",
           "unique_count": 0,
           "non_null_count": 0,
-          "null_count": 341475
+          "null_count": 341507
         },
         {
           "name": "oms_utm_source",
@@ -3505,7 +3548,7 @@
           "annotation": "",
           "unique_count": 0,
           "non_null_count": 0,
-          "null_count": 341475
+          "null_count": 341507
         },
         {
           "name": "oms_utm_medium",
@@ -3513,7 +3556,7 @@
           "annotation": "",
           "unique_count": 0,
           "non_null_count": 0,
-          "null_count": 341475
+          "null_count": 341507
         },
         {
           "name": "oms_utm_campaign",
@@ -3521,7 +3564,7 @@
           "annotation": "",
           "unique_count": 0,
           "non_null_count": 0,
-          "null_count": 341475
+          "null_count": 341507
         },
         {
           "name": "oms_utm_content",
@@ -3529,7 +3572,7 @@
           "annotation": "",
           "unique_count": 0,
           "non_null_count": 0,
-          "null_count": 341475
+          "null_count": 341507
         },
         {
           "name": "oms_utm_adset",
@@ -3537,7 +3580,7 @@
           "annotation": "",
           "unique_count": 0,
           "non_null_count": 0,
-          "null_count": 341475
+          "null_count": 341507
         },
         {
           "name": "shipping_pincode",
@@ -3545,7 +3588,7 @@
           "annotation": "",
           "unique_count": 4735,
           "non_null_count": 153219,
-          "null_count": 188256
+          "null_count": 188288
         },
         {
           "name": "shipping_state",
@@ -3553,7 +3596,7 @@
           "annotation": "",
           "unique_count": 18,
           "non_null_count": 2649,
-          "null_count": 338826,
+          "null_count": 338858,
           "exact_values": [
             "Andhra Pradesh",
             "Assam",
@@ -3581,8 +3624,8 @@
           "type": "LowCardinality(Nullable(String))",
           "annotation": "",
           "unique_count": 22,
-          "non_null_count": 138398,
-          "null_count": 203077,
+          "non_null_count": 138403,
+          "null_count": 203104,
           "exact_values": [
             "Amazon FBA",
             "B2C",
@@ -3614,7 +3657,7 @@
           "type": "LowCardinality(String)",
           "annotation": "",
           "unique_count": 8,
-          "non_null_count": 341475,
+          "non_null_count": 341507,
           "null_count": 0,
           "exact_values": [
             "Flipkart_Earn_More",
@@ -3632,8 +3675,8 @@
           "name": "last_etl_update",
           "type": "Nullable(DateTime64(3))",
           "annotation": "",
-          "unique_count": 111,
-          "non_null_count": 341475,
+          "unique_count": 115,
+          "non_null_count": 341507,
           "null_count": 0,
           "exact_values": [
             "2026-01-21 00:20:58+05:30",
@@ -3746,12 +3789,16 @@
             "2026-05-25 09:00:04+05:30",
             "2026-05-26 09:00:04+05:30",
             "2026-05-27 09:00:04+05:30",
-            "2026-05-28 09:00:05+05:30"
+            "2026-05-28 09:00:05+05:30",
+            "2026-05-29 09:00:03+05:30",
+            "2026-05-30 09:00:05+05:30",
+            "2026-05-31 09:00:04+05:30",
+            "2026-06-01 09:00:05+05:30"
           ],
           "is_categorical": true,
           "date_range": {
             "min": "2026-01-21 00:20:58.000",
-            "max": "2026-05-28 09:00:05.000"
+            "max": "2026-06-01 09:00:05.000"
           }
         }
       ],
@@ -3893,12 +3940,18 @@
       ],
       "business_facts": {
         "total_revenue_crore": 563.95,
-        "total_orders": 286259,
-        "total_units": 5710388,
-        "date_range": "2025-01-01 00:00:00+05:30 to 2026-05-27 16:29:21+05:30"
+        "total_orders": 286285,
+        "total_units": 5710463,
+        "date_range": "2025-01-01 00:00:00+05:30 to 2026-05-28 00:00:00+05:30"
       },
-      "description": "",
-      "aliases": []
+      "description": "PRIMARY SALES TABLE \u2014 all orders across 13 platforms. 340K+ rows, Jan 2025\u2013present. Total revenue ~\u20b9570 crore. Total units ~5.7M (quantity_ordered). EXACT platform names (case-sensitive for WHERE filters):   'direct_sales' (131K orders), 'Nykaa Beauty' (121K), 'POS' (37K),   'Myntra_PPMP' (19K), 'Nykaa Man' (11K), 'LIMESE_ONLINE' (5.8K),   'Flipkart_Earn_More' (5.3K), 'TIRA Online' (3.5K), 'Shopify' (1.6K),   'AJIO Online' (1.4K), 'TIRA Offline' (1.4K), 'AZORTE Online' (114). CRITICAL COLUMN NAMES (use exactly):   date_created (DateTime \u2014 primary date), sales_platform (exact names above),   internal_sku (join key to product_master),   row_subtotal (revenue per line \u2014 USE FOR REVENUE),   quantity_ordered (units ordered \u2014 USE FOR UNITS, NOT shipped_qty which is 0),   final_status, product_mrp, product_sp. ALWAYS add: final_status NOT IN ('cancelled','Cancelled','CANCELLED','returned','Returned'). DATE FUNCTIONS: toYear(date_created), toMonth(date_created),   formatDateTime(date_created, '%Y-%m') for year-month. JOIN: LEFT JOIN product_master pm ON csf.internal_sku = pm.internal_sku",
+      "aliases": [
+        "overall sales",
+        "total revenue",
+        "combined revenue",
+        "sales platform",
+        "sales channels"
+      ]
     },
     "combined_sales_final_archive": {
       "table": "combined_sales_final_archive",
@@ -4232,8 +4285,14 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "final",
+        "staging",
+        "archive",
+        "combined",
+        "sales"
+      ]
     },
     "combined_sales_temp": {
       "table": "combined_sales_temp",
@@ -4722,8 +4781,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "sales",
+        "temp",
+        "combined",
+        "staging"
+      ]
     },
     "combined_sales_test": {
       "table": "combined_sales_test",
@@ -5042,8 +5106,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "sales",
+        "test",
+        "combined",
+        "staging"
+      ]
     },
     "critical_oos_alerts": {
       "table": "critical_oos_alerts",
@@ -5117,8 +5186,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "alerts",
+        "oos",
+        "staging",
+        "critical"
+      ]
     },
     "daily_sales_summary": {
       "table": "daily_sales_summary",
@@ -5157,8 +5231,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to core Limese channel.",
+      "aliases": [
+        "sales",
+        "daily",
+        "summary",
+        "core"
+      ]
     },
     "final_status_mapping": {
       "table": "final_status_mapping",
@@ -5182,8 +5261,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "mapping",
+        "status",
+        "staging",
+        "final"
+      ]
     },
     "final_status_mapping_archive": {
       "table": "final_status_mapping_archive",
@@ -5207,12 +5291,18 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "final",
+        "mapping",
+        "status",
+        "staging",
+        "archive"
+      ]
     },
     "flipkart_earn_more": {
       "table": "flipkart_earn_more",
-      "row_count": 12937,
+      "row_count": 12963,
       "total_columns": 16,
       "columns": [
         {
@@ -5297,12 +5387,16 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to flipkart Limese channel.",
+      "aliases": [
+        "flipkart",
+        "earn",
+        "more"
+      ]
     },
     "flipkart_earn_more_final": {
       "table": "flipkart_earn_more_final",
-      "row_count": 5499,
+      "row_count": 5531,
       "total_columns": 13,
       "columns": [
         {
@@ -5372,8 +5466,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to flipkart Limese channel.",
+      "aliases": [
+        "final",
+        "flipkart",
+        "earn",
+        "more"
+      ]
     },
     "flipkart_earn_more_item_level": {
       "table": "flipkart_earn_more_item_level",
@@ -5467,12 +5566,18 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to flipkart Limese channel.",
+      "aliases": [
+        "earn",
+        "item",
+        "flipkart",
+        "more",
+        "level"
+      ]
     },
     "flipkart_inventory": {
       "table": "flipkart_inventory",
-      "row_count": 149798,
+      "row_count": 152234,
       "total_columns": 7,
       "columns": [
         {
@@ -5512,8 +5617,11 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to flipkart Limese channel.",
+      "aliases": [
+        "inventory",
+        "flipkart"
+      ]
     },
     "flipkart_inventory_sales": {
       "table": "flipkart_inventory_sales",
@@ -5557,8 +5665,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to flipkart Limese channel.",
+      "aliases": [
+        "inventory",
+        "flipkart",
+        "sales"
+      ]
     },
     "flipkart_listing_report": {
       "table": "flipkart_listing_report",
@@ -5772,12 +5884,16 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to flipkart Limese channel.",
+      "aliases": [
+        "listing",
+        "flipkart",
+        "report"
+      ]
     },
     "flipkart_search_traffic": {
       "table": "flipkart_search_traffic",
-      "row_count": 17648,
+      "row_count": 17644,
       "total_columns": 14,
       "columns": [
         {
@@ -5852,8 +5968,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to flipkart Limese channel.",
+      "aliases": [
+        "search",
+        "traffic",
+        "flipkart"
+      ]
     },
     "internal_external_sku_mapping": {
       "table": "internal_external_sku_mapping",
@@ -5872,8 +5992,14 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to catalog Limese channel.",
+      "aliases": [
+        "catalog",
+        "sku",
+        "mapping",
+        "internal",
+        "external"
+      ]
     },
     "inventory_ageing": {
       "table": "inventory_ageing",
@@ -5962,8 +6088,11 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to inventory Limese channel.",
+      "aliases": [
+        "inventory",
+        "ageing"
+      ]
     },
     "inventory_burn_view": {
       "table": "inventory_burn_view",
@@ -6157,8 +6286,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to inventory Limese channel.",
+      "aliases": [
+        "inventory",
+        "burn",
+        "view"
+      ]
     },
     "inventory_ledger": {
       "table": "inventory_ledger",
@@ -6188,7 +6321,7 @@
         {
           "name": "event_date",
           "type": "Date",
-          "annotation": "",
+          "annotation": "Primary date column for ledger activity. Filter: event_date >= '2025-01-01'.",
           "unique_count": 349,
           "non_null_count": 175460,
           "null_count": 0,
@@ -6200,7 +6333,7 @@
         {
           "name": "movement_type",
           "type": "Enum8('inward' = 1, 'outward' = 2, 'return_inward' = 3)",
-          "annotation": "",
+          "annotation": "Movement classification: inward, outward, or return_inward.",
           "unique_count": 3,
           "non_null_count": 175460,
           "null_count": 0,
@@ -6214,7 +6347,7 @@
         {
           "name": "internal_sku",
           "type": "String",
-          "annotation": "",
+          "annotation": "Internal SKU lookup key. Join with product_master.internal_sku.",
           "unique_count": 1431,
           "non_null_count": 175460,
           "null_count": 0
@@ -6238,7 +6371,7 @@
         {
           "name": "quantity",
           "type": "Decimal(18, 2)",
-          "annotation": "",
+          "annotation": "UNITS moved during the event \u2014 positive/negative values depending on movement.",
           "unique_count": 1027,
           "non_null_count": 175460,
           "null_count": 0,
@@ -6557,8 +6690,12 @@
           "category_l3": "None"
         }
       ],
-      "description": "",
-      "aliases": []
+      "description": "Stock movement ledger \u2014 inflows and outflows. Use for: stock reconciliation, vendor receipts, dispatch tracking.",
+      "aliases": [
+        "stock movements",
+        "ledger history",
+        "inventory log"
+      ]
     },
     "inventory_movement": {
       "table": "inventory_movement",
@@ -6667,8 +6804,11 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to inventory Limese channel.",
+      "aliases": [
+        "inventory",
+        "movement"
+      ]
     },
     "inventory_movement_new": {
       "table": "inventory_movement_new",
@@ -6777,8 +6917,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to inventory Limese channel.",
+      "aliases": [
+        "inventory",
+        "movement",
+        "new"
+      ]
     },
     "inventory_sales_overview_archive": {
       "table": "inventory_sales_overview_archive",
@@ -6892,20 +7036,26 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "staging",
+        "inventory",
+        "sales",
+        "overview",
+        "archive"
+      ]
     },
     "inventory_sales_overview_new": {
       "table": "inventory_sales_overview_new",
-      "row_count": 1153881,
+      "row_count": 1161069,
       "total_columns": 16,
       "columns": [
         {
           "name": "sku",
           "type": "String",
           "annotation": "Internal SKU \u2014 join to product_master.internal_sku.",
-          "unique_count": 3956,
-          "non_null_count": 1153881,
+          "unique_count": 3957,
+          "non_null_count": 1161069,
           "null_count": 0
         },
         {
@@ -6913,7 +7063,7 @@
           "type": "String",
           "annotation": "",
           "unique_count": 1,
-          "non_null_count": 1153881,
+          "non_null_count": 1161069,
           "null_count": 0,
           "constant_value": "warehouse",
           "is_constant": true
@@ -6923,7 +7073,7 @@
           "type": "String",
           "annotation": "",
           "unique_count": 2,
-          "non_null_count": 1153881,
+          "non_null_count": 1161069,
           "null_count": 0,
           "exact_values": [
             "unicommerce_inventory",
@@ -6935,12 +7085,12 @@
           "name": "date",
           "type": "DateTime64(6, 'Asia/Kolkata')",
           "annotation": "Snapshot date. For latest stock: WHERE date >= today() - 2",
-          "unique_count": 245,
-          "non_null_count": 1153881,
+          "unique_count": 249,
+          "non_null_count": 1161069,
           "null_count": 0,
           "date_range": {
             "min": "2025-09-24 00:00:00.000000",
-            "max": "2026-05-27 00:00:00.000000"
+            "max": "2026-05-31 00:00:00.000000"
           }
         },
         {
@@ -6948,12 +7098,12 @@
           "type": "Nullable(Float64)",
           "annotation": "Units on hand RIGHT NOW. USE THIS for stock level queries.",
           "unique_count": 5484,
-          "non_null_count": 1153881,
+          "non_null_count": 1161069,
           "null_count": 0,
           "numerical_range": {
             "min": -48737.0,
             "max": 100000.0,
-            "avg": 109.28
+            "avg": 108.61
           }
         },
         {
@@ -6961,25 +7111,25 @@
           "type": "Nullable(Float64)",
           "annotation": "Units sold that day.",
           "unique_count": 1170,
-          "non_null_count": 1153881,
+          "non_null_count": 1161069,
           "null_count": 0,
           "numerical_range": {
             "min": 0.0,
             "max": 37000.0,
-            "avg": 2.49
+            "avg": 2.48
           }
         },
         {
           "name": "sp",
           "type": "Nullable(Float64)",
           "annotation": "",
-          "unique_count": 11866,
-          "non_null_count": 1153881,
+          "unique_count": 11894,
+          "non_null_count": 1161069,
           "null_count": 0,
           "numerical_range": {
             "min": 0.0,
             "max": 26688469.99,
-            "avg": 1524.49
+            "avg": 1515.3
           }
         },
         {
@@ -6987,16 +7137,16 @@
           "type": "Nullable(String)",
           "annotation": "",
           "unique_count": 1181,
-          "non_null_count": 556812,
-          "null_count": 597069
+          "non_null_count": 561823,
+          "null_count": 599246
         },
         {
           "name": "category",
           "type": "Nullable(String)",
           "annotation": "",
           "unique_count": 3,
-          "non_null_count": 491871,
-          "null_count": 662010,
+          "non_null_count": 495950,
+          "null_count": 665119,
           "exact_values": [
             "Haircare",
             "Makeup",
@@ -7009,12 +7159,12 @@
           "type": "Nullable(Int32)",
           "annotation": "",
           "unique_count": 321,
-          "non_null_count": 540288,
-          "null_count": 613593,
+          "non_null_count": 545027,
+          "null_count": 616042,
           "numerical_range": {
             "min": 0.0,
             "max": 1892.0,
-            "avg": 438.37
+            "avg": 438.21
           }
         },
         {
@@ -7022,8 +7172,8 @@
           "type": "Nullable(Int64)",
           "annotation": "",
           "unique_count": 147,
-          "non_null_count": 540288,
-          "null_count": 613593,
+          "non_null_count": 545027,
+          "null_count": 616042,
           "exact_values": [
             "0",
             "100",
@@ -7179,26 +7329,26 @@
           "name": "gross_sales_rs",
           "type": "Nullable(Float64)",
           "annotation": "Daily revenue in \u20b9.",
-          "unique_count": 4324,
-          "non_null_count": 540288,
-          "null_count": 613593,
+          "unique_count": 4325,
+          "non_null_count": 545027,
+          "null_count": 616042,
           "numerical_range": {
             "min": 0.0,
             "max": 53650000.0,
-            "avg": 6211.71
+            "avg": 6158.26
           }
         },
         {
           "name": "holding_price",
           "type": "Nullable(Float64)",
           "annotation": "",
-          "unique_count": 15664,
-          "non_null_count": 540288,
-          "null_count": 613593,
+          "unique_count": 15666,
+          "non_null_count": 545027,
+          "null_count": 616042,
           "numerical_range": {
             "min": -54182150.0,
             "max": 107993100.0,
-            "avg": 221375.43
+            "avg": 219468.13
           }
         },
         {
@@ -7206,7 +7356,7 @@
           "type": "UInt8",
           "annotation": "Fixed 90-day config value \u2014 do NOT use for calculations.",
           "unique_count": 1,
-          "non_null_count": 1153881,
+          "non_null_count": 1161069,
           "null_count": 0,
           "constant_value": "90",
           "is_constant": true
@@ -7216,8 +7366,8 @@
           "type": "Nullable(String)",
           "annotation": "",
           "unique_count": 32,
-          "non_null_count": 556812,
-          "null_count": 597069,
+          "non_null_count": 561823,
+          "null_count": 599246,
           "exact_values": [
             "",
             "AMPLE:N",
@@ -7259,8 +7409,8 @@
           "type": "Nullable(String)",
           "annotation": "",
           "unique_count": 1204,
-          "non_null_count": 503619,
-          "null_count": 650262
+          "non_null_count": 507758,
+          "null_count": 653311
         }
       ],
       "sample_data": [
@@ -7302,11 +7452,16 @@
         }
       ],
       "business_facts": {
-        "tracked_skus": 1550,
-        "total_inventory_units": 4244
+        "tracked_skus": 1554,
+        "total_inventory_units": 2067
       },
-      "description": "",
-      "aliases": []
+      "description": "Daily inventory snapshot \u2014 1.1M rows, Sep 2025\u2013present. COLUMNS: sku (internal SKU = join to product_master.internal_sku), date (DateTime), facility, inventory (units on hand \u2014 USE FOR STOCK LEVELS), order_quantity (units sold that day), gross_sales_rs (daily revenue), sp (selling price), mrp, cogs, burn_period (fixed at 90 days). Current stock: Skincare=1,693 units/632 SKUs, Makeup=476 units/334 SKUs, Haircare=39 units. For CURRENT inventory: WHERE date = (SELECT max(date) FROM inventory_sales_overview_new WHERE inventory > 0). For LOW STOCK: WHERE inventory < 100 AND inventory > 0. For OOS: WHERE inventory = 0.",
+      "aliases": [
+        "inventory stock",
+        "warehouse quantity",
+        "stock levels",
+        "sell-through"
+      ]
     },
     "inventory_sales_overview_old": {
       "table": "inventory_sales_overview_old",
@@ -7420,12 +7575,18 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "staging",
+        "old",
+        "inventory",
+        "overview",
+        "sales"
+      ]
     },
     "inventory_sales_overview_temp": {
       "table": "inventory_sales_overview_temp",
-      "row_count": 1153881,
+      "row_count": 1161069,
       "total_columns": 8,
       "columns": [
         {
@@ -7470,8 +7631,14 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "temp",
+        "staging",
+        "inventory",
+        "overview",
+        "sales"
+      ]
     },
     "inventory_sales_overview_temp_archive": {
       "table": "inventory_sales_overview_temp_archive",
@@ -7520,8 +7687,15 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "temp",
+        "staging",
+        "inventory",
+        "sales",
+        "overview",
+        "archive"
+      ]
     },
     "inventory_sales_overview_temp_dec": {
       "table": "inventory_sales_overview_temp_dec",
@@ -7570,8 +7744,15 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "temp",
+        "staging",
+        "inventory",
+        "dec",
+        "overview",
+        "sales"
+      ]
     },
     "inventory_sales_overview_temp_old": {
       "table": "inventory_sales_overview_temp_old",
@@ -7620,8 +7801,15 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "temp",
+        "old",
+        "staging",
+        "inventory",
+        "overview",
+        "sales"
+      ]
     },
     "inventory_snapshot_fmcg_temp": {
       "table": "inventory_snapshot_fmcg_temp",
@@ -7985,8 +8173,14 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "temp",
+        "staging",
+        "inventory",
+        "snapshot",
+        "fmcg"
+      ]
     },
     "inventory_snapshot_limese_test": {
       "table": "inventory_snapshot_limese_test",
@@ -8050,8 +8244,14 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "test",
+        "limese",
+        "staging",
+        "inventory",
+        "snapshot"
+      ]
     },
     "inventory_snapshot_simple_test": {
       "table": "inventory_snapshot_simple_test",
@@ -8115,8 +8315,14 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "test",
+        "simple",
+        "staging",
+        "inventory",
+        "snapshot"
+      ]
     },
     "inventory_view_archive": {
       "table": "inventory_view_archive",
@@ -8400,12 +8606,17 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "inventory",
+        "staging",
+        "view",
+        "archive"
+      ]
     },
     "inventory_view_new": {
       "table": "inventory_view_new",
-      "row_count": 5099,
+      "row_count": 5103,
       "total_columns": 53,
       "columns": [
         {
@@ -8675,8 +8886,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to inventory Limese channel.",
+      "aliases": [
+        "inventory",
+        "view",
+        "new"
+      ]
     },
     "inventory_view_old": {
       "table": "inventory_view_old",
@@ -8865,8 +9080,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "inventory",
+        "staging",
+        "old",
+        "view"
+      ]
     },
     "inventory_view_test": {
       "table": "inventory_view_test",
@@ -9145,8 +9365,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "inventory",
+        "test",
+        "staging",
+        "view"
+      ]
     },
     "lead_time": {
       "table": "lead_time",
@@ -9156,7 +9381,7 @@
         {
           "name": "sku",
           "type": "Nullable(String)",
-          "annotation": "",
+          "annotation": "Internal SKU lookup key. Join with product_master.internal_sku.",
           "unique_count": 721,
           "non_null_count": 721,
           "null_count": 0
@@ -9164,7 +9389,7 @@
         {
           "name": "median_lead_time_days",
           "type": "Nullable(Float64)",
-          "annotation": "",
+          "annotation": "MEDIAN LEAD TIME \u2014 average days taken by vendor to fulfill orders.",
           "unique_count": 15,
           "non_null_count": 721,
           "null_count": 0,
@@ -9190,7 +9415,7 @@
         {
           "name": "total_orders",
           "type": "UInt64",
-          "annotation": "",
+          "annotation": "Volume of purchase orders analyzed to calculate lead time.",
           "unique_count": 8,
           "non_null_count": 721,
           "null_count": 0,
@@ -9209,7 +9434,7 @@
         {
           "name": "min_lead_time",
           "type": "Nullable(Int64)",
-          "annotation": "",
+          "annotation": "Minimum days observed for delivery.",
           "unique_count": 8,
           "non_null_count": 721,
           "null_count": 0,
@@ -9228,7 +9453,7 @@
         {
           "name": "max_lead_time",
           "type": "Nullable(Int64)",
-          "annotation": "",
+          "annotation": "Maximum days observed for delivery.",
           "unique_count": 12,
           "non_null_count": 721,
           "null_count": 0,
@@ -9265,8 +9490,12 @@
           "max_lead_time": "10"
         }
       ],
-      "description": "",
-      "aliases": []
+      "description": "Vendor lead times by SKU/vendor. Key columns: vendor, sku, avg_lead_time_days. Use for: reorder planning, supply chain analysis.",
+      "aliases": [
+        "replenishment time",
+        "delivery days",
+        "supplier latency"
+      ]
     },
     "lead_time_by_vendor": {
       "table": "lead_time_by_vendor",
@@ -9305,8 +9534,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "lead",
+        "time",
+        "vendor",
+        "staging"
+      ]
     },
     "movement_temp": {
       "table": "movement_temp",
@@ -9365,8 +9599,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "movement",
+        "temp",
+        "staging"
+      ]
     },
     "mp_sales": {
       "table": "mp_sales",
@@ -9585,8 +9823,11 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to core Limese channel.",
+      "aliases": [
+        "sales",
+        "core"
+      ]
     },
     "mp_sales_temp": {
       "table": "mp_sales_temp",
@@ -9810,8 +10051,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "sales",
+        "temp",
+        "staging"
+      ]
     },
     "myntra_sales_ppmp": {
       "table": "myntra_sales_ppmp",
@@ -10055,8 +10300,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to myntra Limese channel.",
+      "aliases": [
+        "sales",
+        "myntra",
+        "ppmp"
+      ]
     },
     "myntra_sales_ppmp_final": {
       "table": "myntra_sales_ppmp_final",
@@ -10315,8 +10564,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to myntra Limese channel.",
+      "aliases": [
+        "sales",
+        "myntra",
+        "ppmp",
+        "final"
+      ]
     },
     "myntra_seller_listing_style_sku": {
       "table": "myntra_seller_listing_style_sku",
@@ -10435,8 +10689,14 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to myntra Limese channel.",
+      "aliases": [
+        "style",
+        "sku",
+        "seller",
+        "listing",
+        "myntra"
+      ]
     },
     "nykaa_grn": {
       "table": "nykaa_grn",
@@ -10630,8 +10890,11 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to nykaa Limese channel.",
+      "aliases": [
+        "grn",
+        "nykaa"
+      ]
     },
     "nykaa_grn_new": {
       "table": "nykaa_grn_new",
@@ -10745,8 +11008,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to nykaa Limese channel.",
+      "aliases": [
+        "grn",
+        "nykaa",
+        "new"
+      ]
     },
     "nykaa_po": {
       "table": "nykaa_po",
@@ -10910,8 +11177,10 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to nykaa Limese channel.",
+      "aliases": [
+        "nykaa"
+      ]
     },
     "nykaa_po_new": {
       "table": "nykaa_po_new",
@@ -11015,8 +11284,11 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to nykaa Limese channel.",
+      "aliases": [
+        "nykaa",
+        "new"
+      ]
     },
     "nykaa_retail_seller": {
       "table": "nykaa_retail_seller",
@@ -11135,8 +11407,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to nykaa Limese channel.",
+      "aliases": [
+        "retail",
+        "nykaa",
+        "seller"
+      ]
     },
     "nykaa_sales_final": {
       "table": "nykaa_sales_final",
@@ -11265,8 +11541,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to nykaa Limese channel.",
+      "aliases": [
+        "sales",
+        "nykaa",
+        "final"
+      ]
     },
     "nykaa_seller_portal": {
       "table": "nykaa_seller_portal",
@@ -11370,8 +11650,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to nykaa Limese channel.",
+      "aliases": [
+        "portal",
+        "nykaa",
+        "seller"
+      ]
     },
     "nykaa_vendor_returns": {
       "table": "nykaa_vendor_returns",
@@ -11595,8 +11879,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to nykaa Limese channel.",
+      "aliases": [
+        "vendor",
+        "nykaa",
+        "returns"
+      ]
     },
     "nykaa_vendor_returns_new": {
       "table": "nykaa_vendor_returns_new",
@@ -11720,8 +12008,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to nykaa Limese channel.",
+      "aliases": [
+        "vendor",
+        "nykaa",
+        "returns",
+        "new"
+      ]
     },
     "pincode_details": {
       "table": "pincode_details",
@@ -11755,8 +12048,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "details",
+        "pincode",
+        "staging"
+      ]
     },
     "platform_sku_categorization": {
       "table": "platform_sku_categorization",
@@ -11810,8 +12107,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to catalog Limese channel.",
+      "aliases": [
+        "sku",
+        "categorization",
+        "catalog",
+        "platform"
+      ]
     },
     "platform_sku_mapping": {
       "table": "platform_sku_mapping",
@@ -11829,7 +12131,7 @@
         {
           "name": "platform",
           "type": "String",
-          "annotation": "",
+          "annotation": "Specific marketplace name.",
           "unique_count": 17,
           "non_null_count": 3240,
           "null_count": 0,
@@ -11857,7 +12159,7 @@
         {
           "name": "internal_sku",
           "type": "String",
-          "annotation": "",
+          "annotation": "Join key \u2192 product_master.internal_sku for matching master products.",
           "unique_count": 1281,
           "non_null_count": 3240,
           "null_count": 0
@@ -11865,7 +12167,7 @@
         {
           "name": "external_code",
           "type": "String",
-          "annotation": "",
+          "annotation": "Listing-specific code on the marketplace platform.",
           "unique_count": 2378,
           "non_null_count": 3240,
           "null_count": 0
@@ -11897,8 +12199,11 @@
           "external_code_type": "SKU"
         }
       ],
-      "description": "",
-      "aliases": []
+      "description": "Maps internal SKUs to platform-specific codes. Key columns: internal_sku, platform, external_code, product_name. Use to understand which internal SKU corresponds to platform listings.",
+      "aliases": [
+        "sku mapping",
+        "external sku map"
+      ]
     },
     "product_categorization": {
       "table": "product_categorization",
@@ -11967,8 +12272,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "categorization",
+        "product",
+        "staging"
+      ]
     },
     "product_catlog": {
       "table": "product_catlog",
@@ -11978,7 +12287,7 @@
         {
           "name": "external_sku",
           "type": "Nullable(String)",
-          "annotation": "",
+          "annotation": "Platform-specific SKU code.",
           "unique_count": 3917,
           "non_null_count": 5586,
           "null_count": 0
@@ -11986,7 +12295,7 @@
         {
           "name": "internal_sku",
           "type": "Nullable(String)",
-          "annotation": "",
+          "annotation": "Internal SKU lookup key. Join with product_master.internal_sku.",
           "unique_count": 1439,
           "non_null_count": 5230,
           "null_count": 356
@@ -11994,7 +12303,7 @@
         {
           "name": "platform",
           "type": "Nullable(String)",
-          "annotation": "",
+          "annotation": "Marketplace platform name (e.g. nykaa, shopify, amazon_in).",
           "unique_count": 16,
           "non_null_count": 5586,
           "null_count": 0,
@@ -12021,7 +12330,7 @@
         {
           "name": "product_name",
           "type": "Nullable(String)",
-          "annotation": "",
+          "annotation": "Marketplace listing name.",
           "unique_count": 1181,
           "non_null_count": 5586,
           "null_count": 0
@@ -12243,7 +12552,7 @@
         {
           "name": "category",
           "type": "Nullable(String)",
-          "annotation": "",
+          "annotation": "Listing category classification.",
           "unique_count": 3,
           "non_null_count": 4779,
           "null_count": 807,
@@ -12287,8 +12596,11 @@
           "ean": "8809704190138"
         }
       ],
-      "description": "",
-      "aliases": []
+      "description": "Platform SKU catalog \u2014 5,586 rows mapping internal to external SKUs. COLUMNS: internal_sku, external_sku, platform, product_name, brand, mrp, cogs, category. Use to find platform-specific listing info.",
+      "aliases": [
+        "catalog",
+        "listing catalogue"
+      ]
     },
     "product_catlog_archive": {
       "table": "product_catlog_archive",
@@ -12507,8 +12819,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "archive",
+        "catlog",
+        "product",
+        "staging"
+      ]
     },
     "product_catlog_backup": {
       "table": "product_catlog_backup",
@@ -12562,8 +12879,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "catlog",
+        "product",
+        "staging",
+        "backup"
+      ]
     },
     "product_catlog_mapping": {
       "table": "product_catlog_mapping",
@@ -12777,8 +13099,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to catalog Limese channel.",
+      "aliases": [
+        "catalog",
+        "mapping",
+        "catlog",
+        "product"
+      ]
     },
     "product_catlog_old": {
       "table": "product_catlog_old",
@@ -12832,8 +13159,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "staging",
+        "catlog",
+        "product",
+        "old"
+      ]
     },
     "product_hierarchy": {
       "table": "product_hierarchy",
@@ -12843,7 +13175,7 @@
         {
           "name": "relationship_type",
           "type": "Enum8('variant' = 1, 'combo' = 2, 'kit' = 3)",
-          "annotation": "",
+          "annotation": "Classification: variant, combo, or kit.",
           "unique_count": 0,
           "non_null_count": 0,
           "null_count": 0
@@ -12851,7 +13183,7 @@
         {
           "name": "parent_sku",
           "type": "String",
-          "annotation": "",
+          "annotation": "SKU of parent combo, kit, or variant product.",
           "unique_count": 0,
           "non_null_count": 0,
           "null_count": 0
@@ -12859,7 +13191,7 @@
         {
           "name": "child_sku",
           "type": "String",
-          "annotation": "",
+          "annotation": "SKU of individual product included in parent combo/kit.",
           "unique_count": 0,
           "non_null_count": 0,
           "null_count": 0
@@ -12867,7 +13199,7 @@
         {
           "name": "quantity",
           "type": "Nullable(UInt32)",
-          "annotation": "",
+          "annotation": "UNITS of child product contained within 1 unit of parent combo.",
           "unique_count": 0,
           "non_null_count": 0,
           "null_count": 0
@@ -12922,8 +13254,11 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Product parent-child relationships (combo/kit/variant). Key columns: relationship_type, parent_sku, child_sku, quantity.",
+      "aliases": [
+        "category tree",
+        "brand hierarchy"
+      ]
     },
     "product_master": {
       "table": "product_master",
@@ -13419,8 +13754,14 @@
           "source_system": "EXCEL"
         }
       ],
-      "description": "",
-      "aliases": []
+      "description": "Product catalog \u2014 1,383 unique internal SKUs. COLUMNS: internal_sku (PK, join key), item_name, brand, category_l1 (values: 'Skincare' 963 SKUs, 'Makeup' 409 SKUs, 'Haircare' 11 SKUs), category_l2, category_l3, size, color, mrp, cogs, gst_tax_percent. Use for: product-level analysis, category breakdown, margin calculation (mrp - cogs).",
+      "aliases": [
+        "products",
+        "categories",
+        "sku mrp",
+        "cogs",
+        "margins"
+      ]
     },
     "product_sku_mapping_view": {
       "table": "product_sku_mapping_view",
@@ -13454,8 +13795,14 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to catalog Limese channel.",
+      "aliases": [
+        "catalog",
+        "product",
+        "sku",
+        "mapping",
+        "view"
+      ]
     },
     "purchase_orders_line_items": {
       "table": "purchase_orders_line_items",
@@ -13654,8 +14001,14 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to core Limese channel.",
+      "aliases": [
+        "items",
+        "orders",
+        "line",
+        "purchase",
+        "core"
+      ]
     },
     "raw_ingress": {
       "table": "raw_ingress",
@@ -13704,8 +14057,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "raw",
+        "ingress",
+        "staging"
+      ]
     },
     "reliance_ajio_online": {
       "table": "reliance_ajio_online",
@@ -13809,8 +14166,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to reliance Limese channel.",
+      "aliases": [
+        "ajio",
+        "online",
+        "reliance"
+      ]
     },
     "reliance_azorte_online": {
       "table": "reliance_azorte_online",
@@ -13944,8 +14305,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to reliance Limese channel.",
+      "aliases": [
+        "azorte",
+        "online",
+        "reliance"
+      ]
     },
     "reliance_final": {
       "table": "reliance_final",
@@ -14024,8 +14389,11 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to reliance Limese channel.",
+      "aliases": [
+        "final",
+        "reliance"
+      ]
     },
     "reliance_overall_sales": {
       "table": "reliance_overall_sales",
@@ -14114,8 +14482,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to reliance Limese channel.",
+      "aliases": [
+        "sales",
+        "overall",
+        "reliance"
+      ]
     },
     "reliance_tira_offline": {
       "table": "reliance_tira_offline",
@@ -14234,8 +14606,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to reliance Limese channel.",
+      "aliases": [
+        "offline",
+        "tira",
+        "reliance"
+      ]
     },
     "reliance_tira_online": {
       "table": "reliance_tira_online",
@@ -14344,8 +14720,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to reliance Limese channel.",
+      "aliases": [
+        "tira",
+        "online",
+        "reliance"
+      ]
     },
     "reliance_unified": {
       "table": "reliance_unified",
@@ -14459,8 +14839,11 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to reliance Limese channel.",
+      "aliases": [
+        "unified",
+        "reliance"
+      ]
     },
     "shopify_abandoned_checkouts": {
       "table": "shopify_abandoned_checkouts",
@@ -14819,8 +15202,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to shopify Limese channel.",
+      "aliases": [
+        "shopify",
+        "checkouts",
+        "abandoned"
+      ]
     },
     "shopify_customers": {
       "table": "shopify_customers",
@@ -14929,8 +15316,11 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to shopify Limese channel.",
+      "aliases": [
+        "shopify",
+        "customers"
+      ]
     },
     "shopify_discount_codes": {
       "table": "shopify_discount_codes",
@@ -15019,8 +15409,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to shopify Limese channel.",
+      "aliases": [
+        "shopify",
+        "codes",
+        "discount"
+      ]
     },
     "shopify_draft_orders": {
       "table": "shopify_draft_orders",
@@ -15359,8 +15753,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to shopify Limese channel.",
+      "aliases": [
+        "shopify",
+        "draft",
+        "orders"
+      ]
     },
     "shopify_final": {
       "table": "shopify_final",
@@ -16019,8 +16417,11 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to shopify Limese channel.",
+      "aliases": [
+        "shopify",
+        "final"
+      ]
     },
     "shopify_markets_india": {
       "table": "shopify_markets_india",
@@ -16089,8 +16490,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to shopify Limese channel.",
+      "aliases": [
+        "shopify",
+        "india",
+        "markets"
+      ]
     },
     "shopify_orders": {
       "table": "shopify_orders",
@@ -16116,7 +16521,7 @@
         {
           "name": "financial_status",
           "type": "LowCardinality(Nullable(String))",
-          "annotation": "",
+          "annotation": "Payment state. EXCLUDE refunded: WHERE financial_status NOT IN ('refunded','partially_refunded').",
           "unique_count": 3,
           "non_null_count": 1956,
           "null_count": 0,
@@ -16142,7 +16547,7 @@
         {
           "name": "fulfillment_status",
           "type": "LowCardinality(Nullable(String))",
-          "annotation": "",
+          "annotation": "Shipping state: 'fulfilled' = shipped, 'unfulfilled' = pending.",
           "unique_count": 2,
           "non_null_count": 1956,
           "null_count": 0,
@@ -16190,7 +16595,7 @@
         {
           "name": "subtotal",
           "type": "Nullable(Float32)",
-          "annotation": "",
+          "annotation": "REVENUE \u2014 USE THIS for Shopify revenue/sales totals.",
           "unique_count": 545,
           "non_null_count": 1956,
           "null_count": 0,
@@ -16226,7 +16631,7 @@
         {
           "name": "total",
           "type": "Nullable(Float32)",
-          "annotation": "",
+          "annotation": "Order total including taxes \u2014 use subtotal instead for pure revenue.",
           "unique_count": 545,
           "non_null_count": 1956,
           "null_count": 0,
@@ -16424,7 +16829,7 @@
         {
           "name": "created_at",
           "type": "DateTime64(3, 'Asia/Kolkata')",
-          "annotation": "",
+          "annotation": "Primary date column. Filter: created_at >= '2025-01-01'. Group: formatDateTime(created_at, '%Y-%m').",
           "unique_count": 1293,
           "non_null_count": 1956,
           "null_count": 0,
@@ -16436,7 +16841,7 @@
         {
           "name": "lineitem_quantity",
           "type": "Nullable(Int32)",
-          "annotation": "",
+          "annotation": "Units per line item \u2014 USE THIS for unit counts.",
           "unique_count": 7,
           "non_null_count": 1956,
           "null_count": 0,
@@ -16454,7 +16859,7 @@
         {
           "name": "lineitem_name",
           "type": "String",
-          "annotation": "",
+          "annotation": "Product name per line item.",
           "unique_count": 290,
           "non_null_count": 1956,
           "null_count": 0
@@ -16462,7 +16867,7 @@
         {
           "name": "lineitem_price",
           "type": "Nullable(Float32)",
-          "annotation": "",
+          "annotation": "Price per line item.",
           "unique_count": 182,
           "non_null_count": 1956,
           "null_count": 0,
@@ -17834,8 +18239,13 @@
           "payment_references": "40738.1"
         }
       ],
-      "description": "",
-      "aliases": []
+      "description": "Shopify D2C website orders. Key columns: name (order ID), created_at, total, lineitem_sku, lineitem_price, lineitem_quantity, financial_status, billing_city, billing_province (state), discount_code.",
+      "aliases": [
+        "shopify sales",
+        "online sales",
+        "storefront orders",
+        "website transactions"
+      ]
     },
     "shopify_orders_archive": {
       "table": "shopify_orders_archive",
@@ -18239,12 +18649,17 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "archive",
+        "shopify",
+        "staging",
+        "orders"
+      ]
     },
     "shopify_orders_with_shipments": {
       "table": "shopify_orders_with_shipments",
-      "row_count": 2289,
+      "row_count": 2309,
       "total_columns": 129,
       "columns": [
         {
@@ -18894,8 +19309,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to shopify Limese channel.",
+      "aliases": [
+        "with",
+        "shopify",
+        "shipments",
+        "orders"
+      ]
     },
     "shopify_overall_orders": {
       "table": "shopify_overall_orders",
@@ -19559,8 +19979,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to shopify Limese channel.",
+      "aliases": [
+        "shopify",
+        "overall",
+        "orders"
+      ]
     },
     "shopify_sales": {
       "table": "shopify_sales",
@@ -20219,8 +20643,11 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to shopify Limese channel.",
+      "aliases": [
+        "sales",
+        "shopify"
+      ]
     },
     "shopify_sales_temp": {
       "table": "shopify_sales_temp",
@@ -20644,8 +21071,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "sales",
+        "shopify",
+        "temp",
+        "staging"
+      ]
     },
     "shopify_sales_test": {
       "table": "shopify_sales_test",
@@ -21069,8 +21501,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "sales",
+        "shopify",
+        "staging",
+        "test"
+      ]
     },
     "sku_categorization": {
       "table": "sku_categorization",
@@ -21109,8 +21546,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to catalog Limese channel.",
+      "aliases": [
+        "sku",
+        "categorization",
+        "catalog"
+      ]
     },
     "sku_categorization_distinct": {
       "table": "sku_categorization_distinct",
@@ -21149,8 +21590,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to catalog Limese channel.",
+      "aliases": [
+        "sku",
+        "categorization",
+        "catalog",
+        "distinct"
+      ]
     },
     "sku_categorization_new": {
       "table": "sku_categorization_new",
@@ -21189,8 +21635,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to catalog Limese channel.",
+      "aliases": [
+        "sku",
+        "categorization",
+        "catalog",
+        "new"
+      ]
     },
     "sku_categorization_new_temp": {
       "table": "sku_categorization_new_temp",
@@ -21229,8 +21680,14 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "sku",
+        "categorization",
+        "temp",
+        "staging",
+        "new"
+      ]
     },
     "sku_mapping": {
       "table": "sku_mapping",
@@ -21279,8 +21736,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to catalog Limese channel.",
+      "aliases": [
+        "sku",
+        "mapping",
+        "catalog"
+      ]
     },
     "sku_shelf_mapping": {
       "table": "sku_shelf_mapping",
@@ -21304,8 +21765,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to catalog Limese channel.",
+      "aliases": [
+        "sku",
+        "mapping",
+        "catalog",
+        "shelf"
+      ]
     },
     "temp_sku_category_map": {
       "table": "temp_sku_category_map",
@@ -21329,8 +21795,14 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "sku",
+        "temp",
+        "staging",
+        "map",
+        "category"
+      ]
     },
     "topseller_skus": {
       "table": "topseller_skus",
@@ -21439,8 +21911,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to catalog Limese channel.",
+      "aliases": [
+        "catalog",
+        "skus",
+        "topseller"
+      ]
     },
     "unicomm_courier_returns": {
       "table": "unicomm_courier_returns",
@@ -21674,8 +22150,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to unicomm Limese channel.",
+      "aliases": [
+        "courier",
+        "unicomm",
+        "returns"
+      ]
     },
     "unicomm_customer_returns": {
       "table": "unicomm_customer_returns",
@@ -21779,12 +22259,16 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to unicomm Limese channel.",
+      "aliases": [
+        "unicomm",
+        "customer",
+        "returns"
+      ]
     },
     "unicomm_final": {
       "table": "unicomm_final",
-      "row_count": 298354,
+      "row_count": 298648,
       "total_columns": 70,
       "columns": [
         {
@@ -22139,8 +22623,11 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to unicomm Limese channel.",
+      "aliases": [
+        "unicomm",
+        "final"
+      ]
     },
     "unicomm_final_orders": {
       "table": "unicomm_final_orders",
@@ -22529,8 +23016,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to unicomm Limese channel.",
+      "aliases": [
+        "orders",
+        "unicomm",
+        "final"
+      ]
     },
     "unicomm_gate_passes": {
       "table": "unicomm_gate_passes",
@@ -22604,8 +23095,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to unicomm Limese channel.",
+      "aliases": [
+        "passes",
+        "unicomm",
+        "gate"
+      ]
     },
     "unicomm_grn": {
       "table": "unicomm_grn",
@@ -22774,8 +23269,11 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to unicomm Limese channel.",
+      "aliases": [
+        "grn",
+        "unicomm"
+      ]
     },
     "unicomm_inventory_ledger": {
       "table": "unicomm_inventory_ledger",
@@ -22844,12 +23342,16 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to unicomm Limese channel.",
+      "aliases": [
+        "inventory",
+        "unicomm",
+        "ledger"
+      ]
     },
     "unicomm_item_shipment": {
       "table": "unicomm_item_shipment",
-      "row_count": 40004,
+      "row_count": 40285,
       "total_columns": 50,
       "columns": [
         {
@@ -23104,8 +23606,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to unicomm Limese channel.",
+      "aliases": [
+        "item",
+        "shipment",
+        "unicomm"
+      ]
     },
     "unicomm_orders_api": {
       "table": "unicomm_orders_api",
@@ -23204,12 +23710,16 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to unicomm Limese channel.",
+      "aliases": [
+        "orders",
+        "api",
+        "unicomm"
+      ]
     },
     "unicomm_orders_group": {
       "table": "unicomm_orders_group",
-      "row_count": 298354,
+      "row_count": 298648,
       "total_columns": 19,
       "columns": [
         {
@@ -23309,8 +23819,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to unicomm Limese channel.",
+      "aliases": [
+        "orders",
+        "unicomm",
+        "group"
+      ]
     },
     "unicomm_orders_raw": {
       "table": "unicomm_orders_raw",
@@ -23409,12 +23923,17 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "orders",
+        "unicomm",
+        "staging",
+        "raw"
+      ]
     },
     "unicomm_orders_shipment": {
       "table": "unicomm_orders_shipment",
-      "row_count": 298354,
+      "row_count": 298648,
       "total_columns": 70,
       "columns": [
         {
@@ -23769,12 +24288,16 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to unicomm Limese channel.",
+      "aliases": [
+        "orders",
+        "shipment",
+        "unicomm"
+      ]
     },
     "unicomm_orders_split": {
       "table": "unicomm_orders_split",
-      "row_count": 1485938,
+      "row_count": 1486262,
       "total_columns": 18,
       "columns": [
         {
@@ -23869,8 +24392,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to unicomm Limese channel.",
+      "aliases": [
+        "orders",
+        "unicomm",
+        "split"
+      ]
     },
     "unicomm_overall_orders": {
       "table": "unicomm_overall_orders",
@@ -24234,8 +24761,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to unicomm Limese channel.",
+      "aliases": [
+        "orders",
+        "unicomm",
+        "overall"
+      ]
     },
     "unicomm_product_inventory": {
       "table": "unicomm_product_inventory",
@@ -24354,12 +24885,16 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to unicomm Limese channel.",
+      "aliases": [
+        "inventory",
+        "unicomm",
+        "product"
+      ]
     },
     "unicomm_product_inventory_snapshot": {
       "table": "unicomm_product_inventory_snapshot",
-      "row_count": 304101,
+      "row_count": 308277,
       "total_columns": 20,
       "columns": [
         {
@@ -24464,8 +24999,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to unicomm Limese channel.",
+      "aliases": [
+        "inventory",
+        "snapshot",
+        "unicomm",
+        "product"
+      ]
     },
     "unicomm_product_inventory_snapshot_new": {
       "table": "unicomm_product_inventory_snapshot_new",
@@ -24554,8 +25094,14 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to unicomm Limese channel.",
+      "aliases": [
+        "product",
+        "unicomm",
+        "new",
+        "inventory",
+        "snapshot"
+      ]
     },
     "unicomm_product_listings": {
       "table": "unicomm_product_listings",
@@ -24714,8 +25260,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to unicomm Limese channel.",
+      "aliases": [
+        "listings",
+        "unicomm",
+        "product"
+      ]
     },
     "unicomm_products": {
       "table": "unicomm_products",
@@ -24834,8 +25384,11 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to unicomm Limese channel.",
+      "aliases": [
+        "unicomm",
+        "products"
+      ]
     },
     "unicomm_purchase_backorders": {
       "table": "unicomm_purchase_backorders",
@@ -24914,8 +25467,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to unicomm Limese channel.",
+      "aliases": [
+        "unicomm",
+        "purchase",
+        "backorders"
+      ]
     },
     "unicomm_purchase_orders": {
       "table": "unicomm_purchase_orders",
@@ -25119,12 +25676,16 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to unicomm Limese channel.",
+      "aliases": [
+        "orders",
+        "unicomm",
+        "purchase"
+      ]
     },
     "unicomm_sales": {
       "table": "unicomm_sales",
-      "row_count": 301643,
+      "row_count": 301998,
       "total_columns": 25,
       "columns": [
         {
@@ -25254,60 +25815,63 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to unicomm Limese channel.",
+      "aliases": [
+        "sales",
+        "unicomm"
+      ]
     },
     "unicomm_sales_final": {
       "table": "unicomm_sales_final",
-      "row_count": 315212,
+      "row_count": 315525,
       "total_columns": 78,
       "columns": [
         {
           "name": "order_id",
           "type": "String",
           "annotation": "",
-          "unique_count": 201685,
-          "non_null_count": 315212,
+          "unique_count": 201939,
+          "non_null_count": 315525,
           "null_count": 0
         },
         {
           "name": "order_display_order_no",
           "type": "Nullable(String)",
           "annotation": "",
-          "unique_count": 196264,
-          "non_null_count": 314996,
+          "unique_count": 196527,
+          "non_null_count": 315309,
           "null_count": 216
         },
         {
           "name": "uniware_created_at",
           "type": "DateTime",
           "annotation": "",
-          "unique_count": 190359,
-          "non_null_count": 315212,
+          "unique_count": 190648,
+          "non_null_count": 315525,
           "null_count": 0,
           "date_range": {
             "min": "1970-01-01 05:30:00",
-            "max": "2026-05-27 04:49:19"
+            "max": "2026-05-31 03:38:17"
           }
         },
         {
           "name": "channel_created_at",
           "type": "DateTime",
-          "annotation": "",
-          "unique_count": 198912,
-          "non_null_count": 315212,
+          "annotation": "Primary date column. Filter: channel_created_at >= '2025-01-01'.",
+          "unique_count": 199182,
+          "non_null_count": 315525,
           "null_count": 0,
           "date_range": {
             "min": "1970-01-01 05:30:00",
-            "max": "2026-05-27 04:48:49"
+            "max": "2026-05-31 03:37:59"
           }
         },
         {
           "name": "order_channel_name",
           "type": "Nullable(String)",
-          "annotation": "",
+          "annotation": "Platform or channel (e.g. Nykaa, Shopify, Amazon).",
           "unique_count": 18,
-          "non_null_count": 315211,
+          "non_null_count": 315524,
           "null_count": 1,
           "exact_values": [
             "AMAZON_FBM",
@@ -25334,9 +25898,9 @@
         {
           "name": "order_status",
           "type": "Nullable(String)",
-          "annotation": "",
+          "annotation": "Order state. ALWAYS exclude cancelled: WHERE order_status NOT IN ('CANCELLED', 'Cancelled').",
           "unique_count": 3,
-          "non_null_count": 315211,
+          "non_null_count": 315524,
           "null_count": 1,
           "exact_values": [
             "CANCELLED",
@@ -25350,7 +25914,7 @@
           "type": "Nullable(String)",
           "annotation": "",
           "unique_count": 1,
-          "non_null_count": 315211,
+          "non_null_count": 315524,
           "null_count": 1,
           "constant_value": "STD",
           "is_constant": true
@@ -25360,7 +25924,7 @@
           "type": "Nullable(UInt8)",
           "annotation": "",
           "unique_count": 3,
-          "non_null_count": 315211,
+          "non_null_count": 315524,
           "null_count": 1,
           "exact_values": [
             "0",
@@ -25374,7 +25938,7 @@
           "type": "Nullable(Enum8('No' = 0, 'Yes' = 1))",
           "annotation": "",
           "unique_count": 1,
-          "non_null_count": 315211,
+          "non_null_count": 315524,
           "null_count": 1,
           "constant_value": "No",
           "is_constant": true
@@ -25384,7 +25948,7 @@
           "type": "Nullable(String)",
           "annotation": "",
           "unique_count": 1,
-          "non_null_count": 315211,
+          "non_null_count": 315524,
           "null_count": 1,
           "constant_value": "********",
           "is_constant": true
@@ -25394,7 +25958,7 @@
           "type": "Nullable(String)",
           "annotation": "",
           "unique_count": 1,
-          "non_null_count": 310603,
+          "non_null_count": 310916,
           "null_count": 4609,
           "constant_value": "********",
           "is_constant": true
@@ -25404,8 +25968,8 @@
           "type": "Nullable(String)",
           "annotation": "",
           "unique_count": 1,
-          "non_null_count": 166443,
-          "null_count": 148769,
+          "non_null_count": 166449,
+          "null_count": 149076,
           "constant_value": "None",
           "is_constant": true
         },
@@ -25414,7 +25978,7 @@
           "type": "Nullable(String)",
           "annotation": "",
           "unique_count": 1,
-          "non_null_count": 315211,
+          "non_null_count": 315524,
           "null_count": 1,
           "constant_value": "-",
           "is_constant": true
@@ -25424,7 +25988,7 @@
           "type": "Nullable(String)",
           "annotation": "",
           "unique_count": 2,
-          "non_null_count": 315211,
+          "non_null_count": 315524,
           "null_count": 1,
           "exact_values": [
             "COD",
@@ -25435,51 +25999,51 @@
         {
           "name": "order_price",
           "type": "Nullable(Float64)",
-          "annotation": "",
-          "unique_count": 19074,
-          "non_null_count": 315211,
+          "annotation": "TOTAL REVENUE \u2014 USE THIS for Unicommerce revenue totals.",
+          "unique_count": 19076,
+          "non_null_count": 315524,
           "null_count": 1,
           "numerical_range": {
             "min": 0.0,
             "max": 4097950.0,
-            "avg": 108513.5
+            "avg": 108406.87
           }
         },
         {
           "name": "sku",
           "type": "String",
-          "annotation": "",
-          "unique_count": 1998,
-          "non_null_count": 315212,
+          "annotation": "Internal SKU lookup key. Join with product_master.internal_sku.",
+          "unique_count": 2001,
+          "non_null_count": 315525,
           "null_count": 0
         },
         {
           "name": "item_price",
           "type": "Nullable(Float64)",
-          "annotation": "",
-          "unique_count": 18396,
-          "non_null_count": 315211,
+          "annotation": "UNIT PRICE \u2014 price per unit for this line item.",
+          "unique_count": 18398,
+          "non_null_count": 315524,
           "null_count": 1,
           "numerical_range": {
             "min": 0.0,
             "max": 55377.7,
-            "avg": 2128.26
+            "avg": 2127.01
           }
         },
         {
           "name": "product_id",
           "type": "Nullable(String)",
           "annotation": "",
-          "unique_count": 1001,
-          "non_null_count": 215130,
-          "null_count": 100082
+          "unique_count": 1004,
+          "non_null_count": 215429,
+          "null_count": 100096
         },
         {
           "name": "qty",
           "type": "UInt64",
-          "annotation": "",
+          "annotation": "UNITS sold for this line item \u2014 USE THIS for Unicommerce units.",
           "unique_count": 142,
-          "non_null_count": 315212,
+          "non_null_count": 315525,
           "null_count": 0,
           "exact_values": [
             "1",
@@ -25631,36 +26195,36 @@
           "name": "shipment_id",
           "type": "String",
           "annotation": "",
-          "unique_count": 32945,
-          "non_null_count": 315212,
+          "unique_count": 33198,
+          "non_null_count": 315525,
           "null_count": 0
         },
         {
           "name": "shipment_code",
           "type": "Nullable(String)",
           "annotation": "",
-          "unique_count": 32944,
-          "non_null_count": 39343,
-          "null_count": 275869
+          "unique_count": 33197,
+          "non_null_count": 39626,
+          "null_count": 275899
         },
         {
           "name": "shipment_created_at",
           "type": "DateTime64(3)",
           "annotation": "",
-          "unique_count": 32572,
-          "non_null_count": 315212,
+          "unique_count": 32825,
+          "non_null_count": 315525,
           "null_count": 0,
           "date_range": {
             "min": "1970-01-01 05:30:00.000",
-            "max": "2026-05-26 12:39:09.000"
+            "max": "2026-05-30 12:43:51.000"
           }
         },
         {
           "name": "last_updated",
           "type": "DateTime64(3)",
           "annotation": "",
-          "unique_count": 90,
-          "non_null_count": 315212,
+          "unique_count": 94,
+          "non_null_count": 315525,
           "null_count": 0,
           "exact_values": [
             "1970-01-01 05:30:00+05:30",
@@ -25752,36 +26316,40 @@
             "2026-05-23 07:00:00+05:30",
             "2026-05-24 07:00:00+05:30",
             "2026-05-26 07:00:00+05:30",
-            "2026-05-27 07:00:00+05:30"
+            "2026-05-27 07:00:00+05:30",
+            "2026-05-28 07:00:00+05:30",
+            "2026-05-29 07:00:00+05:30",
+            "2026-05-30 07:00:00+05:30",
+            "2026-05-31 07:00:00+05:30"
           ],
           "is_categorical": true,
           "date_range": {
             "min": "1970-01-01 05:30:00.000",
-            "max": "2026-05-27 07:00:00.000"
+            "max": "2026-05-31 07:00:00.000"
           }
         },
         {
           "name": "fulfillment_tat",
           "type": "Nullable(DateTime64(3))",
           "annotation": "",
-          "unique_count": 1973,
-          "non_null_count": 39343,
-          "null_count": 275869,
+          "unique_count": 1982,
+          "non_null_count": 39626,
+          "null_count": 275899,
           "date_range": {
             "min": "2025-01-02 12:00:00.000",
-            "max": "2026-05-26 14:00:00.000"
+            "max": "2026-05-30 21:31:43.000"
           }
         },
         {
           "name": "dispatch_time",
           "type": "Nullable(DateTime64(3))",
           "annotation": "",
-          "unique_count": 3485,
-          "non_null_count": 36573,
-          "null_count": 278639,
+          "unique_count": 3509,
+          "non_null_count": 36856,
+          "null_count": 278669,
           "date_range": {
             "min": "2025-01-01 14:34:52.000",
-            "max": "2026-05-26 13:36:06.000"
+            "max": "2026-05-30 13:48:19.000"
           }
         },
         {
@@ -25789,8 +26357,8 @@
           "type": "Nullable(String)",
           "annotation": "",
           "unique_count": 4,
-          "non_null_count": 1557,
-          "null_count": 313655,
+          "non_null_count": 1563,
+          "null_count": 313962,
           "exact_values": [
             "0",
             "1",
@@ -25804,8 +26372,8 @@
           "type": "Nullable(String)",
           "annotation": "",
           "unique_count": 2,
-          "non_null_count": 39343,
-          "null_count": 275869,
+          "non_null_count": 39626,
+          "null_count": 275899,
           "exact_values": [
             "false",
             "true"
@@ -25816,17 +26384,17 @@
           "name": "products",
           "type": "Nullable(String)",
           "annotation": "",
-          "unique_count": 575,
-          "non_null_count": 39343,
-          "null_count": 275869
+          "unique_count": 577,
+          "non_null_count": 39626,
+          "null_count": 275899
         },
         {
           "name": "shipment_channel",
           "type": "Nullable(String)",
           "annotation": "",
           "unique_count": 5,
-          "non_null_count": 39343,
-          "null_count": 275869,
+          "non_null_count": 39626,
+          "null_count": 275899,
           "exact_values": [
             "CUSTOM_BOTERA",
             "KOLHASIA_MYNTRAPPMP",
@@ -25841,8 +26409,8 @@
           "type": "Nullable(String)",
           "annotation": "",
           "unique_count": 9,
-          "non_null_count": 39343,
-          "null_count": 275869,
+          "non_null_count": 39626,
+          "null_count": 275899,
           "exact_values": [
             "CREATED",
             "DELIVERED",
@@ -25861,8 +26429,8 @@
           "type": "Nullable(UInt8)",
           "annotation": "",
           "unique_count": 2,
-          "non_null_count": 39343,
-          "null_count": 275869,
+          "non_null_count": 39626,
+          "null_count": 275899,
           "exact_values": [
             "0",
             "2"
@@ -25873,25 +26441,25 @@
           "name": "picklist",
           "type": "Nullable(String)",
           "annotation": "",
-          "unique_count": 1818,
-          "non_null_count": 36576,
-          "null_count": 278636
+          "unique_count": 1836,
+          "non_null_count": 36859,
+          "null_count": 278666
         },
         {
           "name": "invoice_no",
           "type": "Nullable(String)",
           "annotation": "",
-          "unique_count": 32751,
-          "non_null_count": 38796,
-          "null_count": 276416
+          "unique_count": 33004,
+          "non_null_count": 39079,
+          "null_count": 276446
         },
         {
           "name": "shipment_on_hold",
           "type": "Nullable(String)",
           "annotation": "",
           "unique_count": 1,
-          "non_null_count": 39343,
-          "null_count": 275869,
+          "non_null_count": 39626,
+          "null_count": 275899,
           "constant_value": "None",
           "is_constant": true
         },
@@ -25900,8 +26468,8 @@
           "type": "Nullable(String)",
           "annotation": "",
           "unique_count": 34,
-          "non_null_count": 39343,
-          "null_count": 275869,
+          "non_null_count": 39626,
+          "null_count": 275899,
           "exact_values": [
             "Andhra Pradesh",
             "Arunachal Pradesh",
@@ -25946,7 +26514,7 @@
           "annotation": "",
           "unique_count": 0,
           "non_null_count": 0,
-          "null_count": 315212
+          "null_count": 315525
         },
         {
           "name": "batch_no",
@@ -25954,7 +26522,7 @@
           "annotation": "",
           "unique_count": 2,
           "non_null_count": 7,
-          "null_count": 315205,
+          "null_count": 315518,
           "exact_values": [
             "B250616-0001",
             "B250623-0001"
@@ -25965,17 +26533,17 @@
           "name": "shipping",
           "type": "Nullable(String)",
           "annotation": "",
-          "unique_count": 32235,
-          "non_null_count": 36701,
-          "null_count": 278511
+          "unique_count": 32488,
+          "non_null_count": 36984,
+          "null_count": 278541
         },
         {
           "name": "shipment_payment_method",
           "type": "Nullable(String)",
           "annotation": "",
           "unique_count": 2,
-          "non_null_count": 39343,
-          "null_count": 275869,
+          "non_null_count": 39626,
+          "null_count": 275899,
           "exact_values": [
             "COD",
             "PREPAID"
@@ -25988,7 +26556,7 @@
           "annotation": "",
           "unique_count": 0,
           "non_null_count": 0,
-          "null_count": 315212
+          "null_count": 315525
         },
         {
           "name": "pack_group",
@@ -25996,23 +26564,23 @@
           "annotation": "",
           "unique_count": 0,
           "non_null_count": 0,
-          "null_count": 315212
+          "null_count": 315525
         },
         {
           "name": "shipment_display_order_no",
           "type": "Nullable(String)",
           "annotation": "",
-          "unique_count": 32944,
-          "non_null_count": 39343,
-          "null_count": 275869
+          "unique_count": 33197,
+          "non_null_count": 39626,
+          "null_count": 275899
         },
         {
           "name": "contains_gift_wrap",
           "type": "Nullable(UInt8)",
           "annotation": "",
           "unique_count": 3,
-          "non_null_count": 39343,
-          "null_count": 275869,
+          "non_null_count": 39626,
+          "null_count": 275899,
           "exact_values": [
             "0",
             "1",
@@ -26025,8 +26593,8 @@
           "type": "Nullable(String)",
           "annotation": "",
           "unique_count": 5,
-          "non_null_count": 39343,
-          "null_count": 275869,
+          "non_null_count": 39626,
+          "null_count": 275899,
           "exact_values": [
             "CUSTOM_BOTERA",
             "KOLHASIA_MYNTRAPPMP",
@@ -26041,8 +26609,8 @@
           "type": "Nullable(UInt64)",
           "annotation": "",
           "unique_count": 5,
-          "non_null_count": 39343,
-          "null_count": 275869,
+          "non_null_count": 39626,
+          "null_count": 275899,
           "exact_values": [
             "11414",
             "6832",
@@ -26056,49 +26624,49 @@
           "name": "item_type_sku",
           "type": "String",
           "annotation": "",
-          "unique_count": 668,
-          "non_null_count": 315212,
+          "unique_count": 670,
+          "non_null_count": 315525,
           "null_count": 0
         },
         {
           "name": "seller_sku",
           "type": "String",
           "annotation": "",
-          "unique_count": 949,
-          "non_null_count": 315212,
+          "unique_count": 952,
+          "non_null_count": 315525,
           "null_count": 0
         },
         {
           "name": "item_type_ids",
           "type": "Nullable(String)",
           "annotation": "",
-          "unique_count": 2248,
-          "non_null_count": 39343,
-          "null_count": 275869
+          "unique_count": 2259,
+          "non_null_count": 39626,
+          "null_count": 275899
         },
         {
           "name": "item_id_details",
           "type": "Nullable(String)",
           "annotation": "",
-          "unique_count": 1969,
-          "non_null_count": 39343,
-          "null_count": 275869
+          "unique_count": 1978,
+          "non_null_count": 39626,
+          "null_count": 275899
         },
         {
           "name": "seller_sku_details",
           "type": "Nullable(String)",
           "annotation": "",
-          "unique_count": 2235,
-          "non_null_count": 39343,
-          "null_count": 275869
+          "unique_count": 2244,
+          "non_null_count": 39626,
+          "null_count": 275899
         },
         {
           "name": "shipping_provider",
           "type": "Nullable(String)",
           "annotation": "",
           "unique_count": 12,
-          "non_null_count": 36704,
-          "null_count": 278508,
+          "non_null_count": 36987,
+          "null_count": 278538,
           "exact_values": [
             "ClickPost",
             "DELIVERY",
@@ -26120,8 +26688,8 @@
           "type": "Nullable(String)",
           "annotation": "",
           "unique_count": 12,
-          "non_null_count": 36704,
-          "null_count": 278508,
+          "non_null_count": 36987,
+          "null_count": 278538,
           "exact_values": [
             "CLICKPOST",
             "DELIVERY",
@@ -26143,8 +26711,8 @@
           "type": "Nullable(String)",
           "annotation": "",
           "unique_count": 14,
-          "non_null_count": 1655,
-          "null_count": 313557,
+          "non_null_count": 1661,
+          "null_count": 313864,
           "exact_values": [
             "BlueDart Express",
             "Bluedart",
@@ -26167,17 +26735,17 @@
           "name": "awb",
           "type": "Nullable(String)",
           "annotation": "",
-          "unique_count": 32235,
-          "non_null_count": 36701,
-          "null_count": 278511
+          "unique_count": 32488,
+          "non_null_count": 36984,
+          "null_count": 278541
         },
         {
           "name": "shipping_arranged_by",
           "type": "Nullable(String)",
           "annotation": "",
           "unique_count": 2,
-          "non_null_count": 39343,
-          "null_count": 275869,
+          "non_null_count": 39626,
+          "null_count": 275899,
           "exact_values": [
             "CHANNEL",
             "UNIWARE"
@@ -26189,9 +26757,9 @@
           "type": "Nullable(String)",
           "annotation": "",
           "unique_count": 1,
-          "non_null_count": 39343,
-          "null_count": 275869,
-          "constant_value": "None",
+          "non_null_count": 39626,
+          "null_count": 275899,
+          "constant_value": "false",
           "is_constant": true
         },
         {
@@ -26199,8 +26767,8 @@
           "type": "Nullable(String)",
           "annotation": "",
           "unique_count": 1,
-          "non_null_count": 39343,
-          "null_count": 275869,
+          "non_null_count": 39626,
+          "null_count": 275899,
           "constant_value": "PDF",
           "is_constant": true
         },
@@ -26210,16 +26778,16 @@
           "annotation": "",
           "unique_count": 0,
           "non_null_count": 0,
-          "null_count": 315212
+          "null_count": 315525
         },
         {
           "name": "item_detailing_pending",
           "type": "Nullable(UInt8)",
           "annotation": "",
           "unique_count": 1,
-          "non_null_count": 39343,
-          "null_count": 275869,
-          "constant_value": "None",
+          "non_null_count": 39626,
+          "null_count": 275899,
+          "constant_value": "0",
           "is_constant": true
         },
         {
@@ -26227,8 +26795,8 @@
           "type": "Nullable(UInt8)",
           "annotation": "",
           "unique_count": 2,
-          "non_null_count": 39343,
-          "null_count": 275869,
+          "non_null_count": 39626,
+          "null_count": 275899,
           "exact_values": [
             "0",
             "1"
@@ -26239,13 +26807,13 @@
           "name": "weight",
           "type": "Nullable(Float64)",
           "annotation": "",
-          "unique_count": 888,
-          "non_null_count": 39343,
-          "null_count": 275869,
+          "unique_count": 891,
+          "non_null_count": 39626,
+          "null_count": 275899,
           "numerical_range": {
             "min": 0.01,
             "max": 599700.0,
-            "avg": 4027.48
+            "avg": 3999.46
           }
         },
         {
@@ -26253,8 +26821,8 @@
           "type": "Nullable(Float64)",
           "annotation": "",
           "unique_count": 69,
-          "non_null_count": 39343,
-          "null_count": 275869,
+          "non_null_count": 39626,
+          "null_count": 275899,
           "exact_values": [
             "0.0",
             "1.0",
@@ -26333,8 +26901,8 @@
           "type": "Nullable(Float64)",
           "annotation": "",
           "unique_count": 62,
-          "non_null_count": 39343,
-          "null_count": 275869,
+          "non_null_count": 39626,
+          "null_count": 275899,
           "exact_values": [
             "0.0",
             "1.0",
@@ -26406,8 +26974,8 @@
           "type": "Nullable(Float64)",
           "annotation": "",
           "unique_count": 79,
-          "non_null_count": 39343,
-          "null_count": 275869,
+          "non_null_count": 39626,
+          "null_count": 275899,
           "exact_values": [
             "0.0",
             "1.0",
@@ -26496,8 +27064,8 @@
           "type": "Nullable(String)",
           "annotation": "",
           "unique_count": 1,
-          "non_null_count": 39343,
-          "null_count": 275869,
+          "non_null_count": 39626,
+          "null_count": 275899,
           "constant_value": "None",
           "is_constant": true
         },
@@ -26506,8 +27074,8 @@
           "type": "Nullable(UInt8)",
           "annotation": "",
           "unique_count": 2,
-          "non_null_count": 39343,
-          "null_count": 275869,
+          "non_null_count": 39626,
+          "null_count": 275899,
           "exact_values": [
             "1",
             "2"
@@ -26519,8 +27087,8 @@
           "type": "Nullable(String)",
           "annotation": "",
           "unique_count": 2,
-          "non_null_count": 39343,
-          "null_count": 275869,
+          "non_null_count": 39626,
+          "null_count": 275899,
           "exact_values": [
             "OFF",
             "SKIP_INVOICE_URL"
@@ -26531,18 +27099,18 @@
           "name": "order_item_ids",
           "type": "Nullable(String)",
           "annotation": "",
-          "unique_count": 32944,
-          "non_null_count": 39343,
-          "null_count": 275869
+          "unique_count": 33197,
+          "non_null_count": 39626,
+          "null_count": 275899
         },
         {
           "name": "shipping_package_type_scannable_source",
           "type": "Nullable(String)",
           "annotation": "",
           "unique_count": 1,
-          "non_null_count": 39343,
-          "null_count": 275869,
-          "constant_value": "NOT_APPLICABLE",
+          "non_null_count": 39626,
+          "null_count": 275899,
+          "constant_value": "None",
           "is_constant": true
         },
         {
@@ -26550,7 +27118,7 @@
           "type": "String",
           "annotation": "",
           "unique_count": 1,
-          "non_null_count": 315212,
+          "non_null_count": 315525,
           "null_count": 0,
           "constant_value": "Unicommerce",
           "is_constant": true
@@ -26560,16 +27128,16 @@
           "type": "Nullable(String)",
           "annotation": "",
           "unique_count": 939,
-          "non_null_count": 292420,
-          "null_count": 22792
+          "non_null_count": 292646,
+          "null_count": 22879
         },
         {
           "name": "mrp",
           "type": "Nullable(Float64)",
           "annotation": "",
           "unique_count": 130,
-          "non_null_count": 273639,
-          "null_count": 41573,
+          "non_null_count": 273865,
+          "null_count": 41660,
           "exact_values": [
             "100.0",
             "1050.0",
@@ -26708,26 +27276,26 @@
           "name": "sp",
           "type": "Nullable(Float64)",
           "annotation": "",
-          "unique_count": 30032,
-          "non_null_count": 315211,
+          "unique_count": 30041,
+          "non_null_count": 315524,
           "null_count": 1,
           "numerical_range": {
             "min": 0.0,
             "max": 47480.41,
-            "avg": 1548.71
+            "avg": 1548.02
           }
         },
         {
           "name": "row_sp",
           "type": "Nullable(Float64)",
           "annotation": "",
-          "unique_count": 57667,
-          "non_null_count": 315211,
+          "unique_count": 57679,
+          "non_null_count": 315524,
           "null_count": 1,
           "numerical_range": {
             "min": 0.0,
             "max": 4042572.3,
-            "avg": 24457.83
+            "avg": 24434.47
           }
         },
         {
@@ -26735,7 +27303,7 @@
           "type": "UInt8",
           "annotation": "",
           "unique_count": 2,
-          "non_null_count": 315212,
+          "non_null_count": 315525,
           "null_count": 0,
           "exact_values": [
             "0",
@@ -26748,12 +27316,12 @@
           "type": "UInt64",
           "annotation": "",
           "unique_count": 224,
-          "non_null_count": 315212,
+          "non_null_count": 315525,
           "null_count": 0,
           "numerical_range": {
             "min": 1.0,
             "max": 9206.0,
-            "avg": 32.24
+            "avg": 32.21
           }
         },
         {
@@ -26761,49 +27329,49 @@
           "type": "Nullable(Float64)",
           "annotation": "",
           "unique_count": 7750,
-          "non_null_count": 315212,
+          "non_null_count": 315525,
           "null_count": 0,
           "numerical_range": {
             "min": 0.0,
             "max": 10102880.0,
-            "avg": 37170.65
+            "avg": 37135.13
           }
         },
         {
           "name": "total_allocated_to_mrp",
           "type": "Nullable(Float64)",
           "annotation": "",
-          "unique_count": 18759,
-          "non_null_count": 315212,
+          "unique_count": 18762,
+          "non_null_count": 315525,
           "null_count": 0,
           "numerical_range": {
             "min": 0.0,
             "max": 4097950.0,
-            "avg": 108109.39
+            "avg": 108002.97
           }
         }
       ],
       "sample_data": [
         {
-          "order_id": "00084743-400a-480e-b6c5-7a508dff36a3",
-          "order_display_order_no": "00084743-400a-480e-b6c5-7a508dff36a3",
-          "uniware_created_at": "2024-12-13 23:36:23+05:30",
-          "channel_created_at": "2024-12-13 23:36:14+05:30",
+          "order_id": "00008796-0299-46f2-84f7-6a19bd576fd3",
+          "order_display_order_no": "00008796-0299-46f2-84f7-6a19bd576fd3",
+          "uniware_created_at": "2024-03-13 15:14:13+05:30",
+          "channel_created_at": "2024-03-13 15:13:54+05:30",
           "order_channel_name": "MYNTRAPPMP",
           "order_status": "COMPLETE",
           "fulfillment_type": "STD",
-          "order_priority": "0",
+          "order_priority": "1",
           "order_on_hold": "No",
           "customer_name": "********",
           "customer_email": "********",
           "customer_mobile_no": "None",
           "order_payment": "-",
-          "pymt": "COD",
-          "order_price": "801.0",
-          "sku": "RND039",
-          "item_price": "801.0",
-          "product_id": "8809625241148",
-          "qty": "2",
+          "pymt": "PREPAID",
+          "order_price": "1232.0",
+          "sku": "CR008",
+          "item_price": "1232.0",
+          "product_id": "8809416470009",
+          "qty": "1",
           "shipment_id": "",
           "shipment_code": "None",
           "shipment_created_at": "1970-01-01 05:30:00+05:30",
@@ -26855,20 +27423,20 @@
           "order_item_ids": "None",
           "shipping_package_type_scannable_source": "None",
           "source": "Unicommerce",
-          "internal_sku": "8809625241148",
-          "mrp": "890.0",
-          "sp": "400.5",
-          "row_sp": "801.0",
+          "internal_sku": "8809416470009",
+          "mrp": "1450.0",
+          "sp": "1232.0",
+          "row_sp": "1232.0",
           "has_null_mrp": "0",
-          "total_qty": "2",
-          "total_mrp_qty": "1780.0",
-          "total_allocated_to_mrp": "801.0"
+          "total_qty": "1",
+          "total_mrp_qty": "1450.0",
+          "total_allocated_to_mrp": "1232.0"
         },
         {
-          "order_id": "000be915-976b-4809-b414-3a2605d1075d",
-          "order_display_order_no": "000be915-976b-4809-b414-3a2605d1075d",
-          "uniware_created_at": "2024-12-06 20:26:40+05:30",
-          "channel_created_at": "2024-12-06 20:24:37+05:30",
+          "order_id": "00008bfb-bdae-4f09-b926-dbe1668e12df",
+          "order_display_order_no": "00008bfb-bdae-4f09-b926-dbe1668e12df",
+          "uniware_created_at": "2024-09-25 23:11:28+05:30",
+          "channel_created_at": "2024-09-25 23:05:55+05:30",
           "order_channel_name": "MYNTRAPPMP",
           "order_status": "COMPLETE",
           "fulfillment_type": "STD",
@@ -26879,10 +27447,10 @@
           "customer_mobile_no": "None",
           "order_payment": "-",
           "pymt": "PREPAID",
-          "order_price": "1350.0",
-          "sku": "BOJ022",
-          "item_price": "1350.0",
-          "product_id": "8809968130239",
+          "order_price": "382.0",
+          "sku": "CR010_M",
+          "item_price": "382.0",
+          "product_id": "8809598454545",
           "qty": "2",
           "shipment_id": "",
           "shipment_code": "None",
@@ -26935,22 +27503,25 @@
           "order_item_ids": "None",
           "shipping_package_type_scannable_source": "None",
           "source": "Unicommerce",
-          "internal_sku": "8809968130239",
-          "mrp": "1500.0",
-          "sp": "675.0",
-          "row_sp": "1350.0",
-          "has_null_mrp": "0",
+          "internal_sku": "None",
+          "mrp": "None",
+          "sp": "191.0",
+          "row_sp": "382.0",
+          "has_null_mrp": "1",
           "total_qty": "2",
-          "total_mrp_qty": "3000.0",
-          "total_allocated_to_mrp": "1350.0"
+          "total_mrp_qty": "0.0",
+          "total_allocated_to_mrp": "0.0"
         }
       ],
-      "description": "",
-      "aliases": []
+      "description": "Unicommerce OMS sales. B2B and marketplace orders. Key columns: order_id, channel_created_at, order_channel_name (marketplace), sku, item_price, qty, shipment_tracking_number, order_status, final_status.",
+      "aliases": [
+        "unicommerce sales",
+        "unicomm channel"
+      ]
     },
     "unicomm_sales_orders": {
       "table": "unicomm_sales_orders",
-      "row_count": 298347,
+      "row_count": 298627,
       "total_columns": 18,
       "columns": [
         {
@@ -27045,12 +27616,16 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to unicomm Limese channel.",
+      "aliases": [
+        "sales",
+        "orders",
+        "unicomm"
+      ]
     },
     "unicomm_sales_testing": {
       "table": "unicomm_sales_testing",
-      "row_count": 315212,
+      "row_count": 315525,
       "total_columns": 78,
       "columns": [
         {
@@ -27445,8 +28020,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "sales",
+        "unicomm",
+        "staging",
+        "testing"
+      ]
     },
     "unicomm_shipment_errors_log": {
       "table": "unicomm_shipment_errors_log",
@@ -27510,12 +28090,17 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to unicomm Limese channel.",
+      "aliases": [
+        "errors",
+        "shipment",
+        "unicomm",
+        "log"
+      ]
     },
     "unicomm_shipment_final": {
       "table": "unicomm_shipment_final",
-      "row_count": 40004,
+      "row_count": 40285,
       "total_columns": 50,
       "columns": [
         {
@@ -27770,12 +28355,16 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to unicomm Limese channel.",
+      "aliases": [
+        "shipment",
+        "unicomm",
+        "final"
+      ]
     },
     "unicomm_shipments": {
       "table": "unicomm_shipments",
-      "row_count": 73196,
+      "row_count": 74336,
       "total_columns": 50,
       "columns": [
         {
@@ -28030,12 +28619,15 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to unicomm Limese channel.",
+      "aliases": [
+        "shipments",
+        "unicomm"
+      ]
     },
     "unicomm_shipments_split": {
       "table": "unicomm_shipments_split",
-      "row_count": 120405,
+      "row_count": 121688,
       "total_columns": 50,
       "columns": [
         {
@@ -28290,8 +28882,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to unicomm Limese channel.",
+      "aliases": [
+        "shipments",
+        "unicomm",
+        "split"
+      ]
     },
     "unicomm_vendor_catalog": {
       "table": "unicomm_vendor_catalog",
@@ -28355,12 +28951,16 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to unicomm Limese channel.",
+      "aliases": [
+        "vendor",
+        "catalog",
+        "unicomm"
+      ]
     },
     "unicommerce_inventory_sales": {
       "table": "unicommerce_inventory_sales",
-      "row_count": 376650,
+      "row_count": 383838,
       "total_columns": 8,
       "columns": [
         {
@@ -28405,8 +29005,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to unicomm Limese channel.",
+      "aliases": [
+        "unicommerce",
+        "inventory",
+        "unicomm",
+        "sales"
+      ]
     },
     "unicommerce_inventory_sales_archive": {
       "table": "unicommerce_inventory_sales_archive",
@@ -28455,12 +29060,18 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "unicommerce",
+        "staging",
+        "archive",
+        "inventory",
+        "sales"
+      ]
     },
     "unicommerce_inventory_sales_old": {
       "table": "unicommerce_inventory_sales_old",
-      "row_count": 17034701,
+      "row_count": 17316637,
       "total_columns": 8,
       "columns": [
         {
@@ -28505,12 +29116,18 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "unicommerce",
+        "staging",
+        "old",
+        "inventory",
+        "sales"
+      ]
     },
     "unicommerce_sales": {
       "table": "unicommerce_sales",
-      "row_count": 253500,
+      "row_count": 253824,
       "total_columns": 20,
       "columns": [
         {
@@ -28615,8 +29232,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to unicomm Limese channel.",
+      "aliases": [
+        "unicommerce",
+        "unicomm",
+        "sales"
+      ]
     },
     "unified_inventory": {
       "table": "unified_inventory",
@@ -28665,12 +29286,15 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to inventory Limese channel.",
+      "aliases": [
+        "inventory",
+        "unified"
+      ]
     },
     "unified_inventory_view": {
       "table": "unified_inventory_view",
-      "row_count": 658365,
+      "row_count": 662541,
       "total_columns": 18,
       "columns": [
         {
@@ -28765,8 +29389,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to inventory Limese channel.",
+      "aliases": [
+        "inventory",
+        "view",
+        "unified"
+      ]
     },
     "unified_reliance_sales": {
       "table": "unified_reliance_sales",
@@ -28840,8 +29468,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to core Limese channel.",
+      "aliases": [
+        "sales",
+        "reliance",
+        "core",
+        "unified"
+      ]
     },
     "unified_sales": {
       "table": "unified_sales",
@@ -28920,8 +29553,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to core Limese channel.",
+      "aliases": [
+        "sales",
+        "core",
+        "unified"
+      ]
     },
     "vendor_mapping": {
       "table": "vendor_mapping",
@@ -28945,8 +29582,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "vendor",
+        "mapping",
+        "staging"
+      ]
     },
     "zoho_bills": {
       "table": "zoho_bills",
@@ -29380,8 +30021,11 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to zoho Limese channel.",
+      "aliases": [
+        "zoho",
+        "bills"
+      ]
     },
     "zoho_credit_notes": {
       "table": "zoho_credit_notes",
@@ -30015,8 +30659,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to zoho Limese channel.",
+      "aliases": [
+        "credit",
+        "notes",
+        "zoho"
+      ]
     },
     "zoho_customers": {
       "table": "zoho_customers",
@@ -30305,8 +30953,11 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to zoho Limese channel.",
+      "aliases": [
+        "zoho",
+        "customers"
+      ]
     },
     "zoho_delivery_challan": {
       "table": "zoho_delivery_challan",
@@ -30580,8 +31231,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to zoho Limese channel.",
+      "aliases": [
+        "zoho",
+        "challan",
+        "delivery"
+      ]
     },
     "zoho_inventory_adjustment": {
       "table": "zoho_inventory_adjustment",
@@ -30680,8 +31335,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to zoho Limese channel.",
+      "aliases": [
+        "inventory",
+        "zoho",
+        "adjustment"
+      ]
     },
     "zoho_inventory_lots": {
       "table": "zoho_inventory_lots",
@@ -30740,8 +31399,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to zoho Limese channel.",
+      "aliases": [
+        "inventory",
+        "zoho",
+        "lots"
+      ]
     },
     "zoho_inventory_lots_after_sell": {
       "table": "zoho_inventory_lots_after_sell",
@@ -30800,8 +31463,14 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to zoho Limese channel.",
+      "aliases": [
+        "after",
+        "zoho",
+        "sell",
+        "inventory",
+        "lots"
+      ]
     },
     "zoho_inventory_lots_after_sell_fifo": {
       "table": "zoho_inventory_lots_after_sell_fifo",
@@ -30845,8 +31514,15 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to zoho Limese channel.",
+      "aliases": [
+        "after",
+        "zoho",
+        "sell",
+        "inventory",
+        "lots",
+        "fifo"
+      ]
     },
     "zoho_inventory_sales": {
       "table": "zoho_inventory_sales",
@@ -30895,8 +31571,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to zoho Limese channel.",
+      "aliases": [
+        "inventory",
+        "zoho",
+        "sales"
+      ]
     },
     "zoho_inventory_sales_archive": {
       "table": "zoho_inventory_sales_archive",
@@ -30945,8 +31625,14 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "zoho",
+        "staging",
+        "archive",
+        "inventory",
+        "sales"
+      ]
     },
     "zoho_inventory_sales_old": {
       "table": "zoho_inventory_sales_old",
@@ -30995,8 +31681,14 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to staging Limese channel.",
+      "aliases": [
+        "zoho",
+        "staging",
+        "old",
+        "inventory",
+        "sales"
+      ]
     },
     "zoho_inventory_summary": {
       "table": "zoho_inventory_summary",
@@ -31090,8 +31782,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to zoho Limese channel.",
+      "aliases": [
+        "inventory",
+        "zoho",
+        "summary"
+      ]
     },
     "zoho_inventory_valuation_snapshot": {
       "table": "zoho_inventory_valuation_snapshot",
@@ -31140,8 +31836,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to zoho Limese channel.",
+      "aliases": [
+        "inventory",
+        "snapshot",
+        "zoho",
+        "valuation"
+      ]
     },
     "zoho_items": {
       "table": "zoho_items",
@@ -31430,8 +32131,11 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to zoho Limese channel.",
+      "aliases": [
+        "items",
+        "zoho"
+      ]
     },
     "zoho_overall_line_item": {
       "table": "zoho_overall_line_item",
@@ -31545,8 +32249,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to zoho Limese channel.",
+      "aliases": [
+        "item",
+        "line",
+        "zoho",
+        "overall"
+      ]
     },
     "zoho_overall_line_item_all": {
       "table": "zoho_overall_line_item_all",
@@ -32310,8 +33019,14 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to zoho Limese channel.",
+      "aliases": [
+        "zoho",
+        "item",
+        "all",
+        "line",
+        "overall"
+      ]
     },
     "zoho_po_pr_view": {
       "table": "zoho_po_pr_view",
@@ -32925,8 +33640,11 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to zoho Limese channel.",
+      "aliases": [
+        "zoho",
+        "view"
+      ]
     },
     "zoho_price_list": {
       "table": "zoho_price_list",
@@ -33025,8 +33743,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to zoho Limese channel.",
+      "aliases": [
+        "zoho",
+        "price",
+        "list"
+      ]
     },
     "zoho_purchase_orders": {
       "table": "zoho_purchase_orders",
@@ -33182,7 +33904,7 @@
         {
           "name": "purchase_order_date",
           "type": "Nullable(DateTime64(3))",
-          "annotation": "",
+          "annotation": "Primary date column. Filter: purchase_order_date >= '2025-01-01'.",
           "unique_count": 39,
           "non_null_count": 1790,
           "null_count": 0,
@@ -33401,7 +34123,7 @@
         {
           "name": "purchase_order_status",
           "type": "Nullable(String)",
-          "annotation": "",
+          "annotation": "Fulfillment state (e.g. open, closed, void).",
           "unique_count": 2,
           "non_null_count": 1790,
           "null_count": 0,
@@ -33414,7 +34136,7 @@
         {
           "name": "vendor_name",
           "type": "Nullable(String)",
-          "annotation": "",
+          "annotation": "Name of the B2B vendor/supplier.",
           "unique_count": 2,
           "non_null_count": 1790,
           "null_count": 0,
@@ -33495,7 +34217,7 @@
         {
           "name": "totalquantityordered",
           "type": "Nullable(Int64)",
-          "annotation": "",
+          "annotation": "UNITS ordered from supplier \u2014 USE THIS for purchase quantity.",
           "unique_count": 117,
           "non_null_count": 1790,
           "null_count": 0,
@@ -33853,7 +34575,7 @@
         {
           "name": "item_price",
           "type": "Nullable(Float64)",
-          "annotation": "",
+          "annotation": "Purchase rate per unit.",
           "unique_count": 226,
           "non_null_count": 1790,
           "null_count": 0,
@@ -33874,7 +34596,7 @@
         {
           "name": "sku",
           "type": "Nullable(String)",
-          "annotation": "",
+          "annotation": "Internal SKU lookup key. Join with product_master.internal_sku.",
           "unique_count": 721,
           "non_null_count": 1790,
           "null_count": 0
@@ -34816,8 +35538,12 @@
           "source_system": "zoho_inventory"
         }
       ],
-      "description": "",
-      "aliases": []
+      "description": "Purchase orders from vendors. Key columns: po_date, po_vendor_name, po_line_item_description, po_sku, po_quantity_received, po_rate, po_item_total, po_status.",
+      "aliases": [
+        "zoho procurement",
+        "zoho purchase orders",
+        "supplier po"
+      ]
     },
     "zoho_purchase_orders_new": {
       "table": "zoho_purchase_orders_new",
@@ -35006,8 +35732,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to zoho Limese channel.",
+      "aliases": [
+        "orders",
+        "zoho",
+        "purchase",
+        "new"
+      ]
     },
     "zoho_purchase_receive": {
       "table": "zoho_purchase_receive",
@@ -35096,8 +35827,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to zoho Limese channel.",
+      "aliases": [
+        "receive",
+        "zoho",
+        "purchase"
+      ]
     },
     "zoho_purchase_receive_new": {
       "table": "zoho_purchase_receive_new",
@@ -35191,8 +35926,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to zoho Limese channel.",
+      "aliases": [
+        "receive",
+        "zoho",
+        "purchase",
+        "new"
+      ]
     },
     "zoho_sales": {
       "table": "zoho_sales",
@@ -35731,8 +36471,11 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to zoho Limese channel.",
+      "aliases": [
+        "sales",
+        "zoho"
+      ]
     },
     "zoho_sales_final": {
       "table": "zoho_sales_final",
@@ -35758,7 +36501,7 @@
         {
           "name": "so_order_date",
           "type": "Nullable(Date)",
-          "annotation": "",
+          "annotation": "Primary date column. Filter: so_order_date >= '2025-01-01'. Group: formatDateTime(so_order_date, '%Y-%m').",
           "unique_count": 264,
           "non_null_count": 135598,
           "null_count": 0,
@@ -35790,7 +36533,7 @@
         {
           "name": "so_status",
           "type": "Nullable(String)",
-          "annotation": "",
+          "annotation": "Order status. EXCLUDE: WHERE so_status NOT IN ('Cancelled','Returned').",
           "unique_count": 6,
           "non_null_count": 135598,
           "null_count": 0,
@@ -35982,7 +36725,7 @@
         {
           "name": "so_customer_name",
           "type": "Nullable(String)",
-          "annotation": "",
+          "annotation": "B2B customer/distributor name.",
           "unique_count": 150,
           "non_null_count": 135598,
           "null_count": 0,
@@ -36403,7 +37146,7 @@
           "unique_count": 1,
           "non_null_count": 135586,
           "null_count": 12,
-          "constant_value": "None",
+          "constant_value": "pcs",
           "is_constant": true
         },
         {
@@ -36592,7 +37335,7 @@
         {
           "name": "so_item_total",
           "type": "Nullable(Decimal(18, 2))",
-          "annotation": "",
+          "annotation": "REVENUE per line \u2014 USE THIS for zoho revenue/sales totals.",
           "unique_count": 16843,
           "non_null_count": 135598,
           "null_count": 0,
@@ -36631,7 +37374,7 @@
         {
           "name": "so_subtotal",
           "type": "Nullable(Decimal(18, 2))",
-          "annotation": "",
+          "annotation": "Order subtotal before tax \u2014 use so_item_total for line-level revenue.",
           "unique_count": 5233,
           "non_null_count": 135598,
           "null_count": 0,
@@ -36644,7 +37387,7 @@
         {
           "name": "so_total",
           "type": "Nullable(Decimal(18, 2))",
-          "annotation": "",
+          "annotation": "Order total including tax.",
           "unique_count": 4988,
           "non_null_count": 135598,
           "null_count": 0,
@@ -40471,7 +41214,7 @@
           "unique_count": 1,
           "non_null_count": 120912,
           "null_count": 14686,
-          "constant_value": "India",
+          "constant_value": "None",
           "is_constant": true
         },
         {
@@ -40683,20 +41426,20 @@
       ],
       "sample_data": [
         {
-          "so_salesorder_id": "2327129000000121005",
-          "so_product_id": "2327129000000073173",
-          "so_order_date": "2020-10-13",
+          "so_salesorder_id": "2327129000006216003",
+          "so_product_id": "2327129000005878817",
+          "so_order_date": "2025-06-02",
           "so_expected_shipment_date": "None",
-          "so_salesorder_number": "SO-00001",
-          "so_status": "invoiced",
+          "so_salesorder_number": "NHO1349552",
+          "so_status": "Cancelled",
           "so_custom_status": "None",
-          "so_customer_id": "2327129000000077425",
+          "so_customer_id": "2327129000003378553",
           "so_sales_channel": "direct_sales",
-          "so_customer_name": "Dr Maurice Chirom",
-          "so_place_of_supply": "DL",
-          "so_gst_treatment": "business_none",
+          "so_customer_name": "Nykaa Warehouse Indore",
+          "so_place_of_supply": "MP",
+          "so_gst_treatment": "business_gst",
           "so_gstin": "None",
-          "so_is_inclusive_tax": "True",
+          "so_is_inclusive_tax": "False",
           "so_purchaseorder": "None",
           "so_template_name": "Standard Template",
           "so_currency_code": "INR",
@@ -40705,37 +41448,37 @@
           "so_is_discount_before_tax": "True",
           "so_entity_discount_amount": "0.00",
           "so_entity_discount_percent": "0.0000",
-          "so_item_name": "Supple Preparation Facial Toner",
-          "so_sku": "Klairs001",
+          "so_item_name": "Hydro Boost Enzyme Powder Wash [1g]",
+          "so_sku": "8809928134369",
           "so_upc": "None",
           "so_mpn": "None",
-          "so_ean": "None",
+          "so_ean": "8809928134369",
           "so_isbn": "None",
           "so_kit_combo_item_name": "None",
           "so_account": "Sales",
           "so_item_desc": "None",
           "item_quantity": "30.0",
-          "so_usage_unit": "None",
-          "so_item_price": "1001.00",
+          "so_usage_unit": "pcs",
+          "so_item_price": "27.37",
           "so_discount": "0.00",
           "so_discount_amount": "0.000",
-          "so_hsn_sac": "33049990",
+          "so_hsn_sac": "34013019",
           "so_supply_type": "Taxable",
           "so_tax_id": "2327129000000070440",
           "so_item_tax": "IGST18",
           "so_item_tax_percent": "18.000000",
-          "so_item_tax_amount": "4580.85",
+          "so_item_tax_amount": "147.80",
           "so_item_tax_type": "ItemAmount",
           "so_reverse_charge_tax_name": "None",
           "so_reverse_charge_tax_rate": "None",
           "so_reverse_charge_tax_type": "None",
           "so_item_tax_exemption_reason": "None",
           "so_item_type": "goods",
-          "so_item_total": "25449.15",
-          "row_sp": "30030.0",
-          "row_subtotal": "247811.87",
-          "so_subtotal": "247811.87",
-          "so_total": "292418.00",
+          "so_item_total": "821.10",
+          "row_sp": "821.1",
+          "row_subtotal": "128433.67",
+          "so_subtotal": "128433.67",
+          "so_total": "151552.00",
           "so_shipping_charge": "0.00",
           "so_shipping_charge_tax_id": "None",
           "so_shipping_charge_tax_amount": "None",
@@ -40753,20 +41496,20 @@
           "so_terms_and_conditions": "None",
           "so_delivery_method": "None",
           "so_source": "1",
-          "so_billing_address": "Tera Yengkhom Leirak",
-          "so_billing_street2": "Khamnam Leirak",
-          "so_billing_city": "imphal",
-          "so_billing_state": "Manipur",
+          "so_billing_address": "NYKAA E- RETAIL LIMITED\nWarehouse No 11/3A,11/3B,11/3C,11/3D",
+          "so_billing_street2": "Empire Logipark,Village Barode Arjun,Tehsil Sawar\nMangalya",
+          "so_billing_city": "Indore",
+          "so_billing_state": "Madhya Pradesh",
           "so_billing_country": "India",
-          "so_billing_code": "795001",
+          "so_billing_code": "453771",
           "so_billing_fax": "None",
-          "so_billing_phone": "9774788359",
-          "so_shipping_address": "None",
-          "so_shipping_street2": "None",
-          "so_shipping_city": "None",
-          "so_shipping_state": "None",
-          "so_shipping_country": "None",
-          "so_shipping_code": "None",
+          "so_billing_phone": "None",
+          "so_shipping_address": "NYKAA E- RETAIL LIMITED\nWarehouse No 11/3A,11/3B,11/3C,11/3D",
+          "so_shipping_street2": "Empire Logipark,Village Barode Arjun,Tehsil Sawar\nMangalya",
+          "so_shipping_city": "Indore",
+          "so_shipping_state": "Madhya Pradesh",
+          "so_shipping_country": "India",
+          "so_shipping_code": "453771",
           "so_shipping_fax": "None",
           "so_shipping_phone": "None",
           "so_tds_name": "None",
@@ -40778,10 +41521,10 @@
           "so_tcs_percentage": "None",
           "so_tcs_amount": "None",
           "so_nature_of_collection": "None",
-          "so_item_cf_brand": "Klairs",
-          "so_item_cf_ean": "8809115025012",
-          "so_item_cf_mrp": "1430.00",
-          "so_item_cf_shelf_code": "None",
+          "so_item_cf_brand": "Tirtir",
+          "so_item_cf_ean": "8809928134369",
+          "so_item_cf_mrp": "50.00",
+          "so_item_cf_shelf_code": "TIR005S",
           "so_lastupdated": "2025-10-18 12:23:00+05:30",
           "sr_return_date": "1970-01-01 05:30:00+05:30",
           "sr_sales_return_id": "0",
@@ -40807,49 +41550,49 @@
           "sr_item_price": "None",
           "sr_item_total": "None",
           "sr_total": "None",
-          "ss_shipment_id": "0",
-          "ss_packing_number": "None",
-          "ss_shipment_date": "1970-01-01 05:30:00+05:30",
-          "ss_shipment_number": "None",
-          "ss_status": "None",
-          "ss_shipment_type": "None",
-          "ss_carrier_name": "None",
-          "ss_tracking_number": "None",
-          "ss_shipping_charge": "None",
-          "ss_sales_order_id": "None",
+          "ss_shipment_id": "2327129000006220991",
+          "ss_packing_number": "PKG-00005",
+          "ss_shipment_date": "2025-06-03 00:00:00+05:30",
+          "ss_shipment_number": "SHP-00006",
+          "ss_status": "delivered",
+          "ss_shipment_type": "Manual Shipment",
+          "ss_carrier_name": "Bluedart ( Excel )",
+          "ss_tracking_number": "58151578472",
+          "ss_shipping_charge": "0.000",
+          "ss_sales_order_id": "2327129000006216003",
           "ss_expected_delivery_date": "None",
-          "ss_delivery_date": "None",
+          "ss_delivery_date": "2025-06-07 00:00:00+05:30",
           "ss_notes": "None",
-          "ss_created_time": "None",
-          "ss_last_modified_time": "1970-01-01 05:30:00+05:30",
-          "ss_so_number": "None",
-          "ss_customer_name": "None",
-          "ss_shipping_address": "None",
-          "ss_shipping_street2": "None",
-          "ss_shipping_city": "None",
-          "ss_shipping_state": "None",
-          "ss_shipping_country": "None",
-          "ss_shipping_code": "None",
+          "ss_created_time": "2025-06-03 11:20:34+05:30",
+          "ss_last_modified_time": "2025-07-10 17:04:13+05:30",
+          "ss_so_number": "NHO1349552",
+          "ss_customer_name": "Nykaa Warehouse Indore",
+          "ss_shipping_address": "NYKAA E- RETAIL LIMITED\nWarehouse No 11/3A,11/3B,11/3C,11/3D",
+          "ss_shipping_street2": "Empire Logipark,Village Barode Arjun,Tehsil Sawar\nMangalya",
+          "ss_shipping_city": "Indore",
+          "ss_shipping_state": "Madhya Pradesh",
+          "ss_shipping_country": "India",
+          "ss_shipping_code": "453771",
           "ss_shipping_fax": "None",
           "ss_shipping_phone": "None",
           "ss_shipping_attention": "None",
           "source": "Zoho"
         },
         {
-          "so_salesorder_id": "2327129000000121005",
-          "so_product_id": "2327129000000073200",
-          "so_order_date": "2020-10-13",
+          "so_salesorder_id": "2327129000006216003",
+          "so_product_id": "2327129000005879455",
+          "so_order_date": "2025-06-02",
           "so_expected_shipment_date": "None",
-          "so_salesorder_number": "SO-00001",
-          "so_status": "invoiced",
+          "so_salesorder_number": "NHO1349552",
+          "so_status": "Cancelled",
           "so_custom_status": "None",
-          "so_customer_id": "2327129000000077425",
+          "so_customer_id": "2327129000003378553",
           "so_sales_channel": "direct_sales",
-          "so_customer_name": "Dr Maurice Chirom",
-          "so_place_of_supply": "DL",
-          "so_gst_treatment": "business_none",
+          "so_customer_name": "Nykaa Warehouse Indore",
+          "so_place_of_supply": "MP",
+          "so_gst_treatment": "business_gst",
           "so_gstin": "None",
-          "so_is_inclusive_tax": "True",
+          "so_is_inclusive_tax": "False",
           "so_purchaseorder": "None",
           "so_template_name": "Standard Template",
           "so_currency_code": "INR",
@@ -40858,18 +41601,18 @@
           "so_is_discount_before_tax": "True",
           "so_entity_discount_amount": "0.00",
           "so_entity_discount_percent": "0.0000",
-          "so_item_name": "Illuminating Supple Blemish Cream",
-          "so_sku": "Klairs004",
+          "so_item_name": "Mask Fit Red Cushion 21N Ivory [4.5g]",
+          "so_sku": "8809679697496",
           "so_upc": "None",
           "so_mpn": "None",
-          "so_ean": "None",
+          "so_ean": "8809679697496",
           "so_isbn": "None",
           "so_kit_combo_item_name": "None",
           "so_account": "Sales",
           "so_item_desc": "None",
-          "item_quantity": "4.0",
-          "so_usage_unit": "None",
-          "so_item_price": "1197.00",
+          "item_quantity": "14.0",
+          "so_usage_unit": "pcs",
+          "so_item_price": "656.95",
           "so_discount": "0.00",
           "so_discount_amount": "0.000",
           "so_hsn_sac": "33049990",
@@ -40877,18 +41620,18 @@
           "so_tax_id": "2327129000000070440",
           "so_item_tax": "IGST18",
           "so_item_tax_percent": "18.000000",
-          "so_item_tax_amount": "730.37",
+          "so_item_tax_amount": "1655.51",
           "so_item_tax_type": "ItemAmount",
           "so_reverse_charge_tax_name": "None",
           "so_reverse_charge_tax_rate": "None",
           "so_reverse_charge_tax_type": "None",
           "so_item_tax_exemption_reason": "None",
           "so_item_type": "goods",
-          "so_item_total": "4057.63",
-          "row_sp": "4788.0",
-          "row_subtotal": "247811.87",
-          "so_subtotal": "247811.87",
-          "so_total": "292418.00",
+          "so_item_total": "9197.29",
+          "row_sp": "9197.300000000001",
+          "row_subtotal": "128433.67",
+          "so_subtotal": "128433.67",
+          "so_total": "151552.00",
           "so_shipping_charge": "0.00",
           "so_shipping_charge_tax_id": "None",
           "so_shipping_charge_tax_amount": "None",
@@ -40906,20 +41649,20 @@
           "so_terms_and_conditions": "None",
           "so_delivery_method": "None",
           "so_source": "1",
-          "so_billing_address": "Tera Yengkhom Leirak",
-          "so_billing_street2": "Khamnam Leirak",
-          "so_billing_city": "imphal",
-          "so_billing_state": "Manipur",
+          "so_billing_address": "NYKAA E- RETAIL LIMITED\nWarehouse No 11/3A,11/3B,11/3C,11/3D",
+          "so_billing_street2": "Empire Logipark,Village Barode Arjun,Tehsil Sawar\nMangalya",
+          "so_billing_city": "Indore",
+          "so_billing_state": "Madhya Pradesh",
           "so_billing_country": "India",
-          "so_billing_code": "795001",
+          "so_billing_code": "453771",
           "so_billing_fax": "None",
-          "so_billing_phone": "9774788359",
-          "so_shipping_address": "None",
-          "so_shipping_street2": "None",
-          "so_shipping_city": "None",
-          "so_shipping_state": "None",
-          "so_shipping_country": "None",
-          "so_shipping_code": "None",
+          "so_billing_phone": "None",
+          "so_shipping_address": "NYKAA E- RETAIL LIMITED\nWarehouse No 11/3A,11/3B,11/3C,11/3D",
+          "so_shipping_street2": "Empire Logipark,Village Barode Arjun,Tehsil Sawar\nMangalya",
+          "so_shipping_city": "Indore",
+          "so_shipping_state": "Madhya Pradesh",
+          "so_shipping_country": "India",
+          "so_shipping_code": "453771",
           "so_shipping_fax": "None",
           "so_shipping_phone": "None",
           "so_tds_name": "None",
@@ -40931,10 +41674,10 @@
           "so_tcs_percentage": "None",
           "so_tcs_amount": "None",
           "so_nature_of_collection": "None",
-          "so_item_cf_brand": "Klairs",
-          "so_item_cf_ean": "8809115020109",
-          "so_item_cf_mrp": "1710.00",
-          "so_item_cf_shelf_code": "None",
+          "so_item_cf_brand": "Tirtir",
+          "so_item_cf_ean": "8809679697496",
+          "so_item_cf_mrp": "1200.00",
+          "so_item_cf_shelf_code": "TIR014M",
           "so_lastupdated": "2025-10-18 12:23:00+05:30",
           "sr_return_date": "1970-01-01 05:30:00+05:30",
           "sr_sales_return_id": "0",
@@ -40960,37 +41703,41 @@
           "sr_item_price": "None",
           "sr_item_total": "None",
           "sr_total": "None",
-          "ss_shipment_id": "0",
-          "ss_packing_number": "None",
-          "ss_shipment_date": "1970-01-01 05:30:00+05:30",
-          "ss_shipment_number": "None",
-          "ss_status": "None",
-          "ss_shipment_type": "None",
-          "ss_carrier_name": "None",
-          "ss_tracking_number": "None",
-          "ss_shipping_charge": "None",
-          "ss_sales_order_id": "None",
+          "ss_shipment_id": "2327129000006220991",
+          "ss_packing_number": "PKG-00005",
+          "ss_shipment_date": "2025-06-03 00:00:00+05:30",
+          "ss_shipment_number": "SHP-00006",
+          "ss_status": "delivered",
+          "ss_shipment_type": "Manual Shipment",
+          "ss_carrier_name": "Bluedart ( Excel )",
+          "ss_tracking_number": "58151578472",
+          "ss_shipping_charge": "0.000",
+          "ss_sales_order_id": "2327129000006216003",
           "ss_expected_delivery_date": "None",
-          "ss_delivery_date": "None",
+          "ss_delivery_date": "2025-06-07 00:00:00+05:30",
           "ss_notes": "None",
-          "ss_created_time": "None",
-          "ss_last_modified_time": "1970-01-01 05:30:00+05:30",
-          "ss_so_number": "None",
-          "ss_customer_name": "None",
-          "ss_shipping_address": "None",
-          "ss_shipping_street2": "None",
-          "ss_shipping_city": "None",
-          "ss_shipping_state": "None",
-          "ss_shipping_country": "None",
-          "ss_shipping_code": "None",
+          "ss_created_time": "2025-06-03 11:20:34+05:30",
+          "ss_last_modified_time": "2025-07-10 17:04:13+05:30",
+          "ss_so_number": "NHO1349552",
+          "ss_customer_name": "Nykaa Warehouse Indore",
+          "ss_shipping_address": "NYKAA E- RETAIL LIMITED\nWarehouse No 11/3A,11/3B,11/3C,11/3D",
+          "ss_shipping_street2": "Empire Logipark,Village Barode Arjun,Tehsil Sawar\nMangalya",
+          "ss_shipping_city": "Indore",
+          "ss_shipping_state": "Madhya Pradesh",
+          "ss_shipping_country": "India",
+          "ss_shipping_code": "453771",
           "ss_shipping_fax": "None",
           "ss_shipping_phone": "None",
           "ss_shipping_attention": "None",
           "source": "Zoho"
         }
       ],
-      "description": "",
-      "aliases": []
+      "description": "Zoho Books sales orders. B2B and trade sales. Key columns: so_order_date, so_sku, so_item_name, so_customer_name, so_sales_channel, so_quantity_invoiced, so_rate, so_item_total, so_status.",
+      "aliases": [
+        "zoho sales",
+        "zoho invoices",
+        "zoho B2B"
+      ]
     },
     "zoho_sales_orders": {
       "table": "zoho_sales_orders",
@@ -41504,8 +42251,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to zoho Limese channel.",
+      "aliases": [
+        "sales",
+        "orders",
+        "zoho"
+      ]
     },
     "zoho_sales_returns": {
       "table": "zoho_sales_returns",
@@ -41639,8 +42390,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to zoho Limese channel.",
+      "aliases": [
+        "sales",
+        "zoho",
+        "returns"
+      ]
     },
     "zoho_shipment_orders": {
       "table": "zoho_shipment_orders",
@@ -41779,8 +42534,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to zoho Limese channel.",
+      "aliases": [
+        "shipment",
+        "zoho",
+        "orders"
+      ]
     },
     "zoho_shipment_orders_distinct": {
       "table": "zoho_shipment_orders_distinct",
@@ -41919,8 +42678,13 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to zoho Limese channel.",
+      "aliases": [
+        "shipment",
+        "zoho",
+        "distinct",
+        "orders"
+      ]
     },
     "zoho_stock_summary": {
       "table": "zoho_stock_summary",
@@ -41999,8 +42763,12 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to zoho Limese channel.",
+      "aliases": [
+        "summary",
+        "zoho",
+        "stock"
+      ]
     },
     "zoho_vendors": {
       "table": "zoho_vendors",
@@ -42279,14 +43047,17 @@
         }
       ],
       "sample_data": [],
-      "description": "",
-      "aliases": []
+      "description": "Operational dataset related to zoho Limese channel.",
+      "aliases": [
+        "zoho",
+        "vendors"
+      ]
     }
   },
   "global_notes": [
     "READ-ONLY: Never generate INSERT/UPDATE/DELETE/DROP/CREATE/ALTER SQL.",
     "DATABASE TABLES (172): all_sales, all_sales_archive, all_sales_final, all_sales_table, all_sales_temp, all_sales_view, b2b_outward_sales, b2b_sales_overview, combined_sales, combined_sales_final, combined_sales_final_archive, combined_sales_temp, combined_sales_test, critical_oos_alerts, daily_sales_summary",
-    "TOTAL ROWS: 55,252,685",
+    "TOTAL ROWS: 55,572,891",
     "combined_sales_final.client_id is ALWAYS 'Limese' \u2014 NEVER group by this.",
     "combined_sales_final.client_name is ALWAYS 'Limese' \u2014 NEVER group by this.",
     "combined_sales_final.client_name: CONSTANT 'Limese' for all rows \u2014 NEVER group by this for platform analysis.",
@@ -42307,7 +43078,8 @@
     "combined_sales_final.shipping_state \u2014 exact values (case-sensitive): ['Andhra Pradesh', 'Assam', 'Bihar', 'Chandigarh', 'Delhi', 'Gujarat', 'Haryana', 'Karnataka', 'Kerala', 'Maharashtra', 'Manipur', 'Punjab', 'Rajasthan', 'Tamil Nadu', 'Telangana', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal']",
     "combined_sales_final.courier_name \u2014 exact values (case-sensitive): ['Amazon FBA', 'B2C', 'Bluedart', 'Bluedart ( Excel )', 'ClickPost', 'CriticaLog', 'DELIVERY', 'DE_4PL', 'DE_E2E', 'Delhivery', 'EK_E2E', 'Ithink Logistics', 'Nykaa', 'Private Tempo', 'SELF', 'SHipped', 'Safexpress', 'Shipdelight', 'Tester', 'V-Xpress', 'porter', 'wefast']",
     "combined_sales_final.source \u2014 exact values (case-sensitive): ['Flipkart_Earn_More', 'Myntra_PPMP', 'Nykaa_Offline', 'Nykaa_Online', 'Reliance', 'Shopify', 'Unicommerce', 'Zoho']",
-    "combined_sales_final facts: total_revenue_crore: 563.95, total_orders: 286259, total_units: 5710388, date_range: 2025-01-01 00:00:00+05:30 to 2026-05-27 16:29:21+05:30",
+    "combined_sales_final facts: total_revenue_crore: 563.95, total_orders: 286285, total_units: 5710463, date_range: 2025-01-01 00:00:00+05:30 to 2026-05-28 00:00:00+05:30",
+    "inventory_ledger.event_date: Primary date column for ledger activity. Filter: event_date >= '2025-01-01'.",
     "inventory_ledger.movement_type \u2014 exact values (case-sensitive): ['inward', 'outward', 'return_inward']",
     "inventory_ledger.facility \u2014 exact values (case-sensitive): ['WAREHOUSE', 'ZOHO_WAREHOUSE']",
     "inventory_ledger.sub_facility \u2014 exact values (case-sensitive): ['other_inventory', 'zoho_inventory']",
@@ -42322,7 +43094,7 @@
     "inventory_sales_overview_new.category \u2014 exact values (case-sensitive): ['Haircare', 'Makeup', 'Skincare']",
     "inventory_sales_overview_new.gross_sales_rs: Daily revenue in \u20b9.",
     "inventory_sales_overview_new.burn_period is ALWAYS '90' \u2014 NEVER group by this.",
-    "inventory_sales_overview_new facts: tracked_skus: 1550, total_inventory_units: 4244",
+    "inventory_sales_overview_new facts: tracked_skus: 1554, total_inventory_units: 2067",
     "lead_time.median_lead_time_days \u2014 exact values (case-sensitive): ['0.0', '0.5', '1.0', '1.5', '10.0', '2.0', '2.5', '3.0', '3.5', '4.0', '4.5', '5.0', '6.0', '8.0', '8.5']",
     "lead_time.total_orders \u2014 exact values (case-sensitive): ['1', '13', '2', '3', '4', '5', '6', '7']",
     "lead_time.min_lead_time \u2014 exact values (case-sensitive): ['0', '1', '10', '2', '3', '4', '6', '8']",
@@ -42345,9 +43117,13 @@
     "shopify_orders.fulfillment_status \u2014 exact values (case-sensitive): ['fulfilled', 'unfulfilled']",
     "shopify_orders.accepts_marketing \u2014 exact values (case-sensitive): ['no', 'yes']",
     "shopify_orders.currency is ALWAYS 'INR' \u2014 NEVER group by this.",
+    "shopify_orders.subtotal: REVENUE \u2014 USE THIS for Shopify revenue/sales totals.",
     "shopify_orders.shipping is ALWAYS '0.0' \u2014 NEVER group by this.",
+    "shopify_orders.total: Order total including taxes \u2014 use subtotal instead for pure revenue.",
     "shopify_orders.shipping_method \u2014 exact values (case-sensitive): ['Standard Custom Shipping', 'Standard Shipping']",
+    "shopify_orders.created_at: Primary date column. Filter: created_at >= '2025-01-01'. Group: formatDateTime(created_at, '%Y-%m').",
     "shopify_orders.lineitem_quantity \u2014 exact values (case-sensitive): ['1', '10', '2', '3', '5', '6', '8']",
+    "shopify_orders.lineitem_quantity: Units per line item \u2014 USE THIS for unit counts.",
     "shopify_orders.lineitem_requires_shipping is ALWAYS 'True' \u2014 NEVER group by this.",
     "shopify_orders.lineitem_taxable is ALWAYS 'True' \u2014 NEVER group by this.",
     "shopify_orders.lineitem_fulfillment_status \u2014 exact values (case-sensitive): ['fulfilled', 'pending']",
@@ -42366,6 +43142,7 @@
     "shopify_orders.lineitem_discount \u2014 exact values (case-sensitive): ['0.0', '64.12000274658203', '99.75']",
     "shopify_orders.tax_1_name \u2014 exact values (case-sensitive): ['CGST 9%', 'IGST 18%']",
     "shopify_orders.tax_2_name is ALWAYS 'None' \u2014 NEVER group by this.",
+    "unicomm_sales_final.channel_created_at: Primary date column. Filter: channel_created_at >= '2025-01-01'.",
     "unicomm_sales_final.order_channel_name \u2014 exact values (case-sensitive): ['AMAZON_FBM', 'AMAZON_IN', 'CUSTOM', 'CUSTOM_BOTERA', 'FLIPKART', 'FLIPKARTONLINE', 'KOLHASIA_MYNTRAPPMP', 'LIMESE_OFFLINE', 'LIMESE_ONLINE', 'MYNTRAPPMP', 'POPCLUB', 'SHOPIFY', 'SHOPIFY_KBEAUTY', 'SHOPIFY_NEW', 'SWISHCLUB', 'TATACLIQ', 'TATA_CLIQ', 'VELY_MONKEYS']",
     "unicomm_sales_final.order_status \u2014 exact values (case-sensitive): ['CANCELLED', 'COMPLETE', 'PROCESSING']",
     "unicomm_sales_final.fulfillment_type is ALWAYS 'STD' \u2014 NEVER group by this.",
@@ -42376,6 +43153,8 @@
     "unicomm_sales_final.customer_mobile_no is ALWAYS 'None' \u2014 NEVER group by this.",
     "unicomm_sales_final.order_payment is ALWAYS '-' \u2014 NEVER group by this.",
     "unicomm_sales_final.pymt \u2014 exact values (case-sensitive): ['COD', 'PREPAID']",
+    "unicomm_sales_final.order_price: TOTAL REVENUE \u2014 USE THIS for Unicommerce revenue totals.",
+    "unicomm_sales_final.qty: UNITS sold for this line item \u2014 USE THIS for Unicommerce units.",
     "unicomm_sales_final.gift_message \u2014 exact values (case-sensitive): ['0', '1', '2', '3']",
     "unicomm_sales_final.item_contains \u2014 exact values (case-sensitive): ['false', 'true']",
     "unicomm_sales_final.shipment_channel \u2014 exact values (case-sensitive): ['CUSTOM_BOTERA', 'KOLHASIA_MYNTRAPPMP', 'LIMESE_ONLINE', 'MYNTRAPPMP', 'SHOPIFY_NEW']",
@@ -42391,16 +43170,17 @@
     "unicomm_sales_final.shipping_provider_code \u2014 exact values (case-sensitive): ['CLICKPOST', 'DELIVERY', 'DE_4PL', 'DE_E2E', 'EK_E2E', 'ITHINK_LOGISTICS', 'SELF', 'SHIPDELIGHT', 'delhivery', 'delhivery-volumetric-lastmile', 'ecomexpress', 'flipkartlogistics']",
     "unicomm_sales_final.shipping_courier \u2014 exact values (case-sensitive): ['BlueDart Express', 'Bluedart', 'DELIVERY', 'Delhivery', 'Delhivery Air', 'Delhivery Express', 'Ekart Surface', 'Oneworld Express', 'SELF', 'Xpressbees', 'bluedart', 'delhivery', 'ekart', 'xpressbees']",
     "unicomm_sales_final.shipping_arranged_by \u2014 exact values (case-sensitive): ['CHANNEL', 'UNIWARE']",
-    "unicomm_sales_final.product_management_switched_odd is ALWAYS 'None' \u2014 NEVER group by this.",
+    "unicomm_sales_final.product_management_switched_odd is ALWAYS 'false' \u2014 NEVER group by this.",
     "unicomm_sales_final.label_format is ALWAYS 'PDF' \u2014 NEVER group by this.",
-    "unicomm_sales_final.item_detailing_pending is ALWAYS 'None' \u2014 NEVER group by this.",
+    "unicomm_sales_final.item_detailing_pending is ALWAYS '0' \u2014 NEVER group by this.",
     "unicomm_sales_final.putaway_pending \u2014 exact values (case-sensitive): ['0', '1']",
     "unicomm_sales_final.package_type is ALWAYS 'None' \u2014 NEVER group by this.",
     "unicomm_sales_final.number_of_boxes \u2014 exact values (case-sensitive): ['1', '2']",
     "unicomm_sales_final.single_action_invoice_label_new \u2014 exact values (case-sensitive): ['OFF', 'SKIP_INVOICE_URL']",
-    "unicomm_sales_final.shipping_package_type_scannable_source is ALWAYS 'NOT_APPLICABLE' \u2014 NEVER group by this.",
+    "unicomm_sales_final.shipping_package_type_scannable_source is ALWAYS 'None' \u2014 NEVER group by this.",
     "unicomm_sales_final.source is ALWAYS 'Unicommerce' \u2014 NEVER group by this.",
     "unicomm_sales_final.has_null_mrp \u2014 exact values (case-sensitive): ['0', '1']",
+    "zoho_purchase_orders.purchase_order_date: Primary date column. Filter: purchase_order_date >= '2025-01-01'.",
     "zoho_purchase_orders.delivery_date \u2014 exact values (case-sensitive): ['2025-05-20 00:00:00+05:30', '2025-05-21 00:00:00+05:30', '2025-05-26 00:00:00+05:30', '2025-06-11 00:00:00+05:30']",
     "zoho_purchase_orders.purchase_order_status \u2014 exact values (case-sensitive): ['Billed', 'Draft']",
     "zoho_purchase_orders.vendor_name \u2014 exact values (case-sensitive): ['Ayana & Company Co Ltd', 'Limese Corp.']",
@@ -42408,6 +43188,7 @@
     "zoho_purchase_orders.destination_of_supply is ALWAYS 'MH' \u2014 NEVER group by this.",
     "zoho_purchase_orders.gst_treatment is ALWAYS 'overseas' \u2014 NEVER group by this.",
     "zoho_purchase_orders.is_inclusive_tax is ALWAYS '0' \u2014 NEVER group by this.",
+    "zoho_purchase_orders.totalquantityordered: UNITS ordered from supplier \u2014 USE THIS for purchase quantity.",
     "zoho_purchase_orders.balancequantitybilled \u2014 exact values (case-sensitive): ['0', '1', '5100', '7540', '860']",
     "zoho_purchase_orders.currency_code is ALWAYS 'INR' \u2014 NEVER group by this.",
     "zoho_purchase_orders.exchange_rate is ALWAYS '1.0' \u2014 NEVER group by this.",
@@ -42436,6 +43217,7 @@
     "zoho_purchase_orders.tds_amount is ALWAYS '0.0' \u2014 NEVER group by this.",
     "zoho_purchase_orders.item_cf_brand \u2014 exact values (case-sensitive): ['AMPLE:N', 'Anua', 'Arencia', 'Axis-Y', 'Beauty of Joseon', 'Biodance', 'By Wishtrend', 'Cosrx', 'Curlyshyll', 'Dear Klairs', \"I'm From\", 'ILSO', 'Kaine', 'Muzigae Mansion', 'Numbuzin', 'Nuse', 'OOTD', 'One Thing', 'Purcell', 'Rom&nd', 'Some By Mi', 'Standard Seoul', 'Torriden', 'Treecell', 'odiD']",
     "zoho_purchase_orders.source_system is ALWAYS 'zoho_inventory' \u2014 NEVER group by this.",
+    "zoho_sales_final.so_order_date: Primary date column. Filter: so_order_date >= '2025-01-01'. Group: formatDateTime(so_order_date, '%Y-%m').",
     "zoho_sales_final.so_status \u2014 exact values (case-sensitive): ['Cancelled', 'Returned', 'confirmed', 'draft', 'invoiced', 'partially_invoiced']",
     "zoho_sales_final.so_sales_channel is ALWAYS 'direct_sales' \u2014 NEVER group by this.",
     "zoho_sales_final.so_place_of_supply \u2014 exact values (case-sensitive): ['AD', 'AS', 'BR', 'DL', 'GJ', 'HR', 'JK', 'KA', 'KL', 'LA', 'MH', 'ML', 'MN', 'MP', 'NL', 'OD', 'PB', 'RJ', 'SK', 'TN', 'TS', 'UP', 'WB']",
@@ -42451,7 +43233,7 @@
     "zoho_sales_final.so_entity_discount_percent is ALWAYS '0.0000' \u2014 NEVER group by this.",
     "zoho_sales_final.so_account is ALWAYS 'Sales' \u2014 NEVER group by this.",
     "zoho_sales_final.so_item_desc \u2014 exact values (case-sensitive): [\"'-\", '5', 'nan']",
-    "zoho_sales_final.so_usage_unit is ALWAYS 'None' \u2014 NEVER group by this.",
+    "zoho_sales_final.so_usage_unit is ALWAYS 'pcs' \u2014 NEVER group by this.",
     "zoho_sales_final.so_discount is ALWAYS '0.00' \u2014 NEVER group by this.",
     "zoho_sales_final.so_discount_amount is ALWAYS '0.000' \u2014 NEVER group by this.",
     "zoho_sales_final.so_hsn_sac \u2014 exact values (case-sensitive): ['33041000', '33042000', '33049990', '33051090', '33059090', '33079010', '33079090', '33409990', '34013019', '34013090', '39269099', '42022990', '42023190', '56012190', '96032900']",
@@ -42461,6 +43243,8 @@
     "zoho_sales_final.so_item_tax_percent \u2014 exact values (case-sensitive): ['12.000000', '18.000000', '5.000000']",
     "zoho_sales_final.so_item_tax_type \u2014 exact values (case-sensitive): ['ItemAmount', 'Tax Group']",
     "zoho_sales_final.so_item_type is ALWAYS 'goods' \u2014 NEVER group by this.",
+    "zoho_sales_final.so_item_total: REVENUE per line \u2014 USE THIS for zoho revenue/sales totals.",
+    "zoho_sales_final.so_subtotal: Order subtotal before tax \u2014 use so_item_total for line-level revenue.",
     "zoho_sales_final.so_shipping_charge is ALWAYS '0.00' \u2014 NEVER group by this.",
     "zoho_sales_final.so_adjustment is ALWAYS '0.00' \u2014 NEVER group by this.",
     "zoho_sales_final.so_adjustment_description is ALWAYS 'Adjustment' \u2014 NEVER group by this.",
@@ -42490,7 +43274,7 @@
     "zoho_sales_final.ss_carrier_name \u2014 exact values (case-sensitive): ['Amazon FBA', 'B2C', 'Bluedart', 'Bluedart ( Excel )', 'CriticaLog', 'Delhivery', 'Nykaa', 'Private Tempo', 'SHipped', 'Safexpress', 'Tester', 'V-Xpress', 'porter', 'wefast']",
     "zoho_sales_final.ss_shipping_charge is ALWAYS '0.000' \u2014 NEVER group by this.",
     "zoho_sales_final.ss_shipping_state \u2014 exact values (case-sensitive): ['Andhra Pradesh', 'Assam', 'Bihar', 'Delhi', 'Gujarat', 'Haryana', 'Jammu and Kashmir', 'Karnataka', 'Kerala', 'Ladakh', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Nagaland', 'Odisha', 'Punjab', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Uttar Pradesh', 'West Bengal']",
-    "zoho_sales_final.ss_shipping_country is ALWAYS 'India' \u2014 NEVER group by this.",
+    "zoho_sales_final.ss_shipping_country is ALWAYS 'None' \u2014 NEVER group by this.",
     "zoho_sales_final.ss_shipping_phone \u2014 exact values (case-sensitive): [\"'+91-9824681804\", '7829663511', '7977240698', '93668 56291', '9366856291', '9500733418', '9899734780']",
     "zoho_sales_final.ss_shipping_attention \u2014 exact values (case-sensitive): ['9-HG-DC-HYD', 'Apollo Pharmaproducts Private Limited', 'B&N Lulu calicut', 'Botera Ecommmerce LLP', 'Brands WH Bhiwandi Import', 'DELTACMA PRIVATE LIMITED', 'Dark Store Hyderabad,', 'FSN BRANDS MARKETING PRIVATE LIMITED', 'Glow Aesthetic LLP', 'HG-ASIA PHOENIX -BLR', 'HG-FALCON CITY-BLR', 'HG-ORION MALL-BLR', 'HG-PHOENIX MALL-BLR', 'HSR LAYOUT 27TH MAIN', 'Health & GLow', 'INNOVATIVE RETAIL CONCEPTS PRIVATE LIMITED', 'Mr Shubham Agarwal', 'Nykaa E-Retail Ltd', 'Reliance Retail Limited', 'Reliance WH (New)', 'Shubham', 'The Frank']",
     "zoho_sales_final.source is ALWAYS 'Zoho' \u2014 NEVER group by this.",

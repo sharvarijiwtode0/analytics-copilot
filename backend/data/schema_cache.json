@@ -37,7 +37,7 @@
               "name": "suborder_code",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 209955,
+              "null_count": 209987,
               "annotation": ""
             },
             {
@@ -51,7 +51,7 @@
               "name": "internal_sku",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 336591,
+              "null_count": 336623,
               "annotation": "Join key \u2192 product_master.internal_sku for product names and category."
             },
             {
@@ -65,14 +65,14 @@
               "name": "invoice_number",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 337792,
+              "null_count": 337819,
               "annotation": ""
             },
             {
               "name": "invoice_date",
               "type": "Nullable(DateTime64(3))",
               "default": "",
-              "null_count": 341475,
+              "null_count": 341507,
               "annotation": ""
             },
             {
@@ -86,14 +86,14 @@
               "name": "date_completed",
               "type": "Nullable(DateTime64(3))",
               "default": "",
-              "null_count": 166721,
+              "null_count": 166753,
               "annotation": ""
             },
             {
               "name": "shipped_on",
               "type": "Nullable(DateTime64(3))",
               "default": "",
-              "null_count": 209955,
+              "null_count": 209987,
               "annotation": ""
             },
             {
@@ -121,7 +121,7 @@
               "name": "product_mrp",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 146059,
+              "null_count": 146091,
               "annotation": ""
             },
             {
@@ -135,14 +135,14 @@
               "name": "row_mrp",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 146059,
+              "null_count": 146091,
               "annotation": ""
             },
             {
               "name": "row_subtotal",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 5384,
+              "null_count": 5416,
               "annotation": "REVENUE per line item \u2014 USE THIS for revenue/sales. Do NOT use order_price (full order total)."
             },
             {
@@ -163,21 +163,21 @@
               "name": "discount_amount",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 11220,
+              "null_count": 11252,
               "annotation": ""
             },
             {
               "name": "shipping_total",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 203057,
+              "null_count": 203089,
               "annotation": ""
             },
             {
               "name": "cod_fees",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 341475,
+              "null_count": 341507,
               "annotation": ""
             },
             {
@@ -198,21 +198,21 @@
               "name": "shipped_qty",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 341475,
+              "null_count": 341507,
               "annotation": ""
             },
             {
               "name": "rto_qty",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 341475,
+              "null_count": 341507,
               "annotation": ""
             },
             {
               "name": "dto_qty",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 341475,
+              "null_count": 341507,
               "annotation": ""
             },
             {
@@ -226,224 +226,224 @@
               "name": "coupon_code",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 340735,
+              "null_count": 340767,
               "annotation": ""
             },
             {
               "name": "coupon_name",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 341475,
+              "null_count": 341507,
               "annotation": ""
             },
             {
               "name": "ordertype",
               "type": "Nullable(Float32)",
               "default": "",
-              "null_count": 341475,
+              "null_count": 341507,
               "annotation": ""
             },
             {
               "name": "store_code",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 303531,
+              "null_count": 303563,
               "annotation": ""
             },
             {
               "name": "store_name",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 303531,
+              "null_count": 303563,
               "annotation": ""
             },
             {
               "name": "currency",
               "type": "LowCardinality(Nullable(String))",
               "default": "",
-              "null_count": 208344,
+              "null_count": 208376,
               "annotation": ""
             },
             {
               "name": "payment_method_title",
               "type": "LowCardinality(Nullable(String))",
               "default": "",
-              "null_count": 202508,
+              "null_count": 202540,
               "annotation": ""
             },
             {
               "name": "payment_type",
               "type": "LowCardinality(Nullable(String))",
               "default": "",
-              "null_count": 205695,
+              "null_count": 205727,
               "annotation": ""
             },
             {
               "name": "payment_status",
               "type": "LowCardinality(Nullable(String))",
               "default": "",
-              "null_count": 208344,
+              "null_count": 208376,
               "annotation": ""
             },
             {
               "name": "customer_id",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 209955,
+              "null_count": 209987,
               "annotation": ""
             },
             {
               "name": "customer_email",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 334028,
+              "null_count": 334060,
               "annotation": ""
             },
             {
               "name": "customer_mobile",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 333256,
+              "null_count": 333288,
               "annotation": ""
             },
             {
               "name": "gender",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 341475,
+              "null_count": 341507,
               "annotation": ""
             },
             {
               "name": "first_name",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 202508,
+              "null_count": 202540,
               "annotation": ""
             },
             {
               "name": "last_name",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 341475,
+              "null_count": 341507,
               "annotation": ""
             },
             {
               "name": "utm_source_first_touch",
               "type": "LowCardinality(Nullable(String))",
               "default": "",
-              "null_count": 341475,
+              "null_count": 341507,
               "annotation": ""
             },
             {
               "name": "utm_medium_first_touch",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 341475,
+              "null_count": 341507,
               "annotation": ""
             },
             {
               "name": "utm_campaign_first_touch",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 341475,
+              "null_count": 341507,
               "annotation": ""
             },
             {
               "name": "utm_source",
               "type": "LowCardinality(Nullable(String))",
               "default": "",
-              "null_count": 341475,
+              "null_count": 341507,
               "annotation": ""
             },
             {
               "name": "utm_medium",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 341475,
+              "null_count": 341507,
               "annotation": ""
             },
             {
               "name": "utm_campaign",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 341475,
+              "null_count": 341507,
               "annotation": ""
             },
             {
               "name": "full_referrer",
               "type": "LowCardinality(Nullable(String))",
               "default": "",
-              "null_count": 341475,
+              "null_count": 341507,
               "annotation": ""
             },
             {
               "name": "referrer_type",
               "type": "LowCardinality(Nullable(String))",
               "default": "",
-              "null_count": 341475,
+              "null_count": 341507,
               "annotation": ""
             },
             {
               "name": "marketing_channel",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 341475,
+              "null_count": 341507,
               "annotation": ""
             },
             {
               "name": "oms_utm_source",
               "type": "LowCardinality(Nullable(String))",
               "default": "",
-              "null_count": 341475,
+              "null_count": 341507,
               "annotation": ""
             },
             {
               "name": "oms_utm_medium",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 341475,
+              "null_count": 341507,
               "annotation": ""
             },
             {
               "name": "oms_utm_campaign",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 341475,
+              "null_count": 341507,
               "annotation": ""
             },
             {
               "name": "oms_utm_content",
               "type": "LowCardinality(Nullable(String))",
               "default": "",
-              "null_count": 341475,
+              "null_count": 341507,
               "annotation": ""
             },
             {
               "name": "oms_utm_adset",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 341475,
+              "null_count": 341507,
               "annotation": ""
             },
             {
               "name": "shipping_pincode",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 188256,
+              "null_count": 188288,
               "annotation": ""
             },
             {
               "name": "shipping_state",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 338826,
+              "null_count": 338858,
               "annotation": ""
             },
             {
               "name": "courier_name",
               "type": "LowCardinality(Nullable(String))",
               "default": "",
-              "null_count": 203077,
+              "null_count": 203104,
               "annotation": ""
             },
             {
@@ -461,7 +461,7 @@
               "annotation": ""
             }
           ],
-          "row_count": 341475,
+          "row_count": 341507,
           "sample_data": [
             {
               "client_id": "Limese",
@@ -792,28 +792,28 @@
               "type": "Nullable(String)",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Platform-specific SKU code."
             },
             {
               "name": "internal_sku",
               "type": "Nullable(String)",
               "default": "",
               "null_count": 356,
-              "annotation": ""
+              "annotation": "Internal SKU lookup key. Join with product_master.internal_sku."
             },
             {
               "name": "platform",
               "type": "Nullable(String)",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Marketplace platform name (e.g. nykaa, shopify, amazon_in)."
             },
             {
               "name": "product_name",
               "type": "Nullable(String)",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Marketplace listing name."
             },
             {
               "name": "brand",
@@ -841,7 +841,7 @@
               "type": "Nullable(String)",
               "default": "",
               "null_count": 807,
-              "annotation": ""
+              "annotation": "Listing category classification."
             },
             {
               "name": "ean",
@@ -934,42 +934,42 @@
               "name": "item_name",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 597069,
+              "null_count": 599246,
               "annotation": ""
             },
             {
               "name": "category",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 662010,
+              "null_count": 665119,
               "annotation": ""
             },
             {
               "name": "cogs",
               "type": "Nullable(Int32)",
               "default": "",
-              "null_count": 613593,
+              "null_count": 616042,
               "annotation": ""
             },
             {
               "name": "mrp",
               "type": "Nullable(Int64)",
               "default": "",
-              "null_count": 613593,
+              "null_count": 616042,
               "annotation": ""
             },
             {
               "name": "gross_sales_rs",
               "type": "Nullable(Float64)",
               "default": "",
-              "null_count": 613593,
+              "null_count": 616042,
               "annotation": "Daily revenue in \u20b9."
             },
             {
               "name": "holding_price",
               "type": "Nullable(Float64)",
               "default": "",
-              "null_count": 613593,
+              "null_count": 616042,
               "annotation": ""
             },
             {
@@ -983,18 +983,18 @@
               "name": "brand",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 597069,
+              "null_count": 599246,
               "annotation": ""
             },
             {
               "name": "ean",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 650262,
+              "null_count": 653311,
               "annotation": ""
             }
           ],
-          "row_count": 1153881,
+          "row_count": 1161069,
           "sample_data": [
             {
               "sku": "118652885",
@@ -1050,21 +1050,21 @@
               "type": "String",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Specific marketplace name."
             },
             {
               "name": "internal_sku",
               "type": "String",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Join key \u2192 product_master.internal_sku for matching master products."
             },
             {
               "name": "external_code",
               "type": "String",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Listing-specific code on the marketplace platform."
             },
             {
               "name": "external_code_type",
@@ -1115,7 +1115,7 @@
               "type": "LowCardinality(Nullable(String))",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Payment state. EXCLUDE refunded: WHERE financial_status NOT IN ('refunded','partially_refunded')."
             },
             {
               "name": "paid_at",
@@ -1129,7 +1129,7 @@
               "type": "LowCardinality(Nullable(String))",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Shipping state: 'fulfilled' = shipped, 'unfulfilled' = pending."
             },
             {
               "name": "fulfilled_at",
@@ -1157,7 +1157,7 @@
               "type": "Nullable(Float32)",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "REVENUE \u2014 USE THIS for Shopify revenue/sales totals."
             },
             {
               "name": "shipping",
@@ -1178,7 +1178,7 @@
               "type": "Nullable(Float32)",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Order total including taxes \u2014 use subtotal instead for pure revenue."
             },
             {
               "name": "discount_code",
@@ -1206,28 +1206,28 @@
               "type": "DateTime64(3, 'Asia/Kolkata')",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Primary date column. Filter: created_at >= '2025-01-01'. Group: formatDateTime(created_at, '%Y-%m')."
             },
             {
               "name": "lineitem_quantity",
               "type": "Nullable(Int32)",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Units per line item \u2014 USE THIS for unit counts."
             },
             {
               "name": "lineitem_name",
               "type": "String",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Product name per line item."
             },
             {
               "name": "lineitem_price",
               "type": "Nullable(Float32)",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Price per line item."
             },
             {
               "name": "lineitem_compare_at_price",
@@ -1846,21 +1846,21 @@
               "type": "DateTime",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Primary date column. Filter: channel_created_at >= '2025-01-01'."
             },
             {
               "name": "order_channel_name",
               "type": "Nullable(String)",
               "default": "",
               "null_count": 1,
-              "annotation": ""
+              "annotation": "Platform or channel (e.g. Nykaa, Shopify, Amazon)."
             },
             {
               "name": "order_status",
               "type": "Nullable(String)",
               "default": "",
               "null_count": 1,
-              "annotation": ""
+              "annotation": "Order state. ALWAYS exclude cancelled: WHERE order_status NOT IN ('CANCELLED', 'Cancelled')."
             },
             {
               "name": "fulfillment_type",
@@ -1901,7 +1901,7 @@
               "name": "customer_mobile_no",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 148769,
+              "null_count": 149076,
               "annotation": ""
             },
             {
@@ -1923,27 +1923,27 @@
               "type": "Nullable(Float64)",
               "default": "",
               "null_count": 1,
-              "annotation": ""
+              "annotation": "TOTAL REVENUE \u2014 USE THIS for Unicommerce revenue totals."
             },
             {
               "name": "sku",
               "type": "String",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Internal SKU lookup key. Join with product_master.internal_sku."
             },
             {
               "name": "item_price",
               "type": "Nullable(Float64)",
               "default": "",
               "null_count": 1,
-              "annotation": ""
+              "annotation": "UNIT PRICE \u2014 price per unit for this line item."
             },
             {
               "name": "product_id",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 100082,
+              "null_count": 100096,
               "annotation": ""
             },
             {
@@ -1951,7 +1951,7 @@
               "type": "UInt64",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "UNITS sold for this line item \u2014 USE THIS for Unicommerce units."
             },
             {
               "name": "shipment_id",
@@ -1964,7 +1964,7 @@
               "name": "shipment_code",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
@@ -1985,154 +1985,154 @@
               "name": "fulfillment_tat",
               "type": "Nullable(DateTime64(3))",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
               "name": "dispatch_time",
               "type": "Nullable(DateTime64(3))",
               "default": "",
-              "null_count": 278639,
+              "null_count": 278669,
               "annotation": ""
             },
             {
               "name": "gift_message",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 313655,
+              "null_count": 313962,
               "annotation": ""
             },
             {
               "name": "item_contains",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
               "name": "products",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
               "name": "shipment_channel",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
               "name": "shipment_status",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
               "name": "shipment_priority",
               "type": "Nullable(UInt8)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
               "name": "picklist",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 278636,
+              "null_count": 278666,
               "annotation": ""
             },
             {
               "name": "invoice_no",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 276416,
+              "null_count": 276446,
               "annotation": ""
             },
             {
               "name": "shipment_on_hold",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
               "name": "state",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
               "name": "regulatory_forms",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 315212,
+              "null_count": 315525,
               "annotation": ""
             },
             {
               "name": "batch_no",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 315205,
+              "null_count": 315518,
               "annotation": ""
             },
             {
               "name": "shipping",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 278511,
+              "null_count": 278541,
               "annotation": ""
             },
             {
               "name": "shipment_payment_method",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
               "name": "action",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 315212,
+              "null_count": 315525,
               "annotation": ""
             },
             {
               "name": "pack_group",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 315212,
+              "null_count": 315525,
               "annotation": ""
             },
             {
               "name": "shipment_display_order_no",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
               "name": "contains_gift_wrap",
               "type": "Nullable(UInt8)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
               "name": "channel_code",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
               "name": "channel_id",
               "type": "Nullable(UInt64)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
@@ -2153,154 +2153,154 @@
               "name": "item_type_ids",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
               "name": "item_id_details",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
               "name": "seller_sku_details",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
               "name": "shipping_provider",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 278508,
+              "null_count": 278538,
               "annotation": ""
             },
             {
               "name": "shipping_provider_code",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 278508,
+              "null_count": 278538,
               "annotation": ""
             },
             {
               "name": "shipping_courier",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 313557,
+              "null_count": 313864,
               "annotation": ""
             },
             {
               "name": "awb",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 278511,
+              "null_count": 278541,
               "annotation": ""
             },
             {
               "name": "shipping_arranged_by",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
               "name": "product_management_switched_odd",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
               "name": "label_format",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
               "name": "item_details_list",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 315212,
+              "null_count": 315525,
               "annotation": ""
             },
             {
               "name": "item_detailing_pending",
               "type": "Nullable(UInt8)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
               "name": "putaway_pending",
               "type": "Nullable(UInt8)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
               "name": "weight",
               "type": "Nullable(Float64)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
               "name": "length",
               "type": "Nullable(Float64)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
               "name": "width",
               "type": "Nullable(Float64)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
               "name": "height",
               "type": "Nullable(Float64)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
               "name": "package_type",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
               "name": "number_of_boxes",
               "type": "Nullable(UInt8)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
               "name": "single_action_invoice_label_new",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
               "name": "order_item_ids",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
               "name": "shipping_package_type_scannable_source",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 275869,
+              "null_count": 275899,
               "annotation": ""
             },
             {
@@ -2314,14 +2314,14 @@
               "name": "internal_sku",
               "type": "Nullable(String)",
               "default": "",
-              "null_count": 22792,
+              "null_count": 22879,
               "annotation": ""
             },
             {
               "name": "mrp",
               "type": "Nullable(Float64)",
               "default": "",
-              "null_count": 41573,
+              "null_count": 41660,
               "annotation": ""
             },
             {
@@ -2367,28 +2367,28 @@
               "annotation": ""
             }
           ],
-          "row_count": 315212,
+          "row_count": 315525,
           "sample_data": [
             {
-              "order_id": "00084743-400a-480e-b6c5-7a508dff36a3",
-              "order_display_order_no": "00084743-400a-480e-b6c5-7a508dff36a3",
-              "uniware_created_at": "2024-12-13 23:36:23+05:30",
-              "channel_created_at": "2024-12-13 23:36:14+05:30",
+              "order_id": "00008796-0299-46f2-84f7-6a19bd576fd3",
+              "order_display_order_no": "00008796-0299-46f2-84f7-6a19bd576fd3",
+              "uniware_created_at": "2024-03-13 15:14:13+05:30",
+              "channel_created_at": "2024-03-13 15:13:54+05:30",
               "order_channel_name": "MYNTRAPPMP",
               "order_status": "COMPLETE",
               "fulfillment_type": "STD",
-              "order_priority": "0",
+              "order_priority": "1",
               "order_on_hold": "No",
               "customer_name": "********",
               "customer_email": "********",
               "customer_mobile_no": "None",
               "order_payment": "-",
-              "pymt": "COD",
-              "order_price": "801.0",
-              "sku": "RND039",
-              "item_price": "801.0",
-              "product_id": "8809625241148",
-              "qty": "2",
+              "pymt": "PREPAID",
+              "order_price": "1232.0",
+              "sku": "CR008",
+              "item_price": "1232.0",
+              "product_id": "8809416470009",
+              "qty": "1",
               "shipment_id": "",
               "shipment_code": "None",
               "shipment_created_at": "1970-01-01 05:30:00+05:30",
@@ -2440,20 +2440,20 @@
               "order_item_ids": "None",
               "shipping_package_type_scannable_source": "None",
               "source": "Unicommerce",
-              "internal_sku": "8809625241148",
-              "mrp": "890.0",
-              "sp": "400.5",
-              "row_sp": "801.0",
+              "internal_sku": "8809416470009",
+              "mrp": "1450.0",
+              "sp": "1232.0",
+              "row_sp": "1232.0",
               "has_null_mrp": "0",
-              "total_qty": "2",
-              "total_mrp_qty": "1780.0",
-              "total_allocated_to_mrp": "801.0"
+              "total_qty": "1",
+              "total_mrp_qty": "1450.0",
+              "total_allocated_to_mrp": "1232.0"
             },
             {
-              "order_id": "000be915-976b-4809-b414-3a2605d1075d",
-              "order_display_order_no": "000be915-976b-4809-b414-3a2605d1075d",
-              "uniware_created_at": "2024-12-06 20:26:40+05:30",
-              "channel_created_at": "2024-12-06 20:24:37+05:30",
+              "order_id": "00008bfb-bdae-4f09-b926-dbe1668e12df",
+              "order_display_order_no": "00008bfb-bdae-4f09-b926-dbe1668e12df",
+              "uniware_created_at": "2024-09-25 23:11:28+05:30",
+              "channel_created_at": "2024-09-25 23:05:55+05:30",
               "order_channel_name": "MYNTRAPPMP",
               "order_status": "COMPLETE",
               "fulfillment_type": "STD",
@@ -2464,10 +2464,10 @@
               "customer_mobile_no": "None",
               "order_payment": "-",
               "pymt": "PREPAID",
-              "order_price": "1350.0",
-              "sku": "BOJ022",
-              "item_price": "1350.0",
-              "product_id": "8809968130239",
+              "order_price": "382.0",
+              "sku": "CR010_M",
+              "item_price": "382.0",
+              "product_id": "8809598454545",
               "qty": "2",
               "shipment_id": "",
               "shipment_code": "None",
@@ -2520,14 +2520,14 @@
               "order_item_ids": "None",
               "shipping_package_type_scannable_source": "None",
               "source": "Unicommerce",
-              "internal_sku": "8809968130239",
-              "mrp": "1500.0",
-              "sp": "675.0",
-              "row_sp": "1350.0",
-              "has_null_mrp": "0",
+              "internal_sku": "None",
+              "mrp": "None",
+              "sp": "191.0",
+              "row_sp": "382.0",
+              "has_null_mrp": "1",
               "total_qty": "2",
-              "total_mrp_qty": "3000.0",
-              "total_allocated_to_mrp": "1350.0"
+              "total_mrp_qty": "0.0",
+              "total_allocated_to_mrp": "0.0"
             }
           ],
           "description": "Unicommerce OMS sales. B2B and marketplace orders. Key columns: order_id, channel_created_at, order_channel_name (marketplace), sku, item_price, qty, shipment_tracking_number, order_status, final_status."
@@ -2554,7 +2554,7 @@
               "type": "Nullable(Date)",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Primary date column. Filter: so_order_date >= '2025-01-01'. Group: formatDateTime(so_order_date, '%Y-%m')."
             },
             {
               "name": "so_expected_shipment_date",
@@ -2575,7 +2575,7 @@
               "type": "Nullable(String)",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Order status. EXCLUDE: WHERE so_status NOT IN ('Cancelled','Returned')."
             },
             {
               "name": "so_custom_status",
@@ -2603,7 +2603,7 @@
               "type": "Nullable(String)",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "B2B customer/distributor name."
             },
             {
               "name": "so_place_of_supply",
@@ -2876,7 +2876,7 @@
               "type": "Nullable(Decimal(18, 2))",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "REVENUE per line \u2014 USE THIS for zoho revenue/sales totals."
             },
             {
               "name": "row_sp",
@@ -2897,14 +2897,14 @@
               "type": "Nullable(Decimal(18, 2))",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Order subtotal before tax \u2014 use so_item_total for line-level revenue."
             },
             {
               "name": "so_total",
               "type": "Nullable(Decimal(18, 2))",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Order total including tax."
             },
             {
               "name": "so_shipping_charge",
@@ -3596,20 +3596,20 @@
           "row_count": 135598,
           "sample_data": [
             {
-              "so_salesorder_id": "2327129000000121005",
-              "so_product_id": "2327129000000073173",
-              "so_order_date": "2020-10-13",
+              "so_salesorder_id": "2327129000006216003",
+              "so_product_id": "2327129000005878817",
+              "so_order_date": "2025-06-02",
               "so_expected_shipment_date": "None",
-              "so_salesorder_number": "SO-00001",
-              "so_status": "invoiced",
+              "so_salesorder_number": "NHO1349552",
+              "so_status": "Cancelled",
               "so_custom_status": "None",
-              "so_customer_id": "2327129000000077425",
+              "so_customer_id": "2327129000003378553",
               "so_sales_channel": "direct_sales",
-              "so_customer_name": "Dr Maurice Chirom",
-              "so_place_of_supply": "DL",
-              "so_gst_treatment": "business_none",
+              "so_customer_name": "Nykaa Warehouse Indore",
+              "so_place_of_supply": "MP",
+              "so_gst_treatment": "business_gst",
               "so_gstin": "None",
-              "so_is_inclusive_tax": "True",
+              "so_is_inclusive_tax": "False",
               "so_purchaseorder": "None",
               "so_template_name": "Standard Template",
               "so_currency_code": "INR",
@@ -3618,37 +3618,37 @@
               "so_is_discount_before_tax": "True",
               "so_entity_discount_amount": "0.00",
               "so_entity_discount_percent": "0.0000",
-              "so_item_name": "Supple Preparation Facial Toner",
-              "so_sku": "Klairs001",
+              "so_item_name": "Hydro Boost Enzyme Powder Wash [1g]",
+              "so_sku": "8809928134369",
               "so_upc": "None",
               "so_mpn": "None",
-              "so_ean": "None",
+              "so_ean": "8809928134369",
               "so_isbn": "None",
               "so_kit_combo_item_name": "None",
               "so_account": "Sales",
               "so_item_desc": "None",
               "item_quantity": "30.0",
-              "so_usage_unit": "None",
-              "so_item_price": "1001.00",
+              "so_usage_unit": "pcs",
+              "so_item_price": "27.37",
               "so_discount": "0.00",
               "so_discount_amount": "0.000",
-              "so_hsn_sac": "33049990",
+              "so_hsn_sac": "34013019",
               "so_supply_type": "Taxable",
               "so_tax_id": "2327129000000070440",
               "so_item_tax": "IGST18",
               "so_item_tax_percent": "18.000000",
-              "so_item_tax_amount": "4580.85",
+              "so_item_tax_amount": "147.80",
               "so_item_tax_type": "ItemAmount",
               "so_reverse_charge_tax_name": "None",
               "so_reverse_charge_tax_rate": "None",
               "so_reverse_charge_tax_type": "None",
               "so_item_tax_exemption_reason": "None",
               "so_item_type": "goods",
-              "so_item_total": "25449.15",
-              "row_sp": "30030.0",
-              "row_subtotal": "247811.87",
-              "so_subtotal": "247811.87",
-              "so_total": "292418.00",
+              "so_item_total": "821.10",
+              "row_sp": "821.1",
+              "row_subtotal": "128433.67",
+              "so_subtotal": "128433.67",
+              "so_total": "151552.00",
               "so_shipping_charge": "0.00",
               "so_shipping_charge_tax_id": "None",
               "so_shipping_charge_tax_amount": "None",
@@ -3666,20 +3666,20 @@
               "so_terms_and_conditions": "None",
               "so_delivery_method": "None",
               "so_source": "1",
-              "so_billing_address": "Tera Yengkhom Leirak",
-              "so_billing_street2": "Khamnam Leirak",
-              "so_billing_city": "imphal",
-              "so_billing_state": "Manipur",
+              "so_billing_address": "NYKAA E- RETAIL LIMITED\nWarehouse No 11/3A,11/3B,11/3C,11/3D",
+              "so_billing_street2": "Empire Logipark,Village Barode Arjun,Tehsil Sawar\nMangalya",
+              "so_billing_city": "Indore",
+              "so_billing_state": "Madhya Pradesh",
               "so_billing_country": "India",
-              "so_billing_code": "795001",
+              "so_billing_code": "453771",
               "so_billing_fax": "None",
-              "so_billing_phone": "9774788359",
-              "so_shipping_address": "None",
-              "so_shipping_street2": "None",
-              "so_shipping_city": "None",
-              "so_shipping_state": "None",
-              "so_shipping_country": "None",
-              "so_shipping_code": "None",
+              "so_billing_phone": "None",
+              "so_shipping_address": "NYKAA E- RETAIL LIMITED\nWarehouse No 11/3A,11/3B,11/3C,11/3D",
+              "so_shipping_street2": "Empire Logipark,Village Barode Arjun,Tehsil Sawar\nMangalya",
+              "so_shipping_city": "Indore",
+              "so_shipping_state": "Madhya Pradesh",
+              "so_shipping_country": "India",
+              "so_shipping_code": "453771",
               "so_shipping_fax": "None",
               "so_shipping_phone": "None",
               "so_tds_name": "None",
@@ -3691,10 +3691,10 @@
               "so_tcs_percentage": "None",
               "so_tcs_amount": "None",
               "so_nature_of_collection": "None",
-              "so_item_cf_brand": "Klairs",
-              "so_item_cf_ean": "8809115025012",
-              "so_item_cf_mrp": "1430.00",
-              "so_item_cf_shelf_code": "None",
+              "so_item_cf_brand": "Tirtir",
+              "so_item_cf_ean": "8809928134369",
+              "so_item_cf_mrp": "50.00",
+              "so_item_cf_shelf_code": "TIR005S",
               "so_lastupdated": "2025-10-18 12:23:00+05:30",
               "sr_return_date": "1970-01-01 05:30:00+05:30",
               "sr_sales_return_id": "0",
@@ -3720,49 +3720,49 @@
               "sr_item_price": "None",
               "sr_item_total": "None",
               "sr_total": "None",
-              "ss_shipment_id": "0",
-              "ss_packing_number": "None",
-              "ss_shipment_date": "1970-01-01 05:30:00+05:30",
-              "ss_shipment_number": "None",
-              "ss_status": "None",
-              "ss_shipment_type": "None",
-              "ss_carrier_name": "None",
-              "ss_tracking_number": "None",
-              "ss_shipping_charge": "None",
-              "ss_sales_order_id": "None",
+              "ss_shipment_id": "2327129000006220991",
+              "ss_packing_number": "PKG-00005",
+              "ss_shipment_date": "2025-06-03 00:00:00+05:30",
+              "ss_shipment_number": "SHP-00006",
+              "ss_status": "delivered",
+              "ss_shipment_type": "Manual Shipment",
+              "ss_carrier_name": "Bluedart ( Excel )",
+              "ss_tracking_number": "58151578472",
+              "ss_shipping_charge": "0.000",
+              "ss_sales_order_id": "2327129000006216003",
               "ss_expected_delivery_date": "None",
-              "ss_delivery_date": "None",
+              "ss_delivery_date": "2025-06-07 00:00:00+05:30",
               "ss_notes": "None",
-              "ss_created_time": "None",
-              "ss_last_modified_time": "1970-01-01 05:30:00+05:30",
-              "ss_so_number": "None",
-              "ss_customer_name": "None",
-              "ss_shipping_address": "None",
-              "ss_shipping_street2": "None",
-              "ss_shipping_city": "None",
-              "ss_shipping_state": "None",
-              "ss_shipping_country": "None",
-              "ss_shipping_code": "None",
+              "ss_created_time": "2025-06-03 11:20:34+05:30",
+              "ss_last_modified_time": "2025-07-10 17:04:13+05:30",
+              "ss_so_number": "NHO1349552",
+              "ss_customer_name": "Nykaa Warehouse Indore",
+              "ss_shipping_address": "NYKAA E- RETAIL LIMITED\nWarehouse No 11/3A,11/3B,11/3C,11/3D",
+              "ss_shipping_street2": "Empire Logipark,Village Barode Arjun,Tehsil Sawar\nMangalya",
+              "ss_shipping_city": "Indore",
+              "ss_shipping_state": "Madhya Pradesh",
+              "ss_shipping_country": "India",
+              "ss_shipping_code": "453771",
               "ss_shipping_fax": "None",
               "ss_shipping_phone": "None",
               "ss_shipping_attention": "None",
               "source": "Zoho"
             },
             {
-              "so_salesorder_id": "2327129000000121005",
-              "so_product_id": "2327129000000073200",
-              "so_order_date": "2020-10-13",
+              "so_salesorder_id": "2327129000006216003",
+              "so_product_id": "2327129000005879455",
+              "so_order_date": "2025-06-02",
               "so_expected_shipment_date": "None",
-              "so_salesorder_number": "SO-00001",
-              "so_status": "invoiced",
+              "so_salesorder_number": "NHO1349552",
+              "so_status": "Cancelled",
               "so_custom_status": "None",
-              "so_customer_id": "2327129000000077425",
+              "so_customer_id": "2327129000003378553",
               "so_sales_channel": "direct_sales",
-              "so_customer_name": "Dr Maurice Chirom",
-              "so_place_of_supply": "DL",
-              "so_gst_treatment": "business_none",
+              "so_customer_name": "Nykaa Warehouse Indore",
+              "so_place_of_supply": "MP",
+              "so_gst_treatment": "business_gst",
               "so_gstin": "None",
-              "so_is_inclusive_tax": "True",
+              "so_is_inclusive_tax": "False",
               "so_purchaseorder": "None",
               "so_template_name": "Standard Template",
               "so_currency_code": "INR",
@@ -3771,18 +3771,18 @@
               "so_is_discount_before_tax": "True",
               "so_entity_discount_amount": "0.00",
               "so_entity_discount_percent": "0.0000",
-              "so_item_name": "Illuminating Supple Blemish Cream",
-              "so_sku": "Klairs004",
+              "so_item_name": "Mask Fit Red Cushion 21N Ivory [4.5g]",
+              "so_sku": "8809679697496",
               "so_upc": "None",
               "so_mpn": "None",
-              "so_ean": "None",
+              "so_ean": "8809679697496",
               "so_isbn": "None",
               "so_kit_combo_item_name": "None",
               "so_account": "Sales",
               "so_item_desc": "None",
-              "item_quantity": "4.0",
-              "so_usage_unit": "None",
-              "so_item_price": "1197.00",
+              "item_quantity": "14.0",
+              "so_usage_unit": "pcs",
+              "so_item_price": "656.95",
               "so_discount": "0.00",
               "so_discount_amount": "0.000",
               "so_hsn_sac": "33049990",
@@ -3790,18 +3790,18 @@
               "so_tax_id": "2327129000000070440",
               "so_item_tax": "IGST18",
               "so_item_tax_percent": "18.000000",
-              "so_item_tax_amount": "730.37",
+              "so_item_tax_amount": "1655.51",
               "so_item_tax_type": "ItemAmount",
               "so_reverse_charge_tax_name": "None",
               "so_reverse_charge_tax_rate": "None",
               "so_reverse_charge_tax_type": "None",
               "so_item_tax_exemption_reason": "None",
               "so_item_type": "goods",
-              "so_item_total": "4057.63",
-              "row_sp": "4788.0",
-              "row_subtotal": "247811.87",
-              "so_subtotal": "247811.87",
-              "so_total": "292418.00",
+              "so_item_total": "9197.29",
+              "row_sp": "9197.300000000001",
+              "row_subtotal": "128433.67",
+              "so_subtotal": "128433.67",
+              "so_total": "151552.00",
               "so_shipping_charge": "0.00",
               "so_shipping_charge_tax_id": "None",
               "so_shipping_charge_tax_amount": "None",
@@ -3819,20 +3819,20 @@
               "so_terms_and_conditions": "None",
               "so_delivery_method": "None",
               "so_source": "1",
-              "so_billing_address": "Tera Yengkhom Leirak",
-              "so_billing_street2": "Khamnam Leirak",
-              "so_billing_city": "imphal",
-              "so_billing_state": "Manipur",
+              "so_billing_address": "NYKAA E- RETAIL LIMITED\nWarehouse No 11/3A,11/3B,11/3C,11/3D",
+              "so_billing_street2": "Empire Logipark,Village Barode Arjun,Tehsil Sawar\nMangalya",
+              "so_billing_city": "Indore",
+              "so_billing_state": "Madhya Pradesh",
               "so_billing_country": "India",
-              "so_billing_code": "795001",
+              "so_billing_code": "453771",
               "so_billing_fax": "None",
-              "so_billing_phone": "9774788359",
-              "so_shipping_address": "None",
-              "so_shipping_street2": "None",
-              "so_shipping_city": "None",
-              "so_shipping_state": "None",
-              "so_shipping_country": "None",
-              "so_shipping_code": "None",
+              "so_billing_phone": "None",
+              "so_shipping_address": "NYKAA E- RETAIL LIMITED\nWarehouse No 11/3A,11/3B,11/3C,11/3D",
+              "so_shipping_street2": "Empire Logipark,Village Barode Arjun,Tehsil Sawar\nMangalya",
+              "so_shipping_city": "Indore",
+              "so_shipping_state": "Madhya Pradesh",
+              "so_shipping_country": "India",
+              "so_shipping_code": "453771",
               "so_shipping_fax": "None",
               "so_shipping_phone": "None",
               "so_tds_name": "None",
@@ -3844,10 +3844,10 @@
               "so_tcs_percentage": "None",
               "so_tcs_amount": "None",
               "so_nature_of_collection": "None",
-              "so_item_cf_brand": "Klairs",
-              "so_item_cf_ean": "8809115020109",
-              "so_item_cf_mrp": "1710.00",
-              "so_item_cf_shelf_code": "None",
+              "so_item_cf_brand": "Tirtir",
+              "so_item_cf_ean": "8809679697496",
+              "so_item_cf_mrp": "1200.00",
+              "so_item_cf_shelf_code": "TIR014M",
               "so_lastupdated": "2025-10-18 12:23:00+05:30",
               "sr_return_date": "1970-01-01 05:30:00+05:30",
               "sr_sales_return_id": "0",
@@ -3873,29 +3873,29 @@
               "sr_item_price": "None",
               "sr_item_total": "None",
               "sr_total": "None",
-              "ss_shipment_id": "0",
-              "ss_packing_number": "None",
-              "ss_shipment_date": "1970-01-01 05:30:00+05:30",
-              "ss_shipment_number": "None",
-              "ss_status": "None",
-              "ss_shipment_type": "None",
-              "ss_carrier_name": "None",
-              "ss_tracking_number": "None",
-              "ss_shipping_charge": "None",
-              "ss_sales_order_id": "None",
+              "ss_shipment_id": "2327129000006220991",
+              "ss_packing_number": "PKG-00005",
+              "ss_shipment_date": "2025-06-03 00:00:00+05:30",
+              "ss_shipment_number": "SHP-00006",
+              "ss_status": "delivered",
+              "ss_shipment_type": "Manual Shipment",
+              "ss_carrier_name": "Bluedart ( Excel )",
+              "ss_tracking_number": "58151578472",
+              "ss_shipping_charge": "0.000",
+              "ss_sales_order_id": "2327129000006216003",
               "ss_expected_delivery_date": "None",
-              "ss_delivery_date": "None",
+              "ss_delivery_date": "2025-06-07 00:00:00+05:30",
               "ss_notes": "None",
-              "ss_created_time": "None",
-              "ss_last_modified_time": "1970-01-01 05:30:00+05:30",
-              "ss_so_number": "None",
-              "ss_customer_name": "None",
-              "ss_shipping_address": "None",
-              "ss_shipping_street2": "None",
-              "ss_shipping_city": "None",
-              "ss_shipping_state": "None",
-              "ss_shipping_country": "None",
-              "ss_shipping_code": "None",
+              "ss_created_time": "2025-06-03 11:20:34+05:30",
+              "ss_last_modified_time": "2025-07-10 17:04:13+05:30",
+              "ss_so_number": "NHO1349552",
+              "ss_customer_name": "Nykaa Warehouse Indore",
+              "ss_shipping_address": "NYKAA E- RETAIL LIMITED\nWarehouse No 11/3A,11/3B,11/3C,11/3D",
+              "ss_shipping_street2": "Empire Logipark,Village Barode Arjun,Tehsil Sawar\nMangalya",
+              "ss_shipping_city": "Indore",
+              "ss_shipping_state": "Madhya Pradesh",
+              "ss_shipping_country": "India",
+              "ss_shipping_code": "453771",
               "ss_shipping_fax": "None",
               "ss_shipping_phone": "None",
               "ss_shipping_attention": "None",
@@ -3926,7 +3926,7 @@
               "type": "Nullable(DateTime64(3))",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Primary date column. Filter: purchase_order_date >= '2025-01-01'."
             },
             {
               "name": "delivery_date",
@@ -3954,14 +3954,14 @@
               "type": "Nullable(String)",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Fulfillment state (e.g. open, closed, void)."
             },
             {
               "name": "vendor_name",
               "type": "Nullable(String)",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Name of the B2B vendor/supplier."
             },
             {
               "name": "hsn_sac",
@@ -4010,7 +4010,7 @@
               "type": "Nullable(Int64)",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "UNITS ordered from supplier \u2014 USE THIS for purchase quantity."
             },
             {
               "name": "balancequantitybilled",
@@ -4087,7 +4087,7 @@
               "type": "Nullable(Float64)",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Purchase rate per unit."
             },
             {
               "name": "item_name",
@@ -4101,7 +4101,7 @@
               "type": "Nullable(String)",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Internal SKU lookup key. Join with product_master.internal_sku."
             },
             {
               "name": "upc",
@@ -4776,21 +4776,21 @@
               "type": "Date",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Primary date column for ledger activity. Filter: event_date >= '2025-01-01'."
             },
             {
               "name": "movement_type",
               "type": "Enum8('inward' = 1, 'outward' = 2, 'return_inward' = 3)",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Movement classification: inward, outward, or return_inward."
             },
             {
               "name": "internal_sku",
               "type": "String",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Internal SKU lookup key. Join with product_master.internal_sku."
             },
             {
               "name": "external_sku",
@@ -4811,7 +4811,7 @@
               "type": "Decimal(18, 2)",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "UNITS moved during the event \u2014 positive/negative values depending on movement."
             },
             {
               "name": "facility",
@@ -4998,28 +4998,28 @@
               "type": "Enum8('variant' = 1, 'combo' = 2, 'kit' = 3)",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Classification: variant, combo, or kit."
             },
             {
               "name": "parent_sku",
               "type": "String",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "SKU of parent combo, kit, or variant product."
             },
             {
               "name": "child_sku",
               "type": "String",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "SKU of individual product included in parent combo/kit."
             },
             {
               "name": "quantity",
               "type": "Nullable(UInt32)",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "UNITS of child product contained within 1 unit of parent combo."
             },
             {
               "name": "combo_definition",
@@ -5069,35 +5069,35 @@
               "type": "Nullable(String)",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Internal SKU lookup key. Join with product_master.internal_sku."
             },
             {
               "name": "median_lead_time_days",
               "type": "Nullable(Float64)",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "MEDIAN LEAD TIME \u2014 average days taken by vendor to fulfill orders."
             },
             {
               "name": "total_orders",
               "type": "UInt64",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Volume of purchase orders analyzed to calculate lead time."
             },
             {
               "name": "min_lead_time",
               "type": "Nullable(Int64)",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Minimum days observed for delivery."
             },
             {
               "name": "max_lead_time",
               "type": "Nullable(Int64)",
               "default": "",
               "null_count": 0,
-              "annotation": ""
+              "annotation": "Maximum days observed for delivery."
             }
           ],
           "row_count": 721,
@@ -5124,7 +5124,7 @@
       "total_tables": 172,
       "scanned_tables_count": 12
     },
-    "refreshed_at": "2026-05-28T13:39:26.342002"
+    "refreshed_at": "2026-06-01T13:29:04.366759"
   },
   "default": {
     "schema": {

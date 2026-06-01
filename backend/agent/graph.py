@@ -203,6 +203,8 @@ async def run_analytics_agent(
     conversation_id: str,
     conversation_history: list[dict],
     user_id: str = "anonymous",
+    cached_sql: str | None = None,
+    cached_viz_type: str | None = None,
 ) -> dict:
     """
     Main entry point for the analytics agent.
@@ -227,8 +229,7 @@ async def run_analytics_agent(
     from backend.agent.utils import compact_history
     conversation_history = await compact_history(conversation_history)
 
-    cached_sql = None
-    if vector_memory.enabled:
+    if not cached_sql and vector_memory.enabled:
         cached_payload = vector_memory.search_semantic_cache(question, user_id=user_id, threshold=0.92)
         if cached_payload and cached_payload.get("sql"):
             matched_q = cached_payload.get("question", "")
@@ -277,6 +278,29 @@ async def run_analytics_agent(
     }
     if cached_sql:
         initial_state["sql_query"] = cached_sql
+        initial_state["sql_validated"] = True
+        initial_state["intent"] = {
+            "type": "data_query",
+            "confidence": 1.0,
+            "rephrased_question": question,
+            "chart_type_hint": cached_viz_type
+        }
+        from backend.services.db_intelligence import get_db_context
+        try:
+            db_ctx = get_db_context()
+            tables = db_ctx.get("tables", {})
+            matched_tables = []
+            sql_lower = cached_sql.lower()
+            for tname in tables.keys():
+                if tname.lower() in sql_lower:
+                    matched_tables.append({"name": tname})
+            initial_state["schema_context"] = {
+                "relevant_tables": matched_tables
+            }
+        except Exception:
+            initial_state["schema_context"] = {
+                "relevant_tables": [{"name": "combined_sales_final"}]
+            }
 
     try:
         graph = get_graph()

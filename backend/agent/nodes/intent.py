@@ -59,7 +59,7 @@ Current question: "{question}"
 
 Classify this question and return JSON only:
 {{
-  "type": "<chart_request|data_query|follow_up|analytical_question|insight_request|comparison|trend_analysis|export_request|greeting|conversational|off_topic>",
+  "type": "<chart_request|data_query|follow_up|analytical_question|insight_request|comparison|trend_analysis|export_request|greeting|conversational|off_topic|schema_info>",
   "chart_type_hint": "<bar|line|pie|scatter|heatmap|gauge|table|area|treemap|null>",
   "time_range": "<last_7_days|last_30_days|last_quarter|last_year|ytd|custom|null>",
   "aggregation": "<sum|count|avg|max|min|null>",
@@ -75,6 +75,7 @@ Rules:
 - greeting: Simple greetings like "hi", "hello", "gm", "good morning" — NO SQL needed, respond conversationally
 - conversational: "who are you", "what can you do", "how are you", "what are you doing", "help", "tell me about yourself" — respond conversationally about the assistant's capabilities
 - off_topic: Weather, general knowledge, time, news, sports, math, or anything clearly unrelated to the connected database — respond conversationally or answer concisely
+- schema_info: user is asking about table columns, table definitions, database schema structure, listing tables, or describing/analyzing a specific table (e.g. "what columns are in table X", "describe table Y", "analyze columns in Z", "show tables")
 - chart_request: user explicitly wants a chart/graph/visualization
 - data_query: user wants to see/query data without specifying chart
 - analytical_question: "why is X", "explain X", "what caused X", "how is X" — needs data + narrative explanation
@@ -134,6 +135,25 @@ Rules:
         last_ctx = _get_last_assistant_context(history)
         if last_ctx:
             intent["rephrased_question"] = f"{question} (Context from previous answer: {last_ctx[:200]})"
+
+    # Rule-based chart hint overrides based on explicit user keywords and business semantics
+    q_lower = question.lower()
+    if "line" in q_lower or "trend" in q_lower or "monthly sales" in q_lower:
+        intent["chart_type_hint"] = "line"
+    elif "bar" in q_lower or "column" in q_lower or "ranking" in q_lower or "compare" in q_lower:
+        intent["chart_type_hint"] = "bar"
+    elif "pie" in q_lower or "share" in q_lower or "percentage" in q_lower or "contribution" in q_lower:
+        intent["chart_type_hint"] = "pie"
+    elif "funnel" in q_lower or "conversion" in q_lower:
+        intent["chart_type_hint"] = "funnel"
+    elif "gauge" in q_lower or "meter" in q_lower:
+        intent["chart_type_hint"] = "gauge"
+    elif "heatmap" in q_lower or "heat map" in q_lower:
+        intent["chart_type_hint"] = "heatmap"
+    elif "scatter" in q_lower or "bubble" in q_lower:
+        intent["chart_type_hint"] = "scatter"
+    elif "table" in q_lower or "grid" in q_lower or "tabular" in q_lower:
+        intent["chart_type_hint"] = "table"
 
     log.info("intent.classified", type=intent.get("type"), confidence=intent.get("confidence"),
              rephrased=(intent.get("rephrased_question") or "")[:80])

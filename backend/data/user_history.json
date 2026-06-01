@@ -1,11 +1,11 @@
 {
   "verification_session_123": {
-    "shopify": 7,
-    "core": 10,
-    "inventory": 9,
-    "unicomm": 7,
+    "shopify": 9,
+    "core": 14,
+    "inventory": 13,
+    "unicomm": 9,
     "catalog": 3,
-    "zoho": 6
+    "zoho": 10
   },
   "68c2c56d-dfc7-4887-afcb-847091bd343a": {
     "core": 1,
@@ -187,5 +187,248 @@
     "zoho": 1,
     "unicomm": 1,
     "inventory": 1
+  },
+  "4c89d5d4-585b-4dd3-94c6-1145604fe4f2": {
+    "core": 1,
+    "shopify": 1,
+    "zoho": 1,
+    "unicomm": 1
+  },
+  "1eceed5a-380c-45c5-9434-feb3386dbb9a": {
+    "shopify": 1,
+    "core": 1,
+    "catalog": 1,
+    "unicomm": 1
+  },
+  "b8f08b54-8cd1-4fc3-873f-ea0b3a4bf542": {
+    "core": 1,
+    "zoho": 1,
+    "unicomm": 1,
+    "inventory": 1
+  },
+  "ff1b0968-c72f-48b3-8d58-b8c7cdec34d0": {
+    "core": 1,
+    "zoho": 1,
+    "unicomm": 1,
+    "inventory": 1
+  },
+  "c24ed100-add7-45ef-a2d1-45674c241fc7": {
+    "core": 1
+  },
+  "0931770b-d079-44ae-9557-6f0d6fd9ba60": {
+    "core": 1,
+    "zoho": 1,
+    "unicomm": 1,
+    "inventory": 1
+  },
+  "440559d9-7a8b-463a-81b1-e941b877845d": {
+    "core": 1,
+    "zoho": 1,
+    "unicomm": 1,
+    "inventory": 1
+  },
+  "5c6844ee-1a37-4599-bf9a-2ff492d487f7": {
+    "core": 1
+  },
+  "33810fe3-7d70-428d-9a1f-17919c76b519": {
+    "core": 1,
+    "shopify": 1,
+    "zoho": 1,
+    "unicomm": 1
+  },
+  "927ad931-31fd-4ae3-b66d-cf440218c694": {
+    "core": 1,
+    "shopify": 1,
+    "zoho": 1,
+    "unicomm": 1
+  },
+  "cd5d97bc-f184-4acc-8aa8-e84169327ab5": {
+    "core": 1,
+    "unicomm": 1,
+    "zoho": 1,
+    "inventory": 1
+  },
+  "2af6efb0-fd4d-4bb4-8500-5e4bd560adbf": {
+    "core": 1,
+    "catalog": 1,
+    "inventory": 1,
+    "zoho": 1
+  },
+  "20d2e8ec-6790-4246-b15e-bddb61f0013d": {
+    "zoho": 1,
+    "core": 1,
+    "catalog": 1,
+    "unicomm": 1
+  },
+  "00e1af8e-c483-41ba-a170-6c0ed7b65eca": {
+    "core": 1,
+    "inventory": 2,
+    "catalog": 1
+  },
+  "b591d052-89f8-44b8-ac5b-f3479c1795ea": {
+    "core": 1,
+    "catalog": 2,
+    "zoho": 1
+  },
+  "f846066c-f8c9-42b3-9913-a49875fd2a43": {
+    "core": 1,
+    "catalog": 1,
+    "unicomm": 1,
+    "zoho": 1
+  },
+  "bc0c039d-bdd4-4a36-8da1-1c968f5214d6": {
+    "core": 1,
+    "catalog": 2,
+    "inventory": 1
+  },
+  "485c73f4-498f-4f60-8904-1e6749378538": {
+    "core": 1,
+    "zoho": 1,
+    "unicomm": 1,
+    "inventory": 1
+  },
+  "926422a6-69ac-49a2-a0ac-d73960cb2b94": {
+    "core": 1,
+    "shopify": 1,
+    "zoho": 1,
+    "unicomm": 1
+  },
+  "33ff79c2-c45e-40ae-a1af-c9f3ab5d7050": {
+    "core": 1,
+    "shopify": 1,
+    "zoho": 1,
+    "unicomm": 1
+  },
+  "f5b94db4-d5c8-45f9-aac6-ea891dba8db1": {
+    "core": 1,
+    "shopify": 1,
+    "zoho": 1,
+    "unicomm": 1
+  },
+  "fbde74b6-3162-4c3c-b60e-cb9b5bbabd56": {
+    "core": 1,
+    "zoho": 1,
+    "shopify": 1,
+    "unicomm": 1
+  },
+  "0803ff41-1461-4a9a-81e4-fad4c3113692": {
+    "core": 1,
+    "shopify": 1,
+    "zoho": 1,
+    "unicomm": 1
+  },
+  "7defa009-de2d-4abb-9df6-0c9afe0ce4dd": {
+    "zoho": 1,
+    "core": 1,
+    "unicomm": 1,
+    "shopify": 1
+  },
+  "9ef702c1-38ba-4ce9-bab7-d8d52d0ae189": {
+    "core": 1,
+    "shopify": 1,
+    "zoho": 1,
+    "unicomm": 1
+  },
+  "3a2bf254-1384-4c6b-9d5e-0a9bfd35bf05": {
+    "core": 1,
+    "shopify": 1,
+    "zoho": 1,
+    "unicomm": 1
+  },
+  "7d22f939-7003-41b2-bdb1-dc923bc5272e": {
+    "core": 1,
+    "zoho": 1,
+    "unicomm": 1,
+    "shopify": 1
+  },
+  "93051a55-6394-4704-b6ae-a7d03e435ef4": {
+    "core": 1,
+    "shopify": 1,
+    "zoho": 1,
+    "unicomm": 1
+  },
+  "3fd9902d-d247-434e-a394-c702b06c8057": {
+    "core": 1
+  },
+  "98e29221-7c84-443f-9ba9-bdbe3109d712": {
+    "core": 1,
+    "shopify": 1,
+    "zoho": 1,
+    "unicomm": 1
+  },
+  "e474759c-37a8-4a66-ab26-3a70e36a0c21": {
+    "core": 1,
+    "shopify": 1,
+    "unicomm": 1,
+    "zoho": 1
+  },
+  "b194edaf-cf73-48ec-bea6-7a2259817340": {
+    "zoho": 2,
+    "unicomm": 1,
+    "core": 1
+  },
+  "401c44c1-5a14-49ca-b471-97b68f65b008": {
+    "shopify": 1,
+    "core": 1,
+    "unicomm": 1,
+    "zoho": 1
+  },
+  "5f8f4ea6-61e7-4247-8e66-2348df080b08": {
+    "shopify": 1,
+    "core": 1,
+    "zoho": 1,
+    "unicomm": 1
+  },
+  "09c213f2-b1e3-40f0-9208-2b94cdf84c61": {
+    "core": 1,
+    "shopify": 1,
+    "zoho": 1,
+    "unicomm": 1
+  },
+  "fd15843e-6448-41f7-ab80-5eb4c957ec74": {
+    "core": 1,
+    "shopify": 1,
+    "zoho": 1,
+    "unicomm": 1
+  },
+  "b4fc76ca-0ffc-4a6c-b35c-0f79d08796cd": {
+    "core": 1,
+    "catalog": 1,
+    "inventory": 1,
+    "unicomm": 1
+  },
+  "06b04eb2-6d79-416a-9783-a19e45340992": {
+    "zoho": 1,
+    "core": 1,
+    "catalog": 1,
+    "unicomm": 1
+  },
+  "63f4176f-d6eb-44a4-8036-3617e95bb667": {
+    "core": 1,
+    "shopify": 1,
+    "zoho": 1,
+    "unicomm": 1
+  },
+  "c455937f-089b-429e-8df9-506d7f6bda2d": {
+    "zoho": 2,
+    "shopify": 1,
+    "core": 1
+  },
+  "a2a001d5-6ce4-4b90-aca6-f89b37b9892b": {
+    "core": 1,
+    "catalog": 2,
+    "zoho": 1
+  },
+  "f9b80e54-0614-47da-9fd3-be412b671cb4": {
+    "core": 1,
+    "inventory": 1,
+    "unicomm": 1,
+    "catalog": 1
+  },
+  "afc57800-58fb-4678-9491-7363e3a41f38": {
+    "unicomm": 1,
+    "core": 1,
+    "zoho": 1,
+    "shopify": 1
   }
 }

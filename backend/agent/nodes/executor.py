@@ -13,6 +13,7 @@ import structlog
 from backend.agent.state import AnalyticsState
 from backend.data.connector import execute_query
 from backend.config import settings
+from backend.services.training_collector import training_collector
 
 log = structlog.get_logger(__name__)
 
@@ -127,6 +128,8 @@ async def execute_sql(state: AnalyticsState) -> AnalyticsState:
     query_results, error_msg = await _run_query(sql)
 
     if query_results is not None:
+        # Log first-attempt successful Limese query for training dataset
+        training_collector.collect_query(state, sql, query_results, was_fixed=False)
         return {**state, "query_results": query_results, "error": None}
 
     log.error("sql.execution_failed", error=error_msg[:200], sql=sql[:150])
@@ -139,6 +142,8 @@ async def execute_sql(state: AnalyticsState) -> AnalyticsState:
             log.info("executor.auto_fix_succeeded", fixed_sql=fixed_sql[:200])
             query_results, error_msg_fixed = await _run_query(fixed_sql)
             if query_results is not None:
+                # Log successfully auto-fixed Limese query (saving the corrected SQL!)
+                training_collector.collect_query(state, fixed_sql, query_results, was_fixed=True)
                 return {
                     **state,
                     "sql_query": fixed_sql,

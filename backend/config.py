@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     debug: bool = True
     secret_key: str = "change-me-in-production-32chars-min"
     api_prefix: str = "/api/v1"
+    cors_origins: str = "*"
 
     # JWT Auth
     jwt_secret_key: str = ""  # If empty, uses secret_key
@@ -28,14 +29,13 @@ class Settings(BaseSettings):
 
     # ClickHouse (Analytics DB — optional)
     clickhouse_host: str = "localhost"
-    RECURSIVE_MAX_RETRIES: int = 3
-    CONFIDENCE_THRESHOLD: float = 0.85
     clickhouse_port: int = 8123
     clickhouse_user: str = "default"
     clickhouse_password: str = ""
+    clickhouse_database: str = "default"
+    clickhouse_enabled: bool = False
     RECURSIVE_MAX_RETRIES: int = 3
     CONFIDENCE_THRESHOLD: float = 0.85
-    clickhouse_database: str = "default"
 
     # LLM Providers (via OpenRouter or direct)
     groq_api_key: str = ""

@@ -68,13 +68,14 @@ def register_datasource(ds_id: str, ds_type: str, config: dict) -> None:
 
 
 def _get_datasource(ds_id: str) -> dict:
+    from backend.config import settings
     if ds_id == "limese" and "limese" not in _datasources:
         register_datasource("limese", "clickhouse", {
-            "host": "118.95.209.221",
-            "port": 8123,
-            "username": "limese_interns",
-            "password": "ItsInterns!23",
-            "database": "limese",
+            "host": settings.clickhouse_host,
+            "port": settings.clickhouse_port,
+            "username": settings.clickhouse_user,
+            "password": settings.clickhouse_password,
+            "database": settings.clickhouse_database,
         })
     elif ds_id == "default" and "default" not in _datasources:
         register_datasource("default", "sqlite", {"path": "./demo.db"})

@@ -17,7 +17,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.agent.graph import run_analytics_agent
 from backend.auth.dependencies import get_current_user_optional
-from backend.data.connector import upload_csv_as_datasource, get_schema, register_datasource
+from backend.data.connector import upload_csv_as_datasource, get_schema, register_datasource, execute_query
 from backend.database import get_db, AsyncSessionLocal
 from backend.models.conversation import Conversation, Message
 from backend.models.user import User
@@ -624,4 +624,31 @@ async def disambiguate_question(
     payload = SimplePayload(resolved_question, "default", None)
 
     return await query(payload, current_user)
+
+
+class SQLExecuteRequest(BaseModel):
+    sql: str
+    datasource_id: str = "default"
+
+
+@router.post("/sql/execute")
+async def execute_raw_sql(
+    payload: SQLExecuteRequest,
+    current_user: UserDep,
+) -> dict:
+    sql = payload.sql.strip()
+    if not sql:
+        raise HTTPException(status_code=400, detail="SQL query is empty")
+    if not sql.upper().startswith(("SELECT", "WITH")):
+        raise HTTPException(status_code=400, detail="Only SELECT/WITH queries are allowed")
+    try:
+        result = await execute_query(payload.datasource_id, sql, timeout=30)
+        return {
+            "columns": result.get("columns", []),
+            "rows": result.get("rows", []),
+            "row_count": result.get("row_count", 0),
+            "execution_time_ms": result.get("execution_time_ms", 0),
+        }
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
 

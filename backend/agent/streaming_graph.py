@@ -35,6 +35,11 @@ class StreamingGraphRunner:
 
     # Step definitions with descriptions and progress percentages
     STEPS = {
+        "semantic_cache": {
+            "progress": 3,
+            "message": "Checking query cache...",
+            "description": "Looking for similar previous queries"
+        },
         "supervisor": {
             "progress": 5,
             "message": "Supervisor planning reasoning loop...",
@@ -121,16 +126,20 @@ class StreamingGraphRunner:
             
             # Dynamic Paraphraser Integration!
             # Generate descriptive, highly warm analyst narratives locally.
-            from backend.services.hf_loader import hf_loader
-            tables = None
-            if data and isinstance(data, dict):
-                tables = data.get("tables")
-            
-            warm_message = hf_loader.generate_warm_narrative(
-                step=step,
-                tables=tables,
-                domain="E-Commerce"
-            )
+            warm_message = step_info.get("message", "")
+            try:
+                from backend.services.hf_loader import hf_loader
+                tables = None
+                if data and isinstance(data, dict):
+                    tables = data.get("tables")
+
+                warm_message = hf_loader.generate_warm_narrative(
+                    step=step,
+                    tables=tables,
+                    domain="E-Commerce"
+                )
+            except Exception:
+                pass  # Fallback to default message if HuggingFace model unavailable
             
             self.progress_callback(
                 step,
@@ -351,6 +360,73 @@ class StreamingGraphRunner:
         if initial_state.get("conversation_history"):
             from backend.agent.utils import compact_history
             initial_state["conversation_history"] = await compact_history(initial_state["conversation_history"])
+
+        # Semantic cache check — skip pipeline if Qdrant has a matching question
+        question = initial_state.get("user_question", "")
+        datasource_id = initial_state.get("datasource_id", "demo")
+        user_id = initial_state.get("user_id", "anonymous")
+        cached_sql = None
+
+        try:
+            from backend.services.llm_cache import llm_cache
+            canary_hit = llm_cache.get(question, datasource_id)
+            if canary_hit and canary_hit.get("sql"):
+                cached_sql = canary_hit["sql"]
+                log.info("streaming_graph.canary_cache_hit", question=question[:50])
+        except Exception:
+            pass
+
+        if not cached_sql:
+            try:
+                from backend.agent.memory import vector_memory
+                if vector_memory.enabled:
+                    cached_payload = vector_memory.search_semantic_cache(question, user_id=user_id, threshold=0.92)
+                    if cached_payload and cached_payload.get("sql"):
+                        import re as _re
+                        def _validate_match(q1, q2):
+                            curr_years = set(_re.findall(r'\b(20[12]\d)\b', q1))
+                            match_years = set(_re.findall(r'\b(20[12]\d)\b', q2))
+                            if curr_years != match_years:
+                                return False
+                            months = ['january', 'february', 'march', 'april', 'may', 'june', 'july',
+                                      'august', 'september', 'october', 'november', 'december',
+                                      'jan', 'feb', 'mar', 'apr', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
+                            q1l, q2l = q1.lower(), q2.lower()
+                            q1_months = {m for m in months if _re.search(r'\b' + m + r'\b', q1l)}
+                            q2_months = {m for m in months if _re.search(r'\b' + m + r'\b', q2l)}
+                            if q1_months != q2_months:
+                                return False
+                            q1_is_trend = any(w in q1l for w in ["trend", "daily", "weekly", "chart", "graph", "plot", "map", "viz", "visualization"])
+                            q2_is_trend = any(w in q2l for w in ["trend", "daily", "weekly", "chart", "graph", "plot", "map", "viz", "visualization"])
+                            if q1_is_trend != q2_is_trend:
+                                return False
+                            return True
+                        matched_q = cached_payload.get("question", "")
+                        if _validate_match(question, matched_q):
+                            cached_sql = cached_payload["sql"]
+                            log.info("streaming_graph.semantic_cache_hit", question=question[:50])
+            except Exception:
+                pass
+
+        if cached_sql:
+            initial_state["sql_query"] = cached_sql
+            initial_state["sql_validated"] = True
+            initial_state["intent"] = {"type": "data_query", "confidence": 1.0, "rephrased_question": question}
+            try:
+                from backend.services.db_intelligence import get_db_context
+                db_ctx = get_db_context()
+                tables = db_ctx.get("tables", {})
+                matched = [{"name": t} for t in tables if t.lower() in cached_sql.lower()]
+                initial_state["schema_context"] = {"relevant_tables": matched}
+            except Exception:
+                initial_state["schema_context"] = {"relevant_tables": [{"name": "combined_sales_final"}]}
+            yield {
+                "type": "progress",
+                "step": "semantic_cache",
+                "progress": 30,
+                "message": "Found a similar query in cache — skipping to execution!",
+                "data": {"cached": True}
+            }
 
         # Generator to collect progress updates
         progress_queue = []

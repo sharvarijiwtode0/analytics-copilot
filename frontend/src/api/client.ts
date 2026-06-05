@@ -109,3 +109,11 @@ export const getDatasources = async () => {
   return data
 }
 
+export const executeSQL = async (
+  sql: string,
+  datasource_id: string
+): Promise<{ columns: string[]; rows: Record<string, unknown>[]; row_count: number; execution_time_ms: number }> => {
+  const { data } = await api.post('/copilot/sql/execute', { sql, datasource_id })
+  return data
+}
+

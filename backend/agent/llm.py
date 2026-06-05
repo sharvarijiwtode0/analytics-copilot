@@ -164,8 +164,18 @@ async def call_llm(
       "analysis" — smart 70B model (insights) — returns stub on total failure
       "general"  — same as sql
     """
-    # Force cold temperature for deterministic and fast responses
-    temperature = 0.0
+    # Differential temperature by task:
+    # - routing: 0.0 (deterministic classification)
+    # - sql: 0.0 (exact query generation)
+    # - analysis: 0.2 (some creativity for narrative insights)
+    # - general: 0.1 (natural but consistent)
+    _TASK_TEMPERATURES = {
+        "routing": 0.0,
+        "sql": 0.0,
+        "analysis": 0.2,
+        "general": 0.1,
+    }
+    temperature = _TASK_TEMPERATURES.get(task, temperature)
 
     if model is None:
         if task == "analysis" and _is_valid_key(settings.openrouter_api_key):

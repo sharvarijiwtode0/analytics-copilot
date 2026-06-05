@@ -3,7 +3,7 @@ import { MessageSquare, X, Plus, RotateCw, Database, Clock, RefreshCw, BarChart2
 import { useChatStore, ChatSession } from '../../store/chat'
 import { useThemeStore } from '../../store/theme'
 import { useAuthStore } from '../../store/auth'
-import { sendQuery, getDatasources, getSchema } from '../../api/client'
+import { getDatasources, getSchema } from '../../api/client'
 import { ChatMessageComponent } from './ChatMessage'
 import { ChatInput } from './ChatInput'
 import TransparencyPanel from '../TransparencyPanel'

@@ -6,9 +6,9 @@ import { useAuthStore } from '../store/auth'
 import { sendQuery, getDatasources, getSchema } from '../api/client'
 import { ChatMessageComponent } from '../components/Chat/ChatMessage'
 import { ChatInput } from '../components/Chat/ChatInput'
+import SQLEditor from '../components/Chat/SQLEditor'
 import DisambiguationModal from '../components/DisambiguationModal'
 import Sidebar from '../components/Layout/Sidebar'
-import TransparencyPanel from '../components/TransparencyPanel'
 import AgentSidebar, { type AgentRun } from '../components/AgentSidebar'
 import { useStreamingQuery, type TransparencyStep } from '../hooks/useStreamingQuery'
 import { CommunicationAgent } from '../components/Chat/CommunicationAgent'
@@ -350,11 +350,21 @@ export const CopilotPage: React.FC = () => {
 
         {/* Body — chat + agent sidebar side by side */}
         <div className="flex flex-1 min-h-0">
-          {/* Chat area — fills all remaining space */}
+          {/* Main content area */}
           <div className="flex flex-col flex-1 min-w-0">
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 md:px-8 py-6">
-              <div className="w-full max-w-3xl mx-auto">
+            {chatMode === 'sql' ? (
+              /* SQL Editor Mode */
+              <div className="flex-1 overflow-y-auto px-4 md:px-8 py-6">
+                <div className="w-full max-w-3xl mx-auto">
+                  <SQLEditor datasourceId={datasourceId} theme={theme} />
+                </div>
+              </div>
+            ) : (
+              /* Chat Mode / Dashboard Mode */
+            <>
+              {/* Messages */}
+              <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 md:px-8 py-6">
+                <div className="w-full max-w-3xl mx-auto">
                 {messages.length === 0 ? (
                   <WelcomeScreen
                     onQuestionClick={handleSend}
@@ -421,7 +431,7 @@ export const CopilotPage: React.FC = () => {
               </div>
             )}
 
-            {/* Input */}
+            {/* Input — hidden in SQL mode */}
             <div className={`border-t ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'} pt-3`}>
               <div className="max-w-3xl mx-auto">
                 <ChatInput
@@ -434,6 +444,8 @@ export const CopilotPage: React.FC = () => {
                 />
               </div>
             </div>
+            </>
+            )}
           </div>
 
           {/* Right Agent Sidebar */}
@@ -702,72 +714,6 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onQuestionClick, theme, s
             <span className={`text-sm font-medium ${theme === 'dark' ? 'group-hover:text-blue-400' : 'group-hover:text-blue-700'}`}>{q}</span>
           </button>
         ))}
-      </div>
-    </div>
-  )
-}
-
-// Live thinking indicator with elapsed timer
-const ThinkingIndicator: React.FC<{ seconds: number; theme: string }> = ({ seconds, theme }) => {
-  const stages = [
-    { at: 0, label: 'Understanding your question...' },
-    { at: 3, label: 'Discovering schema & tables...' },
-    { at: 6, label: 'Generating SQL query...' },
-    { at: 10, label: 'Executing on database...' },
-    { at: 13, label: 'Analysing results...' },
-    { at: 16, label: 'Building chart & insights...' },
-    { at: 19, label: 'Composing response...' },
-  ]
-
-  // Pick the latest stage that has been reached
-  const reachedStages = stages.filter(s => seconds >= s.at)
-  const current = reachedStages.length > 0 ? reachedStages[reachedStages.length - 1] : stages[0]
-
-  return (
-    <div className="flex flex-col gap-2 mb-4 animate-in fade-in duration-300">
-      <div className={`flex items-center gap-2 ${theme === 'dark' ? 'text-zinc-400' : 'text-slate-400'}`}>
-        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-          <div className="w-2 h-2 rounded-full bg-white animate-ping" />
-        </div>
-        <div className={`flex flex-col rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm gap-1.5 ${
-          theme === 'dark'
-            ? 'bg-zinc-900 border-zinc-800'
-            : 'bg-white border border-slate-200'
-        }`}>
-          {/* Stage label */}
-          <div className="flex items-center gap-2">
-            <div className="flex gap-1">
-              {[0, 1, 2].map((i) => (
-                <div
-                  key={i}
-                  className="w-2 h-2 rounded-full bg-blue-400 animate-bounce"
-                  style={{ animationDelay: `${i * 150}ms` }}
-                />
-              ))}
-            </div>
-            <span className={`text-xs ${theme === 'dark' ? 'text-zinc-300' : 'text-slate-500'}`}>{current.label}</span>
-          </div>
-          {/* Elapsed timer + progress bar */}
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1 text-xs font-mono text-blue-500">
-              <Clock size={11} />
-              <span>{seconds}s</span>
-            </div>
-            {/* 7-step progress bar — one pip per stage */}
-            <div className="flex gap-1">
-              {stages.map((s, i) => (
-                <div
-                  key={i}
-                  className={`w-5 h-1 rounded-full transition-all duration-500 ${
-                    seconds >= s.at
-                      ? 'bg-blue-500'
-                      : theme === 'dark' ? 'bg-zinc-700' : 'bg-slate-200'
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   )

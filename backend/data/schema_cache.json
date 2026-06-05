@@ -5384,5 +5384,894 @@
       ]
     },
     "refreshed_at": "2026-05-28T13:55:23.735885"
+  },
+  "nonexistent": {
+    "schema": {
+      "tables": [
+        {
+          "name": "users",
+          "columns": [
+            {
+              "name": "id",
+              "type": "VARCHAR(36)",
+              "nullable": false,
+              "primary_key": true,
+              "null_count": 0
+            },
+            {
+              "name": "email",
+              "type": "VARCHAR(255)",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "name",
+              "type": "VARCHAR(255)",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "hashed_password",
+              "type": "VARCHAR(255)",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "role",
+              "type": "VARCHAR(50)",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "is_active",
+              "type": "BOOLEAN",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "created_at",
+              "type": "DATETIME",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "last_login",
+              "type": "DATETIME",
+              "nullable": true,
+              "primary_key": false,
+              "null_count": 1
+            },
+            {
+              "name": "preferences",
+              "type": "TEXT",
+              "nullable": true,
+              "primary_key": false,
+              "null_count": 4
+            }
+          ],
+          "row_count": 5,
+          "sample_data": [
+            {
+              "id": "60aa1b48-5ce7-43b5-a378-8fa055caf5b2",
+              "email": "demo@test.com",
+              "name": "Demo",
+              "hashed_password": "$2b$12$mQ3JS1PA29E/ol3d/0FHMeqwSsodDIibMfd//8b9ETTx0zvnlPMhC",
+              "role": "business_analyst",
+              "is_active": 1,
+              "created_at": "2026-05-22 05:48:00",
+              "last_login": "2026-05-22 05:48:06.380491",
+              "preferences": null
+            },
+            {
+              "id": "11d4e849-a0f6-4d0e-a7f5-bdbcf44ed1c9",
+              "email": "sharvari.jiwtode@delphianalytics.in",
+              "name": "Sharvari Jiwtode",
+              "hashed_password": "$2b$12$DXFJAkkrwB5GnVnt/T5Ngeo5f6vnPR.VIK7As0F9yCQmXVc6Dk9e6",
+              "role": "admin",
+              "is_active": 1,
+              "created_at": "2026-05-22 05:50:56",
+              "last_login": "2026-05-23 06:34:06.902968",
+              "preferences": "{\"preferred_chart\": \"auto\", \"response_length\": \"balanced\", \"custom_instructions\": \"\", \"compact_mode\": false, \"animations\": true, \"email_notifications\": true, \"push_notifications\": true, \"weekly_digest\": true}"
+            }
+          ]
+        },
+        {
+          "name": "datasources",
+          "columns": [
+            {
+              "name": "id",
+              "type": "VARCHAR(36)",
+              "nullable": false,
+              "primary_key": true,
+              "null_count": 0
+            },
+            {
+              "name": "name",
+              "type": "VARCHAR(255)",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "description",
+              "type": "TEXT",
+              "nullable": true,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "type",
+              "type": "VARCHAR(50)",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "owner_id",
+              "type": "VARCHAR(36)",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "connection_config",
+              "type": "JSON",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "schema_cache",
+              "type": "JSON",
+              "nullable": true,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "schema_refreshed_at",
+              "type": "DATETIME",
+              "nullable": true,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "is_active",
+              "type": "BOOLEAN",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "row_count",
+              "type": "INTEGER",
+              "nullable": true,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "created_at",
+              "type": "DATETIME",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "updated_at",
+              "type": "DATETIME",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            }
+          ],
+          "row_count": 0,
+          "sample_data": []
+        },
+        {
+          "name": "conversations",
+          "columns": [
+            {
+              "name": "id",
+              "type": "VARCHAR(36)",
+              "nullable": false,
+              "primary_key": true,
+              "null_count": 0
+            },
+            {
+              "name": "user_id",
+              "type": "VARCHAR(36)",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "datasource_id",
+              "type": "VARCHAR(36)",
+              "nullable": true,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "title",
+              "type": "VARCHAR(500)",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "created_at",
+              "type": "DATETIME",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "updated_at",
+              "type": "DATETIME",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            }
+          ],
+          "row_count": 143,
+          "sample_data": [
+            {
+              "id": "ef2c6faa-2d30-4a73-9166-4f56cef600b8",
+              "user_id": "test",
+              "datasource_id": "default",
+              "title": "Show total revenue by region",
+              "created_at": "2026-05-15 08:16:24",
+              "updated_at": "2026-05-15 08:16:24"
+            },
+            {
+              "id": "b78381da-e49b-496a-9f92-af6d9a06a0a1",
+              "user_id": "srishti",
+              "datasource_id": "limese",
+              "title": "Show total revenue by platform for Limese",
+              "created_at": "2026-05-15 08:31:56",
+              "updated_at": "2026-05-15 08:31:56"
+            }
+          ]
+        },
+        {
+          "name": "dashboards",
+          "columns": [
+            {
+              "name": "id",
+              "type": "VARCHAR(36)",
+              "nullable": false,
+              "primary_key": true,
+              "null_count": 0
+            },
+            {
+              "name": "name",
+              "type": "VARCHAR(255)",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "description",
+              "type": "TEXT",
+              "nullable": true,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "owner_id",
+              "type": "VARCHAR(36)",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "layout",
+              "type": "JSON",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "is_public",
+              "type": "BOOLEAN",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "refresh_interval_seconds",
+              "type": "INTEGER",
+              "nullable": true,
+              "primary_key": false,
+              "null_count": 2
+            },
+            {
+              "name": "created_at",
+              "type": "DATETIME",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "updated_at",
+              "type": "DATETIME",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            }
+          ],
+          "row_count": 2,
+          "sample_data": [
+            {
+              "id": "7c235c5e-fb0b-499f-b749-856be4450bbd",
+              "name": "Hello",
+              "description": "",
+              "owner_id": "11d4e849-a0f6-4d0e-a7f5-bdbcf44ed1c9",
+              "layout": "{}",
+              "is_public": 0,
+              "refresh_interval_seconds": null,
+              "created_at": "2026-05-22 09:12:24",
+              "updated_at": "2026-05-22 09:12:24"
+            },
+            {
+              "id": "88ad0dc2-17a6-4a13-9d15-8b9d6bf30b8c",
+              "name": "hi",
+              "description": "",
+              "owner_id": "11d4e849-a0f6-4d0e-a7f5-bdbcf44ed1c9",
+              "layout": "{}",
+              "is_public": 0,
+              "refresh_interval_seconds": null,
+              "created_at": "2026-05-22 09:12:34",
+              "updated_at": "2026-05-22 09:12:34"
+            }
+          ]
+        },
+        {
+          "name": "reports",
+          "columns": [
+            {
+              "name": "id",
+              "type": "VARCHAR(36)",
+              "nullable": false,
+              "primary_key": true,
+              "null_count": 0
+            },
+            {
+              "name": "name",
+              "type": "VARCHAR(255)",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "owner_id",
+              "type": "VARCHAR(36)",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "conversation_id",
+              "type": "VARCHAR(36)",
+              "nullable": true,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "content",
+              "type": "TEXT",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "charts",
+              "type": "JSON",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "schedule",
+              "type": "JSON",
+              "nullable": true,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "recipients",
+              "type": "JSON",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "format",
+              "type": "VARCHAR(20)",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "created_at",
+              "type": "DATETIME",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            }
+          ],
+          "row_count": 0,
+          "sample_data": []
+        },
+        {
+          "name": "messages",
+          "columns": [
+            {
+              "name": "id",
+              "type": "VARCHAR(36)",
+              "nullable": false,
+              "primary_key": true,
+              "null_count": 0
+            },
+            {
+              "name": "conversation_id",
+              "type": "VARCHAR(36)",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "role",
+              "type": "VARCHAR(20)",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "content",
+              "type": "TEXT",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "sql_query",
+              "type": "TEXT",
+              "nullable": true,
+              "primary_key": false,
+              "null_count": 233
+            },
+            {
+              "name": "query_results",
+              "type": "JSON",
+              "nullable": true,
+              "primary_key": false,
+              "null_count": 227
+            },
+            {
+              "name": "viz_config",
+              "type": "JSON",
+              "nullable": true,
+              "primary_key": false,
+              "null_count": 227
+            },
+            {
+              "name": "insights",
+              "type": "JSON",
+              "nullable": true,
+              "primary_key": false,
+              "null_count": 227
+            },
+            {
+              "name": "follow_up_questions",
+              "type": "JSON",
+              "nullable": true,
+              "primary_key": false,
+              "null_count": 227
+            },
+            {
+              "name": "intent",
+              "type": "JSON",
+              "nullable": true,
+              "primary_key": false,
+              "null_count": 454
+            },
+            {
+              "name": "model_used",
+              "type": "VARCHAR(100)",
+              "nullable": true,
+              "primary_key": false,
+              "null_count": 227
+            },
+            {
+              "name": "latency_ms",
+              "type": "INTEGER",
+              "nullable": true,
+              "primary_key": false,
+              "null_count": 227
+            },
+            {
+              "name": "tokens_used",
+              "type": "INTEGER",
+              "nullable": true,
+              "primary_key": false,
+              "null_count": 454
+            },
+            {
+              "name": "error",
+              "type": "TEXT",
+              "nullable": true,
+              "primary_key": false,
+              "null_count": 421
+            },
+            {
+              "name": "created_at",
+              "type": "DATETIME",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            }
+          ],
+          "row_count": 454,
+          "sample_data": [
+            {
+              "id": "28fc1c1f-9bc2-4521-a65b-7345697f06e5",
+              "conversation_id": "ef2c6faa-2d30-4a73-9166-4f56cef600b8",
+              "role": "user",
+              "content": "Show total revenue by region",
+              "sql_query": null,
+              "query_results": null,
+              "viz_config": null,
+              "insights": null,
+              "follow_up_questions": null,
+              "intent": null,
+              "model_used": null,
+              "latency_ms": null,
+              "tokens_used": null,
+              "error": null,
+              "created_at": "2026-05-15 08:16:24"
+            },
+            {
+              "id": "8df74185-f914-4911-bd74-0d22bd7a31c3",
+              "conversation_id": "ef2c6faa-2d30-4a73-9166-4f56cef600b8",
+              "role": "assistant",
+              "content": "**Total Revenue**: $154.1 million | **Average Revenue per Region**: $30.8 million\n\n\u2022 The total revenue across all regions is $154.1 million, with an average of $30.8 million per region.\n\u2022 The revenue is relatively evenly distributed across regions, with the highest revenue being $32.4 million in North India and the lowest being $29.3 million in International.\n\u2022 There is an opportunity to increase revenue in the International region, which has the lowest revenue among all regions.",
+              "sql_query": "SELECT region AS region_name, SUM(revenue) AS total_revenue FROM sales GROUP BY region ORDER BY total_revenue DESC LIMIT 10000",
+              "query_results": "{\"columns\": [\"region_name\", \"total_revenue\"], \"rows\": [{\"region_name\": \"North India\", \"total_revenue\": 32385916.51}, {\"region_name\": \"South India\", \"total_revenue\": 32067323.61}, {\"region_name\": \"East India\", \"total_revenue\": 31005378.56}, {\"region_name\": \"West India\", \"total_revenue\": 29382700.42}, {\"region_name\": \"International\", \"total_revenue\": 29277992.2}], \"row_count\": 5}",
+              "viz_config": "{\"type\": \"table\", \"title\": \"Show total revenue by region\", \"columns\": [\"region_name\", \"total_revenue\"], \"rows\": [{\"region_name\": \"North India\", \"total_revenue\": 32385916.51}, {\"region_name\": \"South India\", \"total_revenue\": 32067323.61}, {\"region_name\": \"East India\", \"total_revenue\": 31005378.56}, {\"region_name\": \"West India\", \"total_revenue\": 29382700.42}, {\"region_name\": \"International\", \"total_revenue\": 29277992.2}], \"total_rows\": 5}",
+              "insights": "[\"The total revenue across all regions is $154.1 million, with an average of $30.8 million per region.\", \"The revenue is relatively evenly distributed across regions, with the highest revenue being $32.4 million in North India and the lowest being $29.3 million in International.\", \"There is an opportunity to increase revenue in the International region, which has the lowest revenue among all regions.\"]",
+              "follow_up_questions": "[\"What is the revenue growth by region?\", \"Which region has the highest revenue growth?\", \"How does revenue compare to last year?\"]",
+              "intent": null,
+              "model_used": "groq/llama-3.3-70b-versatile",
+              "latency_ms": 3467,
+              "tokens_used": null,
+              "error": null,
+              "created_at": "2026-05-15 08:16:27"
+            }
+          ]
+        },
+        {
+          "name": "dashboard_charts",
+          "columns": [
+            {
+              "name": "id",
+              "type": "VARCHAR(36)",
+              "nullable": false,
+              "primary_key": true,
+              "null_count": 0
+            },
+            {
+              "name": "dashboard_id",
+              "type": "VARCHAR(36)",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "title",
+              "type": "VARCHAR(255)",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "datasource_id",
+              "type": "VARCHAR(36)",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "sql_query",
+              "type": "TEXT",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "viz_config",
+              "type": "JSON",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "position",
+              "type": "JSON",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "refresh_interval_seconds",
+              "type": "INTEGER",
+              "nullable": true,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "created_at",
+              "type": "DATETIME",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            }
+          ],
+          "row_count": 0,
+          "sample_data": []
+        },
+        {
+          "name": "approval_queue",
+          "columns": [
+            {
+              "name": "id",
+              "type": "VARCHAR(36)",
+              "nullable": false,
+              "primary_key": true,
+              "null_count": 0
+            },
+            {
+              "name": "change_type",
+              "type": "VARCHAR(50)",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "title",
+              "type": "VARCHAR(255)",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "description",
+              "type": "TEXT",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "diff_data",
+              "type": "JSON",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "status",
+              "type": "VARCHAR(20)",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "requested_by",
+              "type": "VARCHAR(255)",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "reviewed_by",
+              "type": "VARCHAR(255)",
+              "nullable": true,
+              "primary_key": false,
+              "null_count": 1
+            },
+            {
+              "name": "reviewed_at",
+              "type": "DATETIME",
+              "nullable": true,
+              "primary_key": false,
+              "null_count": 1
+            },
+            {
+              "name": "created_at",
+              "type": "DATETIME",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "meta",
+              "type": "JSON",
+              "nullable": true,
+              "primary_key": false,
+              "null_count": 1
+            }
+          ],
+          "row_count": 1,
+          "sample_data": [
+            {
+              "id": "5c29c435-d610-481f-8422-2027b6c427a2",
+              "change_type": "db_schema",
+              "title": "Initial schema scan - no previous version to compare",
+              "description": "Database schema has changed since last scan",
+              "diff_data": "{\"type\": \"initial_scan\", \"summary\": \"Initial schema scan - no previous version to compare\", \"changes\": {\"tables_added\": [\"combined_sales_final\", \"product_master\", \"product_catlog\", \"inventory_sales_overview_new\", \"platform_sku_mapping\", \"shopify_orders\", \"unicomm_sales_final\", \"zoho_sales_final\", \"lead_time\"]}}",
+              "status": "PENDING",
+              "requested_by": "11d4e849-a0f6-4d0e-a7f5-bdbcf44ed1c9",
+              "reviewed_by": null,
+              "reviewed_at": null,
+              "created_at": "2026-05-22 05:56:55",
+              "meta": null
+            }
+          ]
+        },
+        {
+          "name": "query_log",
+          "columns": [
+            {
+              "name": "id",
+              "type": "VARCHAR(36)",
+              "nullable": false,
+              "primary_key": true,
+              "null_count": 0
+            },
+            {
+              "name": "user_id",
+              "type": "VARCHAR(255)",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "conversation_id",
+              "type": "VARCHAR(255)",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "datasource_id",
+              "type": "VARCHAR(100)",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "question",
+              "type": "VARCHAR(2000)",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "intent_type",
+              "type": "VARCHAR(100)",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "sql_query",
+              "type": "VARCHAR(5000)",
+              "nullable": true,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "row_count",
+              "type": "INTEGER",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "viz_type",
+              "type": "VARCHAR(50)",
+              "nullable": true,
+              "primary_key": false,
+              "null_count": 1
+            },
+            {
+              "name": "latency_ms",
+              "type": "INTEGER",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "cache_hit",
+              "type": "BOOLEAN",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "model_used",
+              "type": "VARCHAR(100)",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "error",
+              "type": "VARCHAR(1000)",
+              "nullable": true,
+              "primary_key": false,
+              "null_count": 3
+            },
+            {
+              "name": "success",
+              "type": "BOOLEAN",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            },
+            {
+              "name": "created_at",
+              "type": "DATETIME",
+              "nullable": false,
+              "primary_key": false,
+              "null_count": 0
+            }
+          ],
+          "row_count": 3,
+          "sample_data": [
+            {
+              "id": "0cf48a57-ae40-4d24-ba35-b946e907b083",
+              "user_id": "anonymous",
+              "conversation_id": "7e8a050f-aebb-41a0-ac28-148518b2680e",
+              "datasource_id": "default",
+              "question": "what is the temperature in Nagpur?",
+              "intent_type": "unknown",
+              "sql_query": "SELECT 'No temperature data available' AS message LIMIT 10000",
+              "row_count": 1,
+              "viz_type": "null",
+              "latency_ms": 6160,
+              "cache_hit": 0,
+              "model_used": "groq/llama-3.3-70b-versatile",
+              "error": null,
+              "success": 1,
+              "created_at": "2026-05-22 11:16:55"
+            },
+            {
+              "id": "58ddfb9f-c33e-42ba-a8f4-b25d670a2917",
+              "user_id": "anonymous",
+              "conversation_id": "c85fab2b-fe83-40dc-bc0d-b15effa18d90",
+              "datasource_id": "default",
+              "question": "what is the temperature in Nagpur?",
+              "intent_type": "cached",
+              "sql_query": "SELECT 'No temperature data available' AS message LIMIT 10000",
+              "row_count": 1,
+              "viz_type": "null",
+              "latency_ms": 6160,
+              "cache_hit": 1,
+              "model_used": "groq/llama-3.3-70b-versatile",
+              "error": null,
+              "success": 1,
+              "created_at": "2026-05-22 11:24:09"
+            }
+          ]
+        }
+      ]
+    },
+    "refreshed_at": "2026-06-05T09:04:44.344478"
   }
 }

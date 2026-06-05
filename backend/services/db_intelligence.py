@@ -28,6 +28,7 @@ from typing import Any
 import clickhouse_connect
 import structlog
 from backend.data.clickhouse_connector import TABLE_DESCRIPTIONS
+from backend.config import settings
 
 log = structlog.get_logger(__name__)
 
@@ -125,9 +126,12 @@ TABLE_ALIASES = {
 
 def _get_client() -> Any:
     return clickhouse_connect.get_client(
-        host="118.95.209.221", port=8123,
-        username="limese_interns", password="ItsInterns!23",
-        database="limese", connect_timeout=10,
+        host=settings.clickhouse_host,
+        port=settings.clickhouse_port,
+        username=settings.clickhouse_user,
+        password=settings.clickhouse_password,
+        database=settings.clickhouse_database,
+        connect_timeout=10,
     )
 
 
@@ -364,7 +368,7 @@ def build_db_context() -> dict:
     elapsed = round(time.time() - t0, 1)
     context = {
         "database": "limese",
-        "host": "118.95.209.221:8123",
+        "host": f"{settings.clickhouse_host}:{settings.clickhouse_port}",
         "scanned_at": datetime.utcnow().isoformat(),
         "scan_duration_seconds": elapsed,
         "tables": tables_context,
@@ -695,7 +699,7 @@ def _build_minimal_fast_context() -> dict:
     log.info("db_intelligence.fast_context_built", seconds=elapsed)
     return {
         "database": "limese",
-        "host": "118.95.209.221:8123",
+        "host": f"{settings.clickhouse_host}:{settings.clickhouse_port}",
         "scanned_at": datetime.utcnow().isoformat(),
         "scan_duration_seconds": elapsed,
         "tables": tables_context,

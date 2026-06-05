@@ -7,6 +7,7 @@ import AnalyticsPage from './pages/AnalyticsPage'
 import SettingsPage from './pages/SettingsPage'
 import DashboardPage from './pages/DashboardPage'
 import ReportsPage from './pages/ReportsPage'
+import GlossaryPage from './pages/GlossaryPage'
 import DummyClientWebsite from './pages/DummyClientWebsite'
 import { useAuthStore } from './store/auth'
 import { useThemeStore } from './store/theme'
@@ -156,6 +157,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <ReportsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/glossary"
+            element={
+              <ProtectedRoute>
+                <GlossaryPage />
               </ProtectedRoute>
             }
           />

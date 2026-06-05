@@ -30,7 +30,7 @@ def create_app() -> FastAPI:
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=settings.cors_origins.split(",") if hasattr(settings, "cors_origins") else ["*"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -213,13 +213,17 @@ def create_app() -> FastAPI:
         await _seed_demo_data()
 
         # Limese ClickHouse — all real sales, inventory, product data
-        register_datasource("limese", "clickhouse", {
-            "host": "118.95.209.221",
-            "port": 8123,
-            "username": "limese_interns",
-            "password": "ItsInterns!23",
-            "database": "limese",
-        })
+        if settings.clickhouse_enabled:
+            register_datasource("limese", "clickhouse", {
+                "host": settings.clickhouse_host,
+                "port": settings.clickhouse_port,
+                "username": settings.clickhouse_user,
+                "password": settings.clickhouse_password,
+                "database": settings.clickhouse_database,
+            })
+            log.info("dvc.started", port=8001, datasources=["default (demo)", "limese (clickhouse)"])
+        else:
+            log.info("dvc.started", port=8001, datasources=["default (demo)"])
         log.info("dvc.started", port=8001, datasources=["default (demo)", "limese (clickhouse)"])
 
         # Start DB Intelligence Layer — scans Limese ClickHouse on startup,

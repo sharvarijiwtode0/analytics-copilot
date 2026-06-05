@@ -42,7 +42,11 @@ async def _try_fix_sql(sql: str, error_msg: str, question: str, datasource_id: s
 
     try:
         ctx = get_db_context()
-        schema_hint = build_sql_context_prompt(ctx, question, ["combined_sales_final", "product_master"])
+        relevant_tables = state.get("schema_context", {}).get("relevant_tables", [])
+        table_names = [t.get("name", t) if isinstance(t, dict) else t for t in relevant_tables]
+        if not table_names:
+            table_names = ["combined_sales_final", "product_master"]
+        schema_hint = build_sql_context_prompt(ctx, question, table_names)
     except Exception:
         schema_hint = ""
 

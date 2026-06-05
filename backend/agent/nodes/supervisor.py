@@ -4,15 +4,72 @@ Node: Meta-Cognitive Supervisor Agent
 Acts as the central coordination system (prefrontal cortex) for the copilot.
 Inspects the current state, checks execution status/errors, plans next actions,
 and dynamically routes to the appropriate agent node.
+
+Architecture: Deterministic routing as primary engine (sub-millisecond).
+Optional LLM-assisted routing for ambiguous cases (intent=analytical_question
+or sql_retry > 0) for deeper reasoning about next steps.
 """
 from __future__ import annotations
 import json
-import re
+import logging
 import structlog
 from backend.agent.state import AnalyticsState
-from backend.agent.llm import call_llm
 
 log = structlog.get_logger(__name__)
+
+# Cases where LLM-assisted routing can provide better decisions
+_LLM_ASSIST_CASES = {"analytical_question", "why_question", "complex_comparison"}
+
+_ERROR_LLM_RETRY_THRESHOLD = 1  # Only use LLM for retry after 1+ failures
+
+
+async def _try_llm_routing(question: str, state: dict) -> str | None:
+    """Attempt LLM-assisted routing. Returns next_step or None on failure."""
+    from backend.agent.llm import call_llm
+
+    status_lines = []
+    if state.get("sql_query"):
+        status_lines.append(f"SQL: {state['sql_query'][:200]}")
+    if state.get("error"):
+        status_lines.append(f"Error: {state['error'][:200]}")
+    if state.get("query_results", {}).get("row_count"):
+        status_lines.append(f"Rows: {state['query_results']['row_count']}")
+
+    status = "\n".join(status_lines) if status_lines else "No query yet"
+
+    prompt = f"""Based on the current state, decide the SINGLE best next step for this analytics copilot.
+
+Question: "{question}"
+Intent: {state.get('intent', {}).get('type', 'unknown')}
+{status}
+
+Available steps: understand_intent, discover_schema, generate_sql, review_sql, execute_sql,
+analyze_insights, generate_viz_config, review_insights, compose_response, general_llm, disambiguate
+
+If there is a SQL error that might benefit from a different approach (not just retrying),
+suggest generate_sql. If the pipeline is complete, suggest compose_response.
+
+Return ONLY the step name, nothing else."""
+
+    try:
+        resp = await call_llm(
+            messages=[{"role": "user", "content": prompt}],
+            task="routing",
+            max_tokens=10,
+            temperature=0.0,
+        )
+        step = resp.content.strip().strip().strip("`").strip('"').strip()
+        valid_steps = {
+            "understand_intent", "discover_schema", "generate_sql", "review_sql",
+            "execute_sql", "analyze_insights", "generate_viz_config", "review_insights",
+            "compose_response", "general_llm", "disambiguate",
+        }
+        if step in valid_steps:
+            return step
+    except Exception:
+        pass
+    return None
+
 
 async def supervisor(state: AnalyticsState) -> AnalyticsState:
     """
@@ -50,55 +107,7 @@ async def supervisor(state: AnalyticsState) -> AnalyticsState:
         error=error[:80] if error else None
     )
 
-    # Build detailed context of current execution status
-    status_summary = f"""
-Current Execution State:
-- Original Question: "{question}"
-- Intent Type: "{intent_type}"
-- Ambiguity Score: {state.get("ambiguity_score", 0.0)}
-- Schema Context: {"Loaded" if schema_context.get("relevant_tables") else "Empty"}
-- SQL Query: {"Generated" if sql_query else "None"}
-- SQL Validated: {sql_validated}
-- Query Results: {query_results.get("row_count", 0)} rows returned
-- Insights Extracted: {len(insights)} items
-- Insights Validated by Critic: {insights_validated}
-- Critic Feedback: "{critic_feedback or 'None'}"
-- Visualization Ready: {bool(viz_config)}
-- Current Error Status: "{error or 'None'}"
-- Retries Count: SQL executions={sql_retry}/2, DBA reviews={review_retry}/2, Critic loops={critic_retry}/2
-"""
-
-    prompt = f"""You are the Meta-Cognitive Supervisor Agent (the brain) for an SQL analytics copilot system.
-Your job is to read the current execution state, reflect on what has been accomplished, identify errors or gaps, and determine the next logical step in the cognitive reasoning loop.
-
-{status_summary}
-
-DECISION ROUTING RULES (Follow strictly):
-1. INITIAL STATE: If "Intent Type" is empty, route to "understand_intent".
-2. CONVERSATIONAL/OFF-TOPIC: If "Intent Type" is "greeting", "conversational", or "off_topic", route to "general_llm".
-3. CLARIFICATION: If the "Ambiguity Score" is > 0.6 and we have not resolved it, route to "disambiguate".
-4. SCHEMA: If "Intent Type" is a data query but "Schema Context" is Empty, route to "discover_schema".
-5. SQL GENERATION: If we have "Schema Context" but no "SQL Query" exists, route to "generate_sql".
-6. DBA REVIEW: If we have a "SQL Query" but "SQL Validated" is false, and there is NO active database execution error, route to "review_sql".
-7. RETRY LOOP (DBA Review failed): If "SQL Validated" is false, we have DBA feedback/error, and "DBA reviews" < 2, route to "generate_sql" to fix it.
-8. EXECUTION: If we have a "SQL Query" and "SQL Validated" is true, but "Query Results" is empty and there is no execution error, route to "execute_sql".
-9. RETRY LOOP (SQL Execution failed): If "Query Results" has failed (e.g. database error) and "SQL executions" < 2, route to "generate_sql" to fix it.
-10. VIZ/INSIGHTS PARALLEL: If "Query Results" has rows (> 0), but either "Insights Extracted" is 0 or "Visualization Ready" is false:
-    - Route to "generate_viz_config" if viz_config is empty.
-    - Route to "analyze_insights" if insights is empty.
-11. INSIGHT CRITIC REVIEW: If "Insights Extracted" is (> 0) but "Insights Validated by Critic" is false, and there is no active execution error:
-    - If critic_feedback is present and "Critic loops" < 2 -> route to "analyze_insights" to regenerate/fix.
-    - If critic_feedback is empty (not yet reviewed) -> route to "review_insights".
-12. RESPONSE COMPOSITION: If all required data has been retrieved/analyzed, or if we have hit max retries, or if the intent was general, route to "compose_response".
-13. TERMINATION: If "compose_response" has already completed and we are finished, route to "__end__".
-
-Return ONLY a JSON response in the following format:
-{{
-  "thought": "<one sentence reasoning explanation of why you chose this step>",
-  "next_step": "<understand_intent|discover_schema|generate_sql|review_sql|execute_sql|generate_viz_config|analyze_insights|review_insights|compose_response|general_llm|disambiguate|insight_followup|__end__>"
-}}"""
-
-    # 100% accurate, sub-millisecond deterministic Prefrontal Cortex Routing Engine
+    # Deterministic routing engine — 100% accurate, sub-millisecond
     if state.get("pre_filter_response") or state.get("skip_pipeline"):
         next_step = "compose_response"
         thought_log = "Response is already pre-generated. Routing directly to response composer to finalize."
@@ -108,6 +117,11 @@ Return ONLY a JSON response in the following format:
     elif intent_type in ("greeting", "conversational", "off_topic"):
         next_step = "general_llm"
         thought_log = "Conversational or greeting intent detected, routing to general LLM responder."
+    elif intent_type in _LLM_ASSIST_CASES:
+        # Analytical/why questions: let LLM decide between full pipeline or direct compose
+        llm_step = await _try_llm_routing(question, state)
+        next_step = llm_step if llm_step else "discover_schema"
+        thought_log = f"Analytical question detected. {'LLM-assisted routing to' if llm_step else 'Default routing to schema discovery.'} step={next_step}"
     elif intent_type == "schema_info":
         next_step = "compose_response"
         thought_log = "Database schema/table description request detected. Routing directly to response composer to present table definitions."
@@ -132,15 +146,25 @@ Return ONLY a JSON response in the following format:
         next_step = "execute_sql"
         thought_log = "SQL validated successfully. Routing to connector for execution."
     elif error and sql_retry < 2:
-        next_step = "generate_sql"
-        thought_log = f"SQL execution failed with error: {error[:80]}. Routing back to SQL Gen for auto-fix."
+        # Try LLM-assisted routing for error recovery (may suggest different approach)
+        llm_step = await _try_llm_routing(question, state)
+        next_step = llm_step if llm_step else "generate_sql"
+        thought_log = f"SQL execution failed. {'LLM-assisted' if llm_step else 'Routing back'} to {'LLM suggested' if llm_step else 'SQL Gen'} for auto-fix."
     elif error:
         next_step = "compose_response"
         thought_log = "SQL execution failed and retries exhausted. Preparing error response."
     elif not query_results.get("rows"):
-        # Query executed successfully but returned 0 rows! Route to compose_response directly
+        # Query executed successfully but returned 0 rows!
         next_step = "compose_response"
-        thought_log = "Query returned 0 rows. Skipping analysis/visualization and routing to response composer."
+        thought_log = "Query returned 0 rows. Routing to response composer with zero-data explanation."
+        # Store info about why 0 rows so compose_response can explain it
+        state["query_results"]["row_count"] = 0
+        state["query_results"]["zero_row_context"] = {
+            "question": question,
+            "intent_type": intent_type,
+            "sql_query": sql_query[:300],
+            "has_results_structure": bool(query_results.get("columns")),
+        }
     elif not viz_config:
         next_step = "generate_viz_config"
         thought_log = "Database query completed successfully. Generating Apache ECharts visualization."
@@ -163,8 +187,8 @@ Return ONLY a JSON response in the following format:
 
     log.info("supervisor.decision", thought=thought_log, next_step=next_step)
     
-    # Append the supervisor thought to the history log
-    new_thoughts = thoughts + [f"Step decision: {next_step}. Reason: {thought_log}"]
+    # Append the supervisor thought to the history log (cap at 20 to prevent unbounded growth)
+    new_thoughts = (thoughts + [f"Step decision: {next_step}. Reason: {thought_log}"])[:20]
     
     return {
         **state,

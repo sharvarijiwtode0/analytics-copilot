@@ -1,14 +1,15 @@
 import time
+from backend.config import settings
 import clickhouse_connect
 
 print("Connecting to ClickHouse...")
 t0 = time.time()
 client = clickhouse_connect.get_client(
-    host="118.95.209.221",
-    port=8123,
-    username="limese_interns",
-    password="ItsInterns!23",
-    database="limese",
+    host=settings.clickhouse_host,
+    port=settings.clickhouse_port,
+    username=settings.clickhouse_user,
+    password=settings.clickhouse_password,
+    database=settings.clickhouse_database,
     connect_timeout=10,
 )
 print(f"Connected in {time.time() - t0:.2f} seconds")

@@ -411,8 +411,8 @@ async def clickhouse_health() -> dict:
         return {
             "status": "connected",
             "datasource": LIMESE_DS,
-            "host": "118.95.209.221:8123",
-            "database": "limese",
+            "host": f"{settings.clickhouse_host}:{settings.clickhouse_port}",
+            "database": settings.clickhouse_database,
             "test_query_rows": rows,
         }
     except Exception as exc:

@@ -31,12 +31,15 @@ demo.db
 dvc.db
 postgres_data/
 
-# IDE
+# IDE & AI tools
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
+.claude/
+.reqs_hash
+langgraph.json
 
 # OS
 .DS_Store

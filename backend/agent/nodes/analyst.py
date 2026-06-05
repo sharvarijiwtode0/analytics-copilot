@@ -178,9 +178,9 @@ async def analyze_insights(state: AnalyticsState) -> AnalyticsState:
     # Compute stats locally
     basic_stats = _compute_basic_stats(rows, columns)
 
-    # Prepare data sample for LLM (max 50 rows to save tokens)
+    # Prepare data sample for LLM (send up to 30 rows for better pattern recognition)
     sample_rows = rows[:50]
-    data_preview = json.dumps({"columns": columns, "rows": sample_rows[:10]}, default=str)
+    data_preview = json.dumps({"columns": columns, "rows": sample_rows[:30]}, default=str)
 
     stats_summary = json.dumps(basic_stats, indent=2, default=str) if basic_stats else "No numeric columns"
 

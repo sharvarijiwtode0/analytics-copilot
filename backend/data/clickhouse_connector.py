@@ -295,13 +295,14 @@ _limese_connector: ClickHouseConnector | None = None
 
 
 def get_limese_connector() -> ClickHouseConnector:
+    from backend.config import settings
     global _limese_connector
     if _limese_connector is None:
         _limese_connector = ClickHouseConnector(
-            host="118.95.209.221",
-            port=8123,
-            username="limese_interns",
-            password="ItsInterns!23",
-            database="limese",
+            host=settings.clickhouse_host,
+            port=settings.clickhouse_port,
+            username=settings.clickhouse_user,
+            password=settings.clickhouse_password,
+            database=settings.clickhouse_database,
         )
     return _limese_connector
